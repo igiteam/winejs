@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WINEJS - Windows Apps in Browser</title>
+    <link rel="icon" href="WINEJS%20-%20Windows%20Apps%20in%20Browser_files/wineskin.png" type="image/png">
+    <link rel="apple-touch-icon" href="WINEJS%20-%20Windows%20Apps%20in%20Browser_files/wineskin.png" sizes="180x180">
+    <link rel="icon" type="image/png" href="WINEJS%20-%20Windows%20Apps%20in%20Browser_files/wineskin.png"
+        sizes="192x192">
+    <link rel="icon" type="image/png" href="WINEJS%20-%20Windows%20Apps%20in%20Browser_files/wineskin.png"
+        sizes="512x512">
+    <meta itemprop="name" content="WINEJS - Windows Apps in Browser">
+    <meta itemprop="image" content="https://img.sdappnet.cloud/?url=${DOMAIN-MAIN}&amp;w=1920&amp;h=1080">
+    <meta property="og:title" content="WINEJS - Windows Apps in Browser">
+    <meta property="og:image" content="https://img.sdappnet.cloud/?url=${DOMAIN-MAIN}&amp;w=1920&amp;h=1080">
+    <meta property="og:url" content="">
+    <meta property="og:type" content="website">
+    <meta name="twitter:title" content="WINEJS - Windows Apps in Browser">
+    <meta name="twitter:image" content="https://img.sdappnet.cloud/?url=${DOMAIN-MAIN}&amp;w=1920&amp;h=1080">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="apple-touch-icon" href="WINEJS%20-%20Windows%20Apps%20in%20Browser_files/wineskin.png" sizes="180x180">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Lucida Grande', 'Arial', sans-serif;
+        }
+
+        body {
+            background: #1a1a1a;
+            background-image: radial-gradient(circle at 30% 40%, #2d2d2d 0%, #1a1a1a 80%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+
+        /* Windows 10-style title bar */
+        .win-titlebar {
+            background: #2d2d2d;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            padding: 0 0px;
+            border-bottom: 1px solid #404040;
+            user-select: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .win-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 20px;
+        }
+
+        .win-logo img {
+            height: 28px;
+            width: auto;
+        }
+
+        .win-logo span {
+            font-size: 16px;
+            font-weight: 500;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        .win-controls {
+            display: flex;
+            margin-left: auto;
+            gap: 2px;
+        }
+
+        .win-btn {
+            width: 46px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #e0e0e0;
+            font-size: 20px;
+            cursor: pointer;
+            transition: background 0.1s;
+        }
+
+        .win-btn:hover {
+            background: #404040;
+        }
+
+        .win-btn.close:hover {
+            background: #c42b1c;
+            color: white;
+        }
+
+        /* Windows 10-style navigation - UPDATED FOR RESPONSIVENESS */
+        /* Windows 10-style navigation - FIXED FOR IPHONE SE */
+        .win-nav {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px;
+            background: #252525;
+            border-bottom: 1px solid #333;
+            flex-wrap: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            flex-shrink: 0;
+        }
+
+        .win-nav-item {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 6px 8px;
+            border-radius: 4px;
+            color: #ccc;
+            font-size: 13px;
+            transition: all 0.2s;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        /* Hide text on small screens, show only icons */
+        @media (max-width: 480px) {
+            .win-nav-item .nav-text {
+                display: none;
+            }
+
+            .win-nav-item {
+                padding: 6px 6px;
+            }
+
+            .win-nav {
+                gap: 2px;
+                padding: 6px 6px;
+            }
+
+            .win-nav-divider {
+                margin: 0 2px;
+            }
+        }
+
+        .win-nav-item:hover {
+            background: #404040;
+            color: #fff;
+        }
+
+        .win-nav-item.active {
+            background: #0078d4;
+            color: white;
+        }
+
+        .win-nav-divider {
+            display: inline-block;
+            width: 1px;
+            height: 20px;
+            background: #404040;
+            margin: 0 2px;
+            flex-shrink: 0;
+        }
+
+        /* Search bar - takes remaining space */
+        .win-search {
+            background: #3a3a3a;
+            border: 1px solid #4a4a4a;
+            border-radius: 4px;
+            padding: 2px 8px;
+            display: flex;
+            align-items: center;
+            flex: 1 1 auto;
+            min-width: 100px;
+        }
+
+        .win-search input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 13px;
+            padding: 4px 4px;
+            width: 100%;
+            outline: none;
+        }
+
+        .win-search input::placeholder {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .win-search span {
+            color: #888;
+            font-size: 14px;
+            margin-right: 2px;
+        }
+
+        /* Main container */
+        .win-container {
+            padding: 20px;
+            max-width: 100%;
+            width: 100%;
+        }
+
+        /* Windows 10-style status bar */
+        .win-status {
+            background: #0078d4;
+            color: white;
+            padding: 6px 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .win-status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .win-status-divider {
+            width: 1px;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Windows 10-style app grid header */
+        .win-grid-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .win-grid-header h2 {
+            font-size: 20px;
+            font-weight: 400;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .win-grid-header h2 span {
+            font-size: 14px;
+            color: #888;
+            font-weight: normal;
+        }
+
+        .win-view-options {
+            display: flex;
+            gap: 5px;
+        }
+
+        .win-view-btn {
+            padding: 6px 12px;
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            color: #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .win-view-btn.active {
+            background: #0078d4;
+            border-color: #0078d4;
+            color: white;
+        }
+
+        /* Grid View (default) */
+        .win-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        /* List View */
+        .win-grid.list-view {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .win-grid.list-view .win-tile {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .win-grid.list-view .win-tile-image {
+            width: 60px;
+            height: 60px;
+            aspect-ratio: 1/1;
+            flex-shrink: 0;
+        }
+
+        .win-grid.list-view .win-tile-info {
+            flex: 1;
+            border-top: none;
+            padding: 8px 12px;
+        }
+
+        /* Hide badges in list view */
+        .win-grid.list-view .win-tile-badge {
+            display: none;
+        }
+
+        /* Windows 10-style app tile */
+        .win-tile {
+            background: #2d2d2d;
+            border-radius: 6px;
+            overflow: hidden;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: 1px solid #404040;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .win-tile:hover {
+            transform: translateY(-2px);
+            border-color: #0078d4;
+            box-shadow: 0 8px 16px rgba(0, 120, 212, 0.2);
+        }
+
+        .win-tile.selected {
+            border-color: #0078d4;
+            box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.5);
+        }
+
+        .win-tile-image {
+            aspect-ratio: 1/1;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .win-tile-image img {
+            width: 80%;
+            height: 80%;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .win-tile-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 10px;
+            backdrop-filter: blur(4px);
+        }
+
+        .win-tile-info {
+            padding: 12px;
+            border-top: 1px solid #404040;
+        }
+
+        .win-tile-title {
+            font-weight: 500;
+            font-size: 14px;
+            color: #fff;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .win-tile-desc {
+            font-size: 11px;
+            color: #aaa;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .win-tile-desc span {
+            background: #3a3a3a;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        /* Hidden class for search filtering */
+        .hidden-tile {
+            display: none !important;
+        }
+
+        /* Windows 10-style info bar */
+        .win-info-bar {
+            background: #252525;
+            border-radius: 6px;
+            padding: 16px 20px;
+            margin-top: 20px;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .win-info-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .win-info-icon {
+            font-size: 24px;
+            color: #0078d4;
+        }
+
+        .win-info-text {
+            font-size: 13px;
+            color: #ccc;
+        }
+
+        .win-info-text strong {
+            color: #fff;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* No results message */
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #888;
+            font-size: 16px;
+            background: #2d2d2d;
+            border-radius: 6px;
+            border: 1px solid #404040;
+        }
+
+        /* Loading indicator */
+        .loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #888;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .win-info-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .win-grid.list-view .win-tile {
+                flex-wrap: wrap;
+            }
+
+            .win-nav {
+                gap: 8px;
+            }
+        }
+    </style>
+    <style id="mmduhbti.o3">
+        .meta-extractor-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow-y: auto;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Arial', sans-serif;
+            border: 1px solid #e0e0e0;
+        }
+
+        .meta-extractor-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(3px);
+            z-index: 9999;
+        }
+
+        .meta-extractor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .meta-extractor-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin: 0;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .meta-extractor-close {
+            background: #f0f0f0;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 5px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .meta-extractor-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .meta-extractor-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .meta-extractor-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #e9ecef;
+        }
+
+        .meta-extractor-section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .meta-extractor-section-title svg {
+            color: #6c757d;
+        }
+
+        .meta-extractor-tags {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .meta-tag-item {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .meta-tag-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .meta-tag-name svg {
+            color: #7f8c8d;
+        }
+
+        .meta-tag-value {
+            color: #34495e;
+            font-size: 13px;
+            line-height: 1.5;
+            word-break: break-word;
+            background: #f8f9fa;
+            padding: 8px 10px;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+
+        .meta-tag-value.url {
+            color: #2980b9;
+        }
+
+        .meta-extractor-images {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .meta-image-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .meta-image-label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .meta-image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            padding: 5px;
+            background: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .meta-image-preview:hover {
+            transform: scale(1.02);
+            border-color: #3498db;
+        }
+
+        .meta-image-url {
+            margin-top: 12px;
+            color: #7f8c8d;
+            font-size: 12px;
+            word-break: break-all;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+
+        .snapshot-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .snapshot-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            padding: 5px;
+            background: white;
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .snapshot-preview:hover {
+            transform: scale(1.02);
+            border-color: #3498db;
+        }
+
+        .snapshot-url {
+            margin-top: 12px;
+            color: #7f8c8d;
+            font-size: 12px;
+            word-break: break-all;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+
+        .snapshot-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+
+        .snapshot-size-btn {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .snapshot-size-btn:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .snapshot-size-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+
+        .meta-extractor-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+            justify-content: flex-end;
+        }
+
+        .meta-extractor-btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .meta-extractor-btn.copy {
+            background: #3498db;
+            color: white;
+        }
+
+        .meta-extractor-btn.copy:hover {
+            background: #2980b9;
+        }
+
+        .meta-extractor-btn.copied {
+            background: #27ae60;
+        }
+
+        .meta-extractor-btn.json {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .meta-extractor-btn.json:hover {
+            background: #27ae60;
+        }
+
+        .meta-extractor-btn.json-view {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .meta-extractor-btn.json-view:hover {
+            background: #8e44ad;
+        }
+
+        .no-image {
+            color: #95a5a6;
+            font-style: italic;
+            padding: 40px 20px;
+            text-align: center;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed #dee2e6;
+        }
+
+        .copy-hint {
+            color: #7f8c8d;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .image-right-click-hint {
+            color: #e74c3c;
+            font-size: 11px;
+            text-align: center;
+            margin-top: 8px;
+            font-weight: 500;
+            background: #fff5f5;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .snapshot-loading {
+            padding: 40px;
+            text-align: center;
+            color: #7f8c8d;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed #dee2e6;
+        }
+
+        .snapshot-loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            border: 2px solid #3498db;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: snapshot-spin 1s linear infinite;
+        }
+
+        @keyframes snapshot-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .snapshot-error {
+            padding: 40px;
+            text-align: center;
+            color: #e74c3c;
+            background: #fdf3f2;
+            border-radius: 8px;
+            border: 2px dashed #e74c3c;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Windows 10-style title bar -->
+    <div class="win-titlebar">
+        <div class="win-logo">
+            <img src="WINEJS%20-%20Windows%20Apps%20in%20Browser_files/wineskin.png" alt="WINEJS">
+            <span>WINEJS</span>
+        </div>
+        <div class="win-controls">
+            <div class="win-btn">─</div>
+            <div class="win-btn">□</div>
+            <div class="win-btn close">×</div>
+        </div>
+    </div>
+
+    <!-- Windows 10-style navigation - RESTRUCTURED FOR RESPONSIVENESS -->
+    <!-- Windows 10-style navigation - FIXED STRUCTURE -->
+    <div class="win-nav">
+        <div class="nav-links">
+            <a href="https://wine2.sdappnet.cloud/" class="win-nav-item active">
+                <span>🏠</span>
+                <span class="nav-text">Home</span>
+            </a>
+            <a href="https://wine2.sdappnet.cloud/upload" target="_blank" rel="noopener" class="win-nav-item">
+                <span>📤</span>
+                <span class="nav-text">Upload</span>
+            </a>
+            <a href="https://wine2.sdappnet.cloud/download" target="_blank" rel="noopener" class="win-nav-item">
+                <span>📥</span>
+                <span class="nav-text">Downloads</span>
+            </a>
+            <div class="win-nav-divider"></div>
+        </div>
+        <div class="win-search">
+            <span>🔍</span>
+            <input type="text" id="search-input" placeholder="Search...">
+        </div>
+    </div>
+
+    <!-- Windows 10-style status bar -->
+    <div class="win-status">
+        <div class="win-status-item">
+            <span>✅</span>
+            <span>Wine 9.0</span>
+        </div>
+        <div class="win-status-divider"></div>
+        <div class="win-status-item">
+            <span>💾</span>
+            <span>Shared: /uploads</span>
+        </div>
+        <div class="win-status-divider"></div>
+        <div class="win-status-item">
+            <span>🔒</span>
+            <span>Download Portal Protected</span>
+        </div>
+    </div>
+
+    <!-- Main container -->
+    <div class="win-container">
+        <!-- Apps Grid Header -->
+        <div class="win-grid-header">
+            <h2>
+                Available Windows Apps
+                <span id="app-count">(1 of 1 installed)</span>
+            </h2>
+            <div class="win-view-options">
+                <button class="win-view-btn active" data-view="grid">Grid</button>
+                <button class="win-view-btn" data-view="list">List</button>
+            </div>
+        </div>
+
+        <!-- Apps Container - populated dynamically -->
+        <div class="win-grid" id="apps-container">
+            <a href="https://wine2.sdappnet.cloud/milkshape" target="_blank" rel="noopener" class="win-tile selected"
+                data-app-name="MilkShape 3D" data-app-category="Graphics">
+                <div class="win-tile-image">
+                    <img src="WINEJS%20-%20Windows%20Apps%20in%20Browser_files/milkshape.jpg" alt="MilkShape 3D">
+                    <div class="win-tile-badge">Wine</div>
+                </div>
+                <div class="win-tile-info">
+                    <div class="win-tile-title">MilkShape 3D</div>
+                    <div class="win-tile-desc">
+                        <span>Graphics</span>
+                        <span>1.8.5</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Info Bar - Windows 10 style -->
+        <div class="win-info-bar">
+            <div class="win-info-item">
+                <div class="win-info-icon">📁</div>
+                <div class="win-info-text">
+                    <strong>Shared Storage</strong>
+                    /var/www/uploads
+                </div>
+            </div>
+            <div class="win-info-item">
+                <div class="win-info-icon">🔄</div>
+                <div class="win-info-text">
+                    <strong>Auto-start Apps</strong>
+                    On-demand, stop when idle
+                </div>
+            </div>
+            <div class="win-info-item">
+                <div class="win-info-icon">🎮</div>
+                <div class="win-info-text">
+                    <strong>GPU Acceleration</strong>
+                    Client-side rendering
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const appsContainer = document.getElementById('apps-container');
+            const viewBtns = document.querySelectorAll('.win-view-btn');
+            const searchInput = document.getElementById('search-input');
+            const appCountSpan = document.getElementById('app-count');
+            let allTiles = [];
+
+            // Grid/List view with localStorage memory
+            function initView() {
+                const savedView = localStorage.getItem('winejs-view') || 'grid';
+                if (savedView === 'list') {
+                    appsContainer.classList.add('list-view');
+                } else {
+                    appsContainer.classList.remove('list-view');
+                }
+                viewBtns.forEach(btn => {
+                    const view = btn.getAttribute('data-view');
+                    if (view === savedView) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+
+            // Update visible app count
+            function updateAppCount() {
+                const visibleTiles = document.querySelectorAll('.win-tile:not(.hidden-tile)');
+                const totalTiles = allTiles.length;
+                appCountSpan.textContent = `(${visibleTiles.length} of ${totalTiles} installed)`;
+            }
+
+            // Search functionality
+            function initSearch() {
+                if (!searchInput) return;
+                searchInput.addEventListener('input', function (e) {
+                    const searchTerm = e.target.value.toLowerCase().trim();
+                    allTiles.forEach(tile => {
+                        const appName = tile.getAttribute('data-app-name') || '';
+                        const appCategory = tile.getAttribute('data-app-category') || '';
+                        const appTitle = tile.querySelector('.win-tile-title')?.textContent || '';
+                        const searchableText = `${appName} ${appCategory} ${appTitle}`.toLowerCase();
+                        if (searchTerm === '' || searchableText.includes(searchTerm)) {
+                            tile.classList.remove('hidden-tile');
+                        } else {
+                            tile.classList.add('hidden-tile');
+                        }
+                    });
+                    updateAppCount();
+                    let noResultsMsg = document.querySelector('.no-results');
+                    const visibleTiles = document.querySelectorAll('.win-tile:not(.hidden-tile)');
+                    if (visibleTiles.length === 0) {
+                        if (!noResultsMsg) {
+                            noResultsMsg = document.createElement('div');
+                            noResultsMsg.className = 'no-results';
+                            noResultsMsg.textContent = 'No apps match your search';
+                            appsContainer.appendChild(noResultsMsg);
+                        }
+                    } else {
+                        if (noResultsMsg) noResultsMsg.remove();
+                    }
+                });
+            }
+
+            // View toggle functionality
+            function initViewToggle() {
+                viewBtns.forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const view = this.getAttribute('data-view');
+                        if (view === 'list') {
+                            appsContainer.classList.add('list-view');
+                        } else {
+                            appsContainer.classList.remove('list-view');
+                        }
+                        viewBtns.forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        localStorage.setItem('winejs-view', view);
+                    });
+                });
+            }
+
+            // Load apps from API
+            async function loadApps() {
+                try {
+                    const response = await fetch('/apps');
+                    const apps = await response.json();
+
+                    if (Object.keys(apps).length === 0) {
+                        appsContainer.innerHTML = '<div class="no-results">No apps installed yet</div>';
+                        appCountSpan.textContent = '(0 of 0 installed)';
+                        return;
+                    }
+
+                    let html = '';
+                    for (const [key, app] of Object.entries(apps)) {
+                        const iconPath = app.icon ? app.icon : 'https://cdn.sdappnet.cloud/rtx/images/wine-placeholder.png';
+                        const isSelected = key === 'milkshape' ? 'selected' : '';
+
+                        html += `
+                            <a href="/${key}" target="_blank" rel="noopener" 
+                               class="win-tile ${isSelected}" 
+                               data-app-name="${app.name}" 
+                               data-app-category="${app.category || 'Other'}">
+                                <div class="win-tile-image">
+                                    <img src="${iconPath}" alt="${app.name}">
+                                    <div class="win-tile-badge">Wine</div>
+                                </div>
+                                <div class="win-tile-info">
+                                    <div class="win-tile-title">${app.name}</div>
+                                    <div class="win-tile-desc">
+                                        <span>${app.category || 'App'}</span>
+                                        <span>${app.version || 'v1.0'}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
+                    }
+
+                    appsContainer.innerHTML = html;
+                    allTiles = document.querySelectorAll('.win-tile');
+                    updateAppCount();
+
+                } catch (err) {
+                    console.error('Failed to load apps:', err);
+                    appsContainer.innerHTML = '<div class="no-results">Failed to load apps. Please refresh.</div>';
+                }
+            }
+
+            // Initialize everything
+            initView();
+            initSearch();
+            initViewToggle();
+            loadApps();
+        })();
+    </script>
+
+</body>
+
+</html>

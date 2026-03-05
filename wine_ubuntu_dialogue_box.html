@@ -1,0 +1,68 @@
+<!-- App Details Dialog (hidden by default) -->
+<div class="win-dialog-overlay" id="appDialog">
+    <div class="win-dialog">
+        <div class="win-dialog-header">
+            <div class="win-dialog-title">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/milkshape3dicon.jpg"
+                    style="height: 24px; width: 24px; border-radius: 4px;">
+                <span>MilkShape 3D v1.8.5</span>
+            </div>
+            <div class="win-dialog-close" onclick="document.getElementById('appDialog').style.display='none'">×
+            </div>
+        </div>
+        <div class="win-dialog-body">
+            <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/milkshape3dicon.jpg"
+                    style="width: 128px; height: 128px; border-radius: 8px;">
+                <div>
+                    <h3 style="color: #fff; margin-bottom: 8px;">3D Modeling Tool for Game Developers</h3>
+                    <p style="color: #aaa; font-size: 14px; line-height: 1.6;">
+                        MilkShape 3D is a shareware 3D modeling program for low-polygon modeling,
+                        primarily used for creating and modifying models for video games.
+                    </p>
+                    <div style="display: flex; gap: 8px; margin-top: 12px;">
+                        <span style="background: #3a3a3a; padding: 4px 8px; border-radius: 4px; font-size: 12px;">🎮
+                            Game Dev</span>
+                        <span style="background: #3a3a3a; padding: 4px 8px; border-radius: 4px; font-size: 12px;">🔧
+                            Modeling</span>
+                        <span style="background: #3a3a3a; padding: 4px 8px; border-radius: 4px; font-size: 12px;">🔄
+                            Low-Poly</span>
+                    </div>
+                </div>
+            </div>
+
+            <h4 style="color: #fff; margin: 20px 0 10px 0;">Launch Script</h4>
+            <div class="win-script-viewer">
+                #!/bin/bash
+                # MilkShape 3D Launcher
+                cd /app
+                wine ms3d.exe
+            </div>
+
+            <h4 style="color: #fff; margin: 20px 0 10px 0;">Information</h4>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                <div style="background: #252525; padding: 10px; border-radius: 4px;">
+                    <div style="color: #888; font-size: 12px;">Version</div>
+                    <div style="color: #fff; font-size: 14px;">1.8.5</div>
+                </div>
+                <div style="background: #252525; padding: 10px; border-radius: 4px;">
+                    <div style="color: #888; font-size: 12px;">Port</div>
+                    <div style="color: #fff; font-size: 14px;">6901</div>
+                </div>
+                <div style="background: #252525; padding: 10px; border-radius: 4px;">
+                    <div style="color: #888; font-size: 12px;">VNC Password</div>
+                    <div style="color: #fff; font-size: 14px;">••••••••</div>
+                </div>
+                <div style="background: #252525; padding: 10px; border-radius: 4px;">
+                    <div style="color: #888; font-size: 12px;">Category</div>
+                    <div style="color: #fff; font-size: 14px;">Graphics</div>
+                </div>
+            </div>
+        </div>
+        <div class="win-dialog-footer">
+            <button class="win-button"
+                onclick="document.getElementById('appDialog').style.display='none'">Close</button>
+            <button class="win-button primary" onclick="window.location='/milkshape'">Launch App</button>
+        </div>
+    </div>
+</div>

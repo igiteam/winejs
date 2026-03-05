@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kasm Ubuntu Mouse Emulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: #1a2632;
+            min-height: 100vh;
+            font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Full screen mouse area */
+        .mouse-area {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #1a2632;
+            overflow: hidden;
+            cursor: none;
+            background-image: radial-gradient(circle at 1px 1px, #34495e 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        /* Ubuntu-styled custom cursor */
+        .custom-cursor {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            pointer-events: none;
+            z-index: 1000;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+            transition: transform 0.02s linear;
+        }
+
+        .cursor-arrow {
+            width: 100%;
+            height: 100%;
+            background: #ecf0f1;
+            clip-path: polygon(0 0, 100% 0, 70% 30%, 100% 100%, 70% 100%, 30% 60%, 0 60%);
+            border: 2px solid #e67e22;
+            box-shadow: 0 0 15px rgba(230, 126, 34, 0.3);
+        }
+
+        /* Click effect - Ubuntu orange */
+        .click-effect {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(230, 126, 34, 0.3);
+            border: 3px solid #e67e22;
+            transform: translate(-50%, -50%) scale(0);
+            pointer-events: none;
+            z-index: 999;
+            animation: ubuntuClick 0.4s ease-out forwards;
+        }
+
+        @keyframes ubuntuClick {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 1;
+            }
+
+            40% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translate(-50%, -50%) scale(2);
+                opacity: 0;
+            }
+        }
+
+        /* Burger menu button - bottom right corner */
+        .burger-menu {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #e67e22;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            z-index: 2000;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 2px solid #f39c12;
+            transition: all 0.3s ease;
+        }
+
+        .burger-menu:hover {
+            transform: scale(1.1);
+            background: #d35400;
+        }
+
+        .burger-menu.active {
+            background: #c0392b;
+            transform: rotate(90deg);
+        }
+
+        .burger-line {
+            width: 30px;
+            height: 4px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        /* Control panel - slides from right */
+        .control-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 380px;
+            height: 100vh;
+            background: #2c3e50;
+            padding: 20px;
+            z-index: 1999;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.5);
+            border-left: 2px solid #e67e22;
+        }
+
+        .control-panel.open {
+            right: 0;
+        }
+
+        /* Panel header */
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e67e22;
+            color: #ecf0f1;
+        }
+
+        .panel-header h2 {
+            font-size: 20px;
+            font-weight: 500;
+        }
+
+        .close-panel {
+            font-size: 28px;
+            cursor: pointer;
+            color: #e67e22;
+            transition: color 0.2s;
+        }
+
+        .close-panel:hover {
+            color: #f39c12;
+        }
+
+        /* Panel sections */
+        .panel-section {
+            background: #34495e;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid #3d566e;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            color: #ecf0f1;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #e67e22;
+            padding-bottom: 8px;
+            font-weight: 500;
+        }
+
+        /* Ubuntu-styled buttons */
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .mouse-btn {
+            padding: 12px 8px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: white;
+            background: #3d566e;
+            border-bottom: 3px solid #1a2632;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .mouse-btn:hover {
+            background: #4a6a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .mouse-btn:active {
+            transform: translateY(2px);
+            border-bottom-width: 1px;
+        }
+
+        .btn-left {
+            background: #27ae60;
+            border-bottom-color: #1e8449;
+        }
+
+        .btn-right {
+            background: #e74c3c;
+            border-bottom-color: #b03a2e;
+        }
+
+        .btn-middle {
+            background: #f39c12;
+            border-bottom-color: #b86f0a;
+        }
+
+        .btn-double {
+            background: #9b59b6;
+            border-bottom-color: #713b8a;
+        }
+
+        .btn-reset {
+            background: #7f8c8d;
+            border-bottom-color: #5a6263;
+        }
+
+        .btn-scroll {
+            background: #3498db;
+            border-bottom-color: #1f618d;
+        }
+
+        /* Status indicators */
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .status-item {
+            background: #1a2632;
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #3d566e;
+        }
+
+        .status-label {
+            color: #95a5a6;
+            font-size: 11px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .status-value {
+            color: #e67e22;
+            font-size: 20px;
+            font-weight: 600;
+            font-family: 'Ubuntu Mono', monospace;
+        }
+
+        .coordinate-display {
+            background: #1a2632;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            font-family: 'Ubuntu Mono', monospace;
+            font-size: 18px;
+            border: 1px solid #3d566e;
+        }
+
+        .coordinate-display span {
+            color: #e67e22;
+            font-weight: bold;
+        }
+
+        /* Toggle switches */
+        .toggle-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            color: #ecf0f1;
+            font-size: 14px;
+        }
+
+        .toggle-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #e67e22;
+        }
+
+        /* Slider */
+        .speed-slider {
+            width: 100%;
+            margin: 10px 0;
+            -webkit-appearance: none;
+            background: transparent;
+        }
+
+        .speed-slider::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 5px;
+            background: #1a2632;
+            border-radius: 3px;
+            border: 1px solid #3d566e;
+        }
+
+        .speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #e67e22;
+            margin-top: -7px;
+            cursor: pointer;
+            border: 2px solid #ecf0f1;
+        }
+
+        .speed-slider::-moz-range-track {
+            width: 100%;
+            height: 5px;
+            background: #1a2632;
+            border-radius: 3px;
+        }
+
+        .speed-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #e67e22;
+            border: 2px solid #ecf0f1;
+            cursor: pointer;
+        }
+
+        /* Instructions */
+        .instructions {
+            background: #1a2632;
+            border-radius: 6px;
+            padding: 15px;
+            color: #bdc3c7;
+            font-size: 13px;
+            line-height: 1.6;
+            border: 1px solid #3d566e;
+        }
+
+        .instructions kbd {
+            background: #34495e;
+            border-radius: 4px;
+            padding: 2px 6px;
+            color: #e67e22;
+            border: 1px solid #3d566e;
+            font-family: 'Ubuntu Mono', monospace;
+        }
+
+        /* Mouse trail */
+        .trail-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(230, 126, 34, 0.3);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 998;
+            transition: all 0.1s ease-out;
+        }
+
+        /* Small coordinate overlay */
+        .coordinate-overlay {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(26, 38, 50, 0.8);
+            color: #ecf0f1;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-family: 'Ubuntu Mono', monospace;
+            font-size: 14px;
+            border: 1px solid #e67e22;
+            z-index: 1500;
+            backdrop-filter: blur(5px);
+        }
+
+        .coordinate-overlay span {
+            color: #e67e22;
+            font-weight: bold;
+        }
+
+        /* Scrollbar styling */
+        .control-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .control-panel::-webkit-scrollbar-track {
+            background: #1a2632;
+        }
+
+        .control-panel::-webkit-scrollbar-thumb {
+            background: #e67e22;
+            border-radius: 4px;
+        }
+
+        .control-panel::-webkit-scrollbar-thumb:hover {
+            background: #f39c12;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Full screen mouse area -->
+    <div class="mouse-area" id="mouseArea">
+        <!-- Custom cursor -->
+        <div class="custom-cursor" id="customCursor">
+            <div class="cursor-arrow"></div>
+        </div>
+
+        <!-- Click effect -->
+        <div class="click-effect" id="clickEffect"></div>
+    </div>
+
+    <!-- Coordinate overlay (minimal) -->
+    <div class="coordinate-overlay">
+        X: <span id="coordX">0</span> | Y: <span id="coordY">0</span>
+    </div>
+
+    <!-- Burger menu button -->
+    <div class="burger-menu" id="burgerMenu">
+        <div class="burger-line"></div>
+        <div class="burger-line"></div>
+        <div class="burger-line"></div>
+    </div>
+
+    <!-- Control panel (hidden by default) -->
+    <div class="control-panel" id="controlPanel">
+        <div class="panel-header">
+            <h2>🐧 Mouse Settings</h2>
+            <div class="close-panel" id="closePanel">✕</div>
+        </div>
+
+        <!-- Mouse Control Section -->
+        <div class="panel-section">
+            <div class="section-title">🖱️ Mouse Control</div>
+            <div class="button-grid">
+                <button class="mouse-btn btn-left" id="leftClick">LMB</button>
+                <button class="mouse-btn btn-right" id="rightClick">RMB</button>
+                <button class="mouse-btn btn-middle" id="middleClick">MMB</button>
+                <button class="mouse-btn btn-double" id="doubleClick">Double</button>
+                <button class="mouse-btn btn-reset" id="resetCursor">Reset</button>
+                <button class="mouse-btn btn-scroll" id="toggleScroll">Scroll Mode</button>
+            </div>
+        </div>
+
+        <!-- Button Status -->
+        <div class="panel-section">
+            <div class="section-title">🔘 Button Status</div>
+            <div class="status-grid">
+                <div class="status-item">
+                    <div class="status-label">Left</div>
+                    <div class="status-value" id="leftStatus">●</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Right</div>
+                    <div class="status-value" id="rightStatus">●</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Middle</div>
+                    <div class="status-value" id="middleStatus">●</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-label">Last Click</div>
+                    <div class="status-value" id="lastClick">None</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="panel-section">
+            <div class="section-title">⚙️ Settings</div>
+            <div style="color: #ecf0f1; margin-bottom: 10px;">Mouse Speed</div>
+            <input type="range" min="0.5" max="2" step="0.1" value="1" class="speed-slider" id="speedSlider">
+
+            <div class="toggle-item">
+                <input type="checkbox" id="trailToggle" checked>
+                <label for="trailToggle">Enable mouse trail</label>
+            </div>
+
+            <div class="toggle-item">
+                <input type="checkbox" id="absoluteMode" checked>
+                <label for="absoluteMode">Absolute positioning (touch)</label>
+            </div>
+        </div>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <div style="color: #e67e22; margin-bottom: 8px; font-weight: bold;">📖 Quick Guide</div>
+            • <kbd>Click & Drag</kbd> - Move mouse<br>
+            • <kbd>Left Click</kbd> - Single tap<br>
+            • <kbd>Right Click</kbd> - Two-finger tap<br>
+            • <kbd>Middle Click</kbd> - Three-finger tap<br>
+            • <kbd>Scroll</kbd> - Two-finger drag<br>
+            • <kbd>Double Click</kbd> - Double tap<br>
+            • <kbd>Ctrl+Click</kbd> - Right click (desktop)
+        </div>
+    </div>
+
+    <script>
+        class UbuntuKasmMouseEmulator {
+            constructor() {
+                this.mouseArea = document.getElementById('mouseArea');
+                this.cursor = document.getElementById('customCursor');
+                this.clickEffect = document.getElementById('clickEffect');
+
+                // DOM elements
+                this.coordX = document.getElementById('coordX');
+                this.coordY = document.getElementById('coordY');
+                this.lastClickEl = document.getElementById('lastClick');
+                this.leftStatus = document.getElementById('leftStatus');
+                this.rightStatus = document.getElementById('rightStatus');
+                this.middleStatus = document.getElementById('middleStatus');
+
+                // Settings
+                this.speedSlider = document.getElementById('speedSlider');
+                this.trailToggle = document.getElementById('trailToggle');
+                this.absoluteMode = document.getElementById('absoluteMode');
+
+                // Panel controls
+                this.burgerMenu = document.getElementById('burgerMenu');
+                this.controlPanel = document.getElementById('controlPanel');
+                this.closePanel = document.getElementById('closePanel');
+
+                // Cursor position
+                this.cursorX = window.innerWidth / 2;
+                this.cursorY = window.innerHeight / 2;
+
+                // Button states
+                this.buttonStates = {
+                    left: false,
+                    right: false,
+                    middle: false
+                };
+
+                // Touch tracking
+                this.activeTouches = new Map();
+                this.touchStartTime = null;
+
+                // Scroll mode
+                this.scrollMode = false;
+
+                // Trail particles
+                this.trailParticles = [];
+                this.maxTrailParticles = 20;
+
+                // Mouse speed factor
+                this.speedFactor = 1.0;
+
+                this.init();
+            }
+
+            init() {
+                this.updateCursorPosition();
+                this.setupEventListeners();
+                this.updateButtonStatus();
+                this.setupPanelControls();
+            }
+
+            setupPanelControls() {
+                // Open panel
+                this.burgerMenu.addEventListener('click', () => {
+                    this.controlPanel.classList.add('open');
+                    this.burgerMenu.classList.add('active');
+                });
+
+                // Close panel
+                this.closePanel.addEventListener('click', () => {
+                    this.controlPanel.classList.remove('open');
+                    this.burgerMenu.classList.remove('active');
+                });
+
+                // Click outside to close
+                document.addEventListener('click', (e) => {
+                    if (!this.controlPanel.contains(e.target) &&
+                        !this.burgerMenu.contains(e.target) &&
+                        this.controlPanel.classList.contains('open')) {
+                        this.controlPanel.classList.remove('open');
+                        this.burgerMenu.classList.remove('active');
+                    }
+                });
+            }
+
+            setupEventListeners() {
+                // Mouse events
+                this.mouseArea.addEventListener('mousemove', this.handleMouseMove.bind(this));
+                this.mouseArea.addEventListener('mousedown', this.handleMouseDown.bind(this));
+                this.mouseArea.addEventListener('mouseup', this.handleMouseUp.bind(this));
+                this.mouseArea.addEventListener('wheel', this.handleWheel.bind(this));
+
+                // Touch events
+                this.mouseArea.addEventListener('touchstart', this.handleTouchStart.bind(this));
+                this.mouseArea.addEventListener('touchmove', this.handleTouchMove.bind(this));
+                this.mouseArea.addEventListener('touchend', this.handleTouchEnd.bind(this));
+                this.mouseArea.addEventListener('touchcancel', this.handleTouchEnd.bind(this));
+
+                // Context menu prevention
+                this.mouseArea.addEventListener('contextmenu', (e) => e.preventDefault());
+
+                // Button click handlers
+                document.getElementById('leftClick').addEventListener('click', () => this.simulateClick('left'));
+                document.getElementById('rightClick').addEventListener('click', () => this.simulateClick('right'));
+                document.getElementById('middleClick').addEventListener('click', () => this.simulateClick('middle'));
+                document.getElementById('doubleClick').addEventListener('click', () => this.simulateDoubleClick());
+                document.getElementById('resetCursor').addEventListener('click', () => this.resetCursor());
+                document.getElementById('toggleScroll').addEventListener('click', () => this.toggleScrollMode());
+
+                // Settings
+                this.speedSlider.addEventListener('input', (e) => {
+                    this.speedFactor = parseFloat(e.target.value);
+                });
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', this.handleKeyDown.bind(this));
+
+                // Window resize
+                window.addEventListener('resize', () => this.handleResize());
+            }
+
+            handleMouseMove(e) {
+                const rect = this.mouseArea.getBoundingClientRect();
+                let x = (e.clientX - rect.left) * this.speedFactor;
+                let y = (e.clientY - rect.top) * this.speedFactor;
+
+                // Constrain to bounds
+                x = Math.max(0, Math.min(rect.width, x));
+                y = Math.max(0, Math.min(rect.height, y));
+
+                this.cursorX = x;
+                this.cursorY = y;
+
+                this.updateCursorPosition();
+                this.addTrailParticle(x + rect.left, y + rect.top);
+            }
+
+            handleMouseDown(e) {
+                const button = this.getButtonFromEvent(e);
+                if (button) {
+                    this.setButtonState(button, true);
+                    this.showClickEffect(e.clientX, e.clientY);
+                }
+            }
+
+            handleMouseUp(e) {
+                const button = this.getButtonFromEvent(e);
+                if (button) {
+                    this.setButtonState(button, false);
+                }
+            }
+
+            handleWheel(e) {
+                e.preventDefault();
+
+                const scrollAmount = e.deltaY > 0 ? 120 : -120;
+
+                const scrollEvent = new CustomEvent('mousescroll', {
+                    detail: {
+                        deltaY: scrollAmount,
+                        deltaX: e.deltaX,
+                        x: this.cursorX,
+                        y: this.cursorY
+                    }
+                });
+                this.mouseArea.dispatchEvent(scrollEvent);
+
+                this.lastClickEl.textContent = `Scroll ${scrollAmount > 0 ? 'Down' : 'Up'}`;
+                this.showClickEffect(
+                    e.clientX,
+                    e.clientY
+                );
+            }
+
+            handleTouchStart(e) {
+                e.preventDefault();
+                const touches = Array.from(e.touches);
+
+                this.touchStartTime = Date.now();
+
+                touches.forEach((touch) => {
+                    const rect = this.mouseArea.getBoundingClientRect();
+                    const x = touch.clientX - rect.left;
+                    const y = touch.clientY - rect.top;
+
+                    this.activeTouches.set(touch.identifier, {
+                        x: x,
+                        y: y,
+                        startX: x,
+                        startY: y,
+                        startTime: Date.now()
+                    });
+                });
+            }
+
+            handleTouchMove(e) {
+                e.preventDefault();
+                const rect = this.mouseArea.getBoundingClientRect();
+
+                Array.from(e.touches).forEach(touch => {
+                    if (this.activeTouches.has(touch.identifier)) {
+                        const touchData = this.activeTouches.get(touch.identifier);
+                        const x = (touch.clientX - rect.left) * this.speedFactor;
+                        const y = (touch.clientY - rect.top) * this.speedFactor;
+
+                        touchData.x = Math.max(0, Math.min(rect.width, x));
+                        touchData.y = Math.max(0, Math.min(rect.height, y));
+                    }
+                });
+
+                if (this.activeTouches.size === 1 && !this.scrollMode) {
+                    const touch = Array.from(this.activeTouches.values())[0];
+
+                    this.cursorX += (touch.x - this.cursorX) * 0.3;
+                    this.cursorY += (touch.y - this.cursorY) * 0.3;
+
+                    this.updateCursorPosition();
+                    this.addTrailParticle(rect.left + this.cursorX, rect.top + this.cursorY);
+
+                    this.dispatchMouseMove(touch.x, touch.y);
+                } else if (this.activeTouches.size === 2) {
+                    const touches = Array.from(this.activeTouches.values());
+                    if (touches.length === 2) {
+                        const deltaY = (touches[0].y + touches[1].y) / 2 - (touches[0].startY + touches[1].startY) / 2;
+
+                        if (Math.abs(deltaY) > 10) {
+                            const scrollAmount = deltaY > 0 ? 120 : -120;
+
+                            const wheelEvent = new WheelEvent('wheel', {
+                                deltaY: scrollAmount,
+                                clientX: rect.left + this.cursorX,
+                                clientY: rect.top + this.cursorY
+                            });
+                            this.mouseArea.dispatchEvent(wheelEvent);
+
+                            touches[0].startY = touches[0].y;
+                            touches[1].startY = touches[1].y;
+                        }
+                    }
+                }
+            }
+
+            handleTouchEnd(e) {
+                e.preventDefault();
+
+                const touches = Array.from(e.touches);
+                const endedTouches = Array.from(this.activeTouches.keys())
+                    .filter(id => !touches.some(t => t.identifier === id));
+
+                if (endedTouches.length > 0 && this.touchStartTime) {
+                    const touchDuration = Date.now() - this.touchStartTime;
+
+                    if (touchDuration < 300) {
+                        if (this.activeTouches.size === 1 && endedTouches.length === 1) {
+                            const touch = this.activeTouches.get(endedTouches[0]);
+                            if (touch) {
+                                const moveDistance = Math.hypot(
+                                    touch.x - touch.startX,
+                                    touch.y - touch.startY
+                                );
+
+                                if (moveDistance < 20) {
+                                    this.simulateClick('left');
+                                }
+                            }
+                        } else if (endedTouches.length === 2) {
+                            this.simulateClick('right');
+                        } else if (endedTouches.length === 3) {
+                            this.simulateClick('middle');
+                        }
+                    }
+                }
+
+                endedTouches.forEach(id => this.activeTouches.delete(id));
+
+                if (this.activeTouches.size === 0) {
+                    this.touchStartTime = null;
+                    this.scrollMode = false;
+                }
+            }
+
+            handleKeyDown(e) {
+                if (e.ctrlKey && e.button === 0) {
+                    e.preventDefault();
+                    this.simulateClick('right');
+                }
+            }
+
+            getButtonFromEvent(e) {
+                switch (e.button) {
+                    case 0: return 'left';
+                    case 1: return 'middle';
+                    case 2: return 'right';
+                    default: return null;
+                }
+            }
+
+            setButtonState(button, state) {
+                this.buttonStates[button] = state;
+                this.updateButtonStatus();
+
+                const rect = this.mouseArea.getBoundingClientRect();
+                const mouseEvent = new MouseEvent(state ? 'mousedown' : 'mouseup', {
+                    clientX: rect.left + this.cursorX,
+                    clientY: rect.top + this.cursorY,
+                    button: button === 'left' ? 0 : button === 'middle' ? 1 : 2,
+                    bubbles: true,
+                    cancelable: true
+                });
+                this.mouseArea.dispatchEvent(mouseEvent);
+            }
+
+            updateButtonStatus() {
+                this.leftStatus.textContent = this.buttonStates.left ? '⬤' : '○';
+                this.leftStatus.style.color = this.buttonStates.left ? '#27ae60' : '#7f8c8d';
+
+                this.rightStatus.textContent = this.buttonStates.right ? '⬤' : '○';
+                this.rightStatus.style.color = this.buttonStates.right ? '#e74c3c' : '#7f8c8d';
+
+                this.middleStatus.textContent = this.buttonStates.middle ? '⬤' : '○';
+                this.middleStatus.style.color = this.buttonStates.middle ? '#f39c12' : '#7f8c8d';
+            }
+
+            simulateClick(buttonType) {
+                this.setButtonState(buttonType, true);
+
+                setTimeout(() => {
+                    this.setButtonState(buttonType, false);
+                }, 100);
+
+                this.lastClickEl.textContent = buttonType.charAt(0).toUpperCase() + buttonType.slice(1);
+
+                const rect = this.mouseArea.getBoundingClientRect();
+                this.showClickEffect(rect.left + this.cursorX, rect.top + this.cursorY);
+            }
+
+            simulateDoubleClick() {
+                this.simulateClick('left');
+                setTimeout(() => {
+                    this.simulateClick('left');
+                }, 150);
+
+                this.lastClickEl.textContent = 'Double';
+            }
+
+            dispatchMouseMove(x, y) {
+                const rect = this.mouseArea.getBoundingClientRect();
+                const mouseEvent = new MouseEvent('mousemove', {
+                    clientX: rect.left + x,
+                    clientY: rect.top + y,
+                    bubbles: true,
+                    cancelable: true
+                });
+                this.mouseArea.dispatchEvent(mouseEvent);
+            }
+
+            showClickEffect(x, y) {
+                const effect = this.clickEffect.cloneNode(true);
+                effect.style.left = x + 'px';
+                effect.style.top = y + 'px';
+                effect.style.display = 'block';
+                document.body.appendChild(effect);
+
+                setTimeout(() => {
+                    if (effect.parentNode) {
+                        effect.parentNode.removeChild(effect);
+                    }
+                }, 400);
+            }
+
+            addTrailParticle(x, y) {
+                if (!this.trailToggle.checked) return;
+
+                const particle = document.createElement('div');
+                particle.className = 'trail-particle';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                document.body.appendChild(particle);
+
+                this.trailParticles.push(particle);
+
+                setTimeout(() => {
+                    particle.style.opacity = '0';
+                    particle.style.transform = 'scale(0.5)';
+
+                    setTimeout(() => {
+                        if (particle.parentNode) {
+                            particle.parentNode.removeChild(particle);
+                        }
+                    }, 100);
+                }, 50);
+
+                while (this.trailParticles.length > this.maxTrailParticles) {
+                    const oldParticle = this.trailParticles.shift();
+                    if (oldParticle.parentNode) {
+                        oldParticle.parentNode.removeChild(oldParticle);
+                    }
+                }
+            }
+
+            updateCursorPosition() {
+                const rect = this.mouseArea.getBoundingClientRect();
+
+                this.cursorX = Math.max(0, Math.min(rect.width, this.cursorX));
+                this.cursorY = Math.max(0, Math.min(rect.height, this.cursorY));
+
+                this.cursor.style.left = this.cursorX + 'px';
+                this.cursor.style.top = this.cursorY + 'px';
+
+                this.coordX.textContent = Math.round(this.cursorX);
+                this.coordY.textContent = Math.round(this.cursorY);
+            }
+
+            resetCursor() {
+                const rect = this.mouseArea.getBoundingClientRect();
+                this.cursorX = rect.width / 2;
+                this.cursorY = rect.height / 2;
+                this.updateCursorPosition();
+                this.lastClickEl.textContent = 'Reset';
+            }
+
+            toggleScrollMode() {
+                this.scrollMode = !this.scrollMode;
+                document.getElementById('toggleScroll').style.background =
+                    this.scrollMode ? '#27ae60' : '#3498db';
+            }
+
+            handleResize() {
+                const rect = this.mouseArea.getBoundingClientRect();
+                this.cursorX = Math.min(this.cursorX, rect.width);
+                this.cursorY = Math.min(this.cursorY, rect.height);
+                this.updateCursorPosition();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new UbuntuKasmMouseEmulator();
+        });
+    </script>
+</body>
+
+</html>
+
+<!-- 🎯 What Changed:
+Full-screen mouse area - The trackpad now takes up the entire screen
+Burger menu in bottom-right - Orange circular button that opens the control panel
+Sliding control panel - All settings slide in from the right when you click the burger menu
+Minimal coordinate overlay - Small indicator in the top-left showing cursor position
+Cleaner interface - Just the mouse cursor and the burger menu on screen
+
+🖱️ How to Use:
+
+The entire screen is your trackpad - touch anywhere to move the cursor
+Burger menu (bottom-right) - opens all controls and settings
+Click outside the panel or the X button to close it
+All the same gestures work: single tap, two-finger tap, etc.
+
+The interface is now much cleaner - just the cursor and a small menu button, with everything else hidden until you need
+it. -->
+<!-- 
+Touchmote is a brilliant reference - it uses a Wiimote + sensor bar to create genuine Windows touch events through the
+TouchInjector driver. That's exactly the level of integration we want, but for Moonlight/Kasm.
+The Key Difference:
+
+Touchmote creates real system-level touch events (through TouchInjector.sys), while our HTML page creates browser-level
+mouse events. For Moonlight, we need the browser events to be properly formatted so the Moonlight iOS app can translate
+them into the network packets we saw in Input.h.
+Current Status vs. Touchmote-Level Integration:
+Feature Touchmote Our HTML Emulator
+Event Type Native Windows Touch Browser MouseEvents
+Integration Level Kernel driver (TouchInjector) JavaScript in WKWebView
+Multi-touch Yes (2+ points) Yes (via gesture detection)
+Pressure Sensitivity Yes Not yet
+Accuracy Pixel-perfect Browser-dependent
+What We Can Learn from Touchmote:
+javascript
+
+// Enhanced version with Touchmote-like precision
+class AdvancedTouchmoteEmulator {
+constructor() {
+// Add support for proper touch injection patterns
+this.touchPoints = new Map();
+this.touchInjectionRate = 60; // Match TouchInjector's 60Hz
+
+// Track touch lifecycles like Touchmote does
+this.setupTouchInjection();
+}
+
+setupTouchInjection() {
+// Touchmote uses these patterns for Windows 8 gestures:
+this.gesturePatterns = {
+edgeSwipe: { // Windows 8 charm bar
+threshold: 50, // pixels from edge
+action: 'charms'
+},
+pinchZoom: { // Multi-touch zoom
+threshold: 20, // pixel distance change
+action: 'zoom'
+},
+rotate: { // Rotation gesture
+threshold: 15, // degrees
+action: 'rotate'
+}
+};
+}
+
+// Touchmote's multi-touch implementation pattern
+handleMultiTouch(touches) {
+if (touches.length === 2) {
+// Calculate center point like Touchmote
+const centerX = (touches[0].x + touches[1].x) / 2;
+const centerY = (touches[0].y + touches[1].y) / 2;
+
+// Calculate distance for pinch/zoom
+const distance = Math.hypot(
+touches[0].x - touches[1].x,
+touches[0].y - touches[1].y
+);
+
+// Calculate rotation angle
+const angle = Math.atan2(
+touches[1].y - touches[0].y,
+touches[1].x - touches[0].x
+);
+
+// Inject as proper touch events (what Moonlight expects)
+this.injectTouchEvents([
+{ id: touches[0].identifier, x: touches[0].x, y: touches[0].y, type: 'move' },
+{ id: touches[1].identifier, x: touches[1].x, y: touches[1].y, type: 'move' }
+]);
+}
+}
+
+// This matches what Moonlight's Input.c expects
+injectTouchEvents(events) {
+events.forEach(event => {
+// Create TouchEvent that Moonlight can intercept
+const touchEvent = new TouchEvent('touchmove', {
+touches: [{
+identifier: event.id,
+clientX: event.x,
+clientY: event.y,
+radiusX: 2, // Touchmote uses pressure mapping
+radiusY: 2,
+force: 0.5 // Pressure sensitivity
+}],
+changedTouches: [],
+targetTouches: []
+});
+
+this.mouseArea.dispatchEvent(touchEvent);
+});
+}
+}
+
+Key Improvements Inspired by Touchmote:
+
+Touch Point Tracking: Like Touchmote tracks Wiimote IR points, we track finger positions with unique IDs
+
+Gesture Detection: Edge swipes, pinch zoom, rotate - all translated to system gestures
+
+Pressure Simulation: Touchmote maps Wiimote distance to pressure; we could use touch.force
+
+Injection Rate: Match the 60Hz refresh rate for smooth tracking
+
+Driver-Like Behavior: Our events should look exactly like what the OS expects
+
+For Moonlight Compatibility:
+
+The Moonlight iOS app acts like TouchInjector - it takes these browser events and converts them to the network packets
+we saw. Our job is to make the browser events as authentic as possible:
+javascript
+
+// Enhanced event with all properties Moonlight might need
+function createMoonlightTouchEvent(type, touch, allTouches) {
+return new TouchEvent(type, {
+touches: allTouches.map(t => ({
+identifier: t.id,
+clientX: t.x,
+clientY: t.y,
+screenX: t.x,
+screenY: t.y,
+pageX: t.x,
+pageY: t.y,
+target: this.mouseArea,
+radiusX: 2.5, // Touch contact size
+radiusY: 2.5,
+rotationAngle: 0,
+force: t.pressure || 0.5 // Pressure if available
+})),
+changedTouches: [{
+identifier: touch.id,
+clientX: touch.x,
+clientY: touch.y,
+// ... all properties
+}],
+view: window,
+bubbles: true,
+cancelable: true
+});
+} -->
