@@ -9,7 +9,7 @@ load_dotenv()
 
 # Configuration
 TOKEN = os.getenv('DIGITALOCEAN_TOKEN_DELETE', "your_digitalocean_api_token_here")
-DOMAIN = os.getenv('DOMAIN', "sdappnet.cloud")
+DOMAIN = os.getenv('DOMAIN', "example.com")
 
 # Color codes for terminal output
 class Colors:
