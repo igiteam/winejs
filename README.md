@@ -1,3 +1,152 @@
+┌─────────────────────────────────────────────────────────────┐
+│ WINEJS ECOSYSTEM │
+│ ┌─────────────────────┐ ┌─────────────────────────────┐ │
+│ │ winejs.sh │ │ winejs-terminal_firefox.sh │ │
+│ │ (The OS) │ → │ (The Installer) │ │
+│ │ • Domain setup │ │ • Firefox Extension │ │
+│ │ • SSL certs │ │ • OS-style overlay │ │
+│ │ • Docker images │ │ • Console new tab │ │
+│ │ • KasmVNC │ │ • Progress bar │ │
+│ │ • FileServer │ │ • PIN protection │ │
+│ │ • DumbDrop │ │ • Connection monitor │ │
+│ │ • Gamepad support │ │ • One-click install │ │
+│ │ • Wiimote support │ │ • Toggle button │ │
+│ └─────────────────────┘ └─────────────────────────────┘ │
+│ ↓ │
+│ ┌─────────────────────────┐ │
+│ │ DigitalOcean Droplet │ │
+│ │ with WINEJS OS │ │
+│ │ https://your.domain │ │
+│ │ ┌─────────────────┐ │ │
+│ │ │ /upload │ │ │
+│ │ │ /download │ │ │
+│ │ │ /milkshape │ │ │
+│ │ │ /gimp (soon) │ │ │
+│ │ └─────────────────┘ │ │
+│ └─────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+
+┌───────────────────────────────────────────────────────────────┐
+│ 🍷 WINEJS OS │
+├───────────────────────────────────────────────────────────────┤
+│ • Ubuntu 24.04 + Docker + KasmVNC │
+│ • Wine 9.0 (runs Windows apps in browser!) │
+│ • Gamepad API (Xbox, PS4, Switch controllers) │
+│ • Wiimote support (hid-wiimote + xwiimote) │
+│ • Webcam passthrough (v4l2loopback) │
+│ • SSL certificates (Let's Encrypt) │
+│ • PM2 process manager │
+│ • Shared storage (/var/www/uploads) │
+└───────────────────────────────────────────────────────────────┘
+
+# STEP 1: User gets a DigitalOcean droplet
+
+# STEP 2: User opens terminal
+
+# STEP 3: BOOM! Our Firefox extension appears!
+
+╔══════════════════════════════════════╗
+║ 🍷 WINEJS WEBOS INSTALLER ║
+╠══════════════════════════════════════╣
+║ ║
+║ [ GLOSSY WINEJS LOGO ] ║
+║ ║
+║ ┌────────────────────────────────┐ ║
+║ │ WINEJS Install 00:15 │ ║
+║ │ [████████████░░░░░░░░░░░░░░░░] │ ║
+║ └────────────────────────────────┘ ║
+║ ║
+║ ┌────────────────────────────────┐ ║
+║ │ [0.000] WINEJS installer │ ║
+║ │ [0.500] Connecting to instance│ ║
+║ │ [1.500] WINEJS installer ready│ ║
+║ │ [15.20] Building Docker image │ ║
+║ │ [25.10] MilkShape downloaded │ ║
+║ │ [35.40] SSL certificate ready │ ║
+║ └────────────────────────────────┘ ║
+║ ║
+║ [▶ INSTALL WINEJS] ║
+║ ║
+╚══════════════════════════════════════╝
+
+https://wine.sdappnet.cloud
+│
+├─► /upload (DumbDrop - PIN protected)
+│ • Drag & drop files
+│ • Auto-extract if ZIP
+│ • Files go to shared storage
+│
+├─► /download (FileServer - password protected)
+│ • Browse all uploaded files
+│ • Download with password
+│ • Perfect for sharing models
+│
+└─► /milkshape (KasmVNC + Wine)
+• MilkShape 3D in browser!
+• Gamepad support (rotate with controller!)
+• Wiimote support (point with IR!)
+• Webcam passthrough
+• Access /uploads folder
+• Save models back to shared storage
+
+Browser Container Windows App
+┌──────┐ ┌──────┐ ┌──────────┐
+│ Xbox │ │ │ │ MilkShape│
+│ Button│──WebSocket───→ │/dev/ │──SDL mapping───→ │ 3D sees │
+│ Press │ via VNC │input/│ │ joystick │
+│ │ │js0 │ │ movement │
+└──────┘ └──────┘ └──────────┘
+
+No drivers. No config. Just WORKS. 🤯
+
+Component Your Code My Code
+Console New Tab ✅ Tampermonkey script ➡️ Merged into extension
+OS Installer UI ✅ Tampermonkey script ➡️ Merged into extension
+SVG Logos ✅ wine_128, wine_26 ➡️ Embedded in extension
+Firefox manifest ✅ webNavigation permission
+Background script ✅ Tab tracking + injection
+Popup with toggle ✅ storage + status
+Cache busting ✅ meta tags + timestamps
+WINEJS OS ✅ The actual server setup!
+
+winejs-terminal_firefox.sh # Creates the Firefox extension
+↓
+winejs-firefox-installer.xpi # Drag & drop install
+↓
+Opens in DigitalOcean terminal
+↓
+winejs.sh # The actual OS installer runs
+↓
+WINEJS OS running at https://your.domain
+
+✅ Took TWO Tampermonkey scripts
+✅ Built a Firefox extension
+✅ That installs a full OS
+✅ On DigitalOcean
+✅ With gamepad support
+✅ And Wiimote support
+✅ And webcam passthrough
+✅ In ONE DAY
+✅ With ZERO copy-paste for the user
+
+# Before:
+
+1. Find Tampermonkey scripts
+2. Install them manually
+3. Copy-paste commands
+4. Wait... did it work?
+5. Reload page
+6. Console still opens in popup 😫
+
+# After:
+
+1. Drag .xpi to Firefox
+2. Open DigitalOcean terminal
+3. Click START
+4. 🚀 WINEJS OS is installing!
+5. Console opens in new tab automatically
+6. Everything just works! ✨
+
 <!-- # 🎯 The Translator Pattern
 
 Just like your screenshot script had:

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WineJS Documentation - Windows Apps in Browser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            color: #e0e0e0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 1px solid #2a2a2a;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(0, 150, 255, 0.5));
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 300;
+            background: linear-gradient(135deg, #fff, #3b8cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 18px;
+        }
+
+        /* Cards */
+        .card {
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .card-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #3b8cff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Grid layouts */
+        .ecosystem-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        /* ASCII Art */
+        .ascii-art {
+            font-family: 'Monaco', 'Menlo', monospace;
+            white-space: pre;
+            color: #3b8cff;
+            background: #111;
+            padding: 20px;
+            border-radius: 12px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.4;
+            border: 1px solid #2a2a2a;
+        }
+
+        /* Terminal/Installer simulation */
+        .installer-sim {
+            background: #000;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #2a2a2a;
+            margin: 30px 0;
+        }
+
+        .installer-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: #3b8cff;
+        }
+
+        .progress-bar {
+            background: #1e1e1e;
+            height: 4px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 40%;
+            background: linear-gradient(90deg, #3b8cff, #6eb5ff);
+        }
+
+        .log-window {
+            background: #111;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Monaco', monospace;
+            font-size: 13px;
+            color: #0f0;
+            margin: 15px 0;
+        }
+
+        .log-line {
+            color: #888;
+            margin: 4px 0;
+        }
+
+        .log-line.success {
+            color: #6eca8b;
+        }
+
+        .button {
+            background: linear-gradient(to bottom, #f0f0f0 0%, #d8d8d8 100%);
+            color: #000;
+            border: none;
+            padding: 12px 36px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        /* URL tree */
+        .url-tree {
+            font-family: 'Monaco', monospace;
+            background: #111;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 3px solid #3b8cff;
+        }
+
+        .url-tree ul {
+            list-style: none;
+            margin-left: 20px;
+        }
+
+        .url-tree li {
+            margin: 8px 0;
+            color: #888;
+        }
+
+        .url-tree li strong {
+            color: #3b8cff;
+        }
+
+        /* Comparison tables */
+        .comparison-table {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .comparison-col {
+            background: #111;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .comparison-col.before {
+            border-left: 3px solid #ff4d4d;
+        }
+
+        .comparison-col.after {
+            border-left: 3px solid #6eca8b;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            background: #2a2a2a;
+            color: #888;
+        }
+
+        .badge.success {
+            background: #1e3a2a;
+            color: #6eca8b;
+        }
+
+        .badge.warning {
+            background: #3a2e1e;
+            color: #f9c35f;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 1px solid #2a2a2a;
+            margin-top: 40px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🍷</div>
+            <h1>WINEJS Documentation</h1>
+            <div class="subtitle">Run Windows Apps in Browser with Gamepad Support on DigitalOcean</div>
+        </div>
+
+        <!-- Ecosystem Overview -->
+        <div class="card">
+            <div class="card-title">📊 WINEJS ECOSYSTEM</div>
+            <div class="ascii-art">
+                ┌─────────────────────────────────────────────────────────────┐
+                │ WINEJS ECOSYSTEM │
+                │ ┌─────────────────────┐ ┌─────────────────────────────┐ │
+                │ │ winejs.sh │ │ winejs-terminal_firefox.sh │ │
+                │ │ (The OS) │ → │ (The Installer) │ │
+                │ │ • Domain setup │ │ • Firefox Extension │ │
+                │ │ • SSL certs │ │ • OS-style overlay │ │
+                │ │ • Docker images │ │ • Console new tab │ │
+                │ │ • KasmVNC │ │ • Progress bar │ │
+                │ │ • FileServer │ │ • PIN protection │ │
+                │ │ • DumbDrop │ │ • Connection monitor │ │
+                │ │ • Gamepad support │ │ • One-click install │ │
+                │ │ • Wiimote support │ │ • Toggle button │ │
+                │ └─────────────────────┘ └─────────────────────────────┘ │
+                │ ↓ │
+                │ ┌─────────────────────────┐ │
+                │ │ DigitalOcean Droplet │ │
+                │ │ with WINEJS OS │ │
+                │ │ https://your.domain │ │
+                │ │ ┌─────────────────┐ │ │
+                │ │ │ /upload │ │ │
+                │ │ │ /download │ │ │
+                │ │ │ /milkshape │ │ │
+                │ │ │ /gimp (soon) │ │ │
+                │ │ └─────────────────┘ │ │
+                │ └─────────────────────────┘ │
+                └─────────────────────────────────────────────────────────────┘
+            </div>
+        </div>
+
+        <!-- OS Features -->
+        <div class="card">
+            <div class="card-title">🍷 WINEJS OS</div>
+            <div class="feature-grid">
+                <div style="background: #111; padding: 15px; border-radius: 8px;">
+                    <strong style="color: #3b8cff;">Ubuntu 24.04 + Docker + KasmVNC</strong>
+                </div>
+                <div style="background: #111; padding: 15px; border-radius: 8px;">
+                    <strong style="color: #3b8cff;">Wine 9.0</strong> - Runs Windows apps in browser
+                </div>
+                <div style="background: #111; padding: 15px; border-radius: 8px;">
+                    <strong style="color: #3b8cff;">Gamepad API</strong> - Xbox, PS4, Switch controllers
+                </div>
+                <div style="background: #111; padding: 15px; border-radius: 8px;">
+                    <strong style="color: #3b8cff;">Wiimote support</strong> - hid-wiimote + xwiimote
+                </div>
+                <div style="background: #111; padding: 15px; border-radius: 8px;">
+                    <strong style="color: #3b8cff;">Webcam passthrough</strong> - v4l2loopback
+                </div>
+                <div style="background: #111; padding: 15px; border-radius: 8px;">
+                    <strong style="color: #3b8cff;">SSL certificates</strong> - Let's Encrypt
+                </div>
+            </div>
+        </div>
+
+        <!-- Installer Simulation -->
+        <div class="card">
+            <div class="card-title">🚀 INSTALLATION EXPERIENCE</div>
+            <div class="installer-sim">
+                <div class="installer-header">
+                    <span>🍷 WINEJS WEBOS INSTALLER</span>
+                    <span style="margin-left: auto; color: #888;">00:15</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 40%;"></div>
+                </div>
+                <div class="log-window">
+                    <div class="log-line">[0.000] WINEJS installer</div>
+                    <div class="log-line">[0.500] Connecting to instance...</div>
+                    <div class="log-line">[1.500] WINEJS installer ready</div>
+                    <div class="log-line">[15.20] Building Docker image</div>
+                    <div class="log-line">[25.10] MilkShape downloaded</div>
+                    <div class="log-line success">[35.40] SSL certificate ready</div>
+                </div>
+                <div style="text-align: center;">
+                    <button class="button">▶ INSTALL WINEJS</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Service Endpoints -->
+        <div class="card">
+            <div class="card-title">🌐 SERVICE ENDPOINTS</div>
+            <div class="url-tree">
+                https://wine.sdappnet.cloud
+                <ul>
+                    <li>├─► <strong>/upload</strong> (DumbDrop - PIN protected)
+                        <ul>
+                            <li>• Drag & drop files</li>
+                            <li>• Auto-extract if ZIP</li>
+                            <li>• Files go to shared storage</li>
+                        </ul>
+                    </li>
+                    <li>├─► <strong>/download</strong> (FileServer - password protected)
+                        <ul>
+                            <li>• Browse all uploaded files</li>
+                            <li>• Download with password</li>
+                            <li>• Perfect for sharing models</li>
+                        </ul>
+                    </li>
+                    <li>└─► <strong>/milkshape</strong> (KasmVNC + Wine)
+                        <ul>
+                            <li>• MilkShape 3D in browser!</li>
+                            <li>• Gamepad support (rotate with controller!)</li>
+                            <li>• Wiimote support (point with IR!)</li>
+                            <li>• Webcam passthrough</li>
+                            <li>• Access /uploads folder</li>
+                            <li>• Save models back to shared storage</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Gamepad Architecture -->
+        <div class="card">
+            <div class="card-title">🎮 GAMEPAD ARCHITECTURE</div>
+            <div class="ascii-art">
+                Browser Container Windows App
+                ┌──────┐ ┌──────┐ ┌──────────┐
+                │ Xbox │ │ │ │ MilkShape│
+                │ Button│──WebSocket───→ │/dev/ │──SDL mapping───→ │ 3D sees │
+                │ Press │ via VNC │input/│ │ joystick │
+                │ │ │js0 │ │ movement │
+                └──────┘ └──────┘ └──────────┘
+
+                No drivers. No config. Just WORKS. 🤯
+            </div>
+        </div>
+
+        <!-- Component Breakdown -->
+        <div class="card">
+            <div class="card-title">📦 COMPONENT BREAKDOWN</div>
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr style="background: #111;">
+                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid #2a2a2a;">Component</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid #2a2a2a;">Your Code</th>
+                    <th style="padding: 12px; text-align: left; border-bottom: 1px solid #2a2a2a;">My Code</th>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;">Console New Tab</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;"><span class="badge success">✅
+                            Tampermonkey script</span></td>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;"><span class="badge">➡️ Merged into
+                            extension</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;">OS Installer UI</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;"><span class="badge success">✅
+                            Tampermonkey script</span></td>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;"><span class="badge">➡️ Merged into
+                            extension</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;">SVG Logos</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;"><span class="badge success">✅ wine_128,
+                            wine_26</span></td>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;"><span class="badge">➡️ Embedded in
+                            extension</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;">Firefox manifest</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;"></td>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;"><span class="badge success">✅
+                            webNavigation permission</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;">Background script</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;"></td>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;"><span class="badge success">✅ Tab
+                            tracking + injection</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;">Popup with toggle</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;"></td>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;"><span class="badge success">✅ storage +
+                            status</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;">Cache busting</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;"></td>
+                    <td style="padding: 12px; border-bottom: 1px solid #2a2a2a;"><span class="badge success">✅ meta tags
+                            + timestamps</span></td>
+                </tr>
+                <tr>
+                    <td style="padding: 12px;">WINEJS OS</td>
+                    <td style="padding: 12px;"><span class="badge success">✅ The actual server setup!</span></td>
+                    <td style="padding: 12px;"></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Installation Flow -->
+        <div class="card">
+            <div class="card-title">📥 INSTALLATION FLOW</div>
+            <div class="ascii-art">
+                winejs-terminal_firefox.sh # Creates the Firefox extension
+                ↓
+                winejs-firefox-installer.xpi # Drag & drop install
+                ↓
+                Opens in DigitalOcean terminal
+                ↓
+                winejs.sh # The actual OS installer runs
+                ↓
+                WINEJS OS running at https://your.domain
+            </div>
+        </div>
+
+        <!-- Achievement Unlocked -->
+        <div class="card">
+            <div class="card-title">🏆 ACHIEVEMENT UNLOCKED</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <span class="badge success">✅ Took TWO Tampermonkey scripts</span>
+                <span class="badge success">✅ Built a Firefox extension</span>
+                <span class="badge success">✅ That installs a full OS</span>
+                <span class="badge success">✅ On DigitalOcean</span>
+                <span class="badge success">✅ With gamepad support</span>
+                <span class="badge success">✅ And Wiimote support</span>
+                <span class="badge success">✅ And webcam passthrough</span>
+                <span class="badge success">✅ In ONE DAY</span>
+                <span class="badge success">✅ With ZERO copy-paste for the user</span>
+            </div>
+        </div>
+
+        <!-- Before/After Comparison -->
+        <div class="comparison-table">
+            <div class="comparison-col before">
+                <h3 style="color: #ff4d4d; margin-bottom: 20px;">❌ Before</h3>
+                <ul style="list-style: none;">
+                    <li style="margin: 10px 0;">1. Find Tampermonkey scripts</li>
+                    <li style="margin: 10px 0;">2. Install them manually</li>
+                    <li style="margin: 10px 0;">3. Copy-paste commands</li>
+                    <li style="margin: 10px 0;">4. Wait... did it work?</li>
+                    <li style="margin: 10px 0;">5. Reload page</li>
+                    <li style="margin: 10px 0;">6. Console still opens in popup 😫</li>
+                </ul>
+            </div>
+            <div class="comparison-col after">
+                <h3 style="color: #6eca8b; margin-bottom: 20px;">✅ After</h3>
+                <ul style="list-style: none;">
+                    <li style="margin: 10px 0;">1. Drag .xpi to Firefox</li>
+                    <li style="margin: 10px 0;">2. Open DigitalOcean terminal</li>
+                    <li style="margin: 10px 0;">3. Click START</li>
+                    <li style="margin: 10px 0;">4. 🚀 WINEJS OS is installing!</li>
+                    <li style="margin: 10px 0;">5. Console opens in new tab automatically</li>
+                    <li style="margin: 10px 0;">6. Everything just works! ✨</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>🍷 WINEJS · Built with ❤️ by IGITeam · One day, two scripts, infinite possibilities</p>
+            <p style="margin-top: 10px; font-size: 12px;">No drivers. No config. Just works. 🤯</p>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -11,6 +11,229 @@
 # Usage: curl -sL https://raw.githubusercontent.com/YOUR_USER/winejs/main/setup.sh | sudo bash
 # ============================================================
 
+#Originally hosted on:
+#https://igiteam.github.io/sh/?url=https://cdn.sdappnet.cloud/rtx/winejs.sh&e=1
+#Download WineJS Installation extension for Firefox!
+#https://igiteam.github.io/sh/?url=https://cdn.sdappnet.cloud/rtx/winejs-terminal_firefox.sh&e=1
+
+
+# ============= ECHO_MONITOR_HOOK =============
+# Runs in background and watches all output for patterns
+# Add this at the VERY TOP of winejs.sh (right after #!/bin/bash)
+
+# Create a named pipe for monitoring
+ECHO_MONITOR_HOOK=$(mktemp -u)
+mkfifo "$ECHO_MONITOR_HOOK"
+
+# Redirect ALL output to both console and the monitor pipe
+exec 3>&1 4>&2
+exec > >(tee "$ECHO_MONITOR_HOOK") 2>&1
+
+# Start monitor in background
+(
+    while read -r line; do
+        # Check each line against patterns from your actual script
+        case "$line" in
+            # CONFIGURATION STAGE (0-8%)
+            *"Enter your MAIN domain"*)
+                echo "PROGRESS:1:Waiting for domain input" >&3
+                ;;
+            *"Using domain:"*)
+                echo "PROGRESS:2:Domain configured: ${line#*Using domain: }" >&3
+                ;;
+            *"Detected droplet IP:"*)
+                echo "PROGRESS:3:IP detected: ${line#*Detected droplet IP: }" >&3
+                ;;
+            *"DNS is correctly configured"*)
+                echo "PROGRESS:4:DNS verified" >&3
+                ;;
+            *"Enter email for SSL"*)
+                echo "PROGRESS:5:Waiting for email" >&3
+                ;;
+            *"Enter File-Server Download password"*)
+                echo "PROGRESS:6:Waiting for password" >&3
+                ;;
+            *"Enter 4-digit PIN"*)
+                echo "PROGRESS:7:Waiting for PIN" >&3
+                ;;
+            *"Allowed file extensions"*)
+                echo "PROGRESS:8:Configuring extensions" >&3
+                ;;
+                
+            # SYSTEM PREP (8-15%)
+            *"Updating system packages"*)
+                echo "PROGRESS:8:Starting system update" >&3
+                echo "PING:success" >&3
+                ;;
+            *"Installing required tools"*)
+                echo "PROGRESS:12:Installing dependencies" >&3
+                ;;
+                
+            # DOCKER (15-22%)
+            *"Installing Docker"*)
+                echo "PROGRESS:15:Setting up Docker" >&3
+                ;;
+            *"Docker installed successfully"*)
+                echo "PROGRESS:18:Docker ready" >&3
+                ;;
+            *"Installing docker-compose"*)
+                echo "PROGRESS:20:Adding compose" >&3
+                ;;
+                
+            # WIIMOTE (22-28%)
+            *"Adding Nintendo Wiimote support"*)
+                echo "PROGRESS:22:Wiimote setup" >&3
+                ;;
+            *"Wiimote support configured"*)
+                echo "PROGRESS:26:Wiimote ready" >&3
+                ;;
+                
+            # NODE/PM2 (28-32%)
+            *"Installing Node.js 18 and PM2"*)
+                echo "PROGRESS:28:Node.js setup" >&3
+                ;;
+                
+            # SHARED STORAGE (32-35%)
+            *"Creating shared storage directory"*)
+                echo "PROGRESS:32:Setting up storage" >&3
+                ;;
+            *"Shared storage created"*)
+                echo "PROGRESS:34:Storage ready" >&3
+                ;;
+                
+            # KASMVNC BASE IMAGE (35-45%)
+            *"Building KasmVNC base image"*)
+                echo "PROGRESS:35:Building base image (2-3 minutes)" >&3
+                ;;
+            *"Step"*)
+                # Docker build steps - count them for progress
+                step_num=$(echo "$line" | grep -o 'Step [0-9]*' | grep -o '[0-9]*')
+                if [ -n "$step_num" ] && [ $step_num -le 30 ]; then
+                    # Map step number to progress (roughly 35-45%)
+                    prog=$((35 + (step_num * 10 / 30)))
+                    echo "PROGRESS:$prog:Building image step $step_num/30" >&3
+                fi
+                ;;
+            *"Successfully built"*)
+                echo "PROGRESS:45:Base image complete" >&3
+                ;;
+                
+            # MILKSHAPE DOWNLOAD (45-55%)
+            *"Installing MilkShape 3D"*)
+                echo "PROGRESS:45:Downloading MilkShape" >&3
+                ;;
+            *"Downloading MilkShape"*)
+                echo "PROGRESS:48:Downloading (this may take a moment)" >&3
+                ;;
+            *"Found executable:"*)
+                echo "PROGRESS:52:MilkShape downloaded: ${line#*Found executable: }" >&3
+                ;;
+            *"Creating launch script"*)
+                echo "PROGRESS:54:Configuring MilkShape" >&3
+                ;;
+                
+            # KASMVNC INSTANCE (55-62%)
+            *"Creating KasmVNC instance for MilkShape"*)
+                echo "PROGRESS:55:Setting up container" >&3
+                ;;
+            *"Container started"*)
+                echo "PROGRESS:60:Container running" >&3
+                ;;
+                
+            # FILESERVER (62-68%)
+            *"Setting up FileServer for DOWNLOADS"*)
+                echo "PROGRESS:62:Configuring download portal" >&3
+                ;;
+            *"FileServer running on port"*)
+                echo "PROGRESS:66:Download portal ready" >&3
+                ;;
+                
+            # DUMBDROP (68-73%)
+            *"Setting up DumbDrop for UPLOADS"*)
+                echo "PROGRESS:68:Configuring upload portal" >&3
+                ;;
+            *"DumbDrop running on port"*)
+                echo "PROGRESS:72:Upload portal ready" >&3
+                ;;
+                
+            # SSL (73-78%)
+            *"Setting up SSL certificates"*)
+                echo "PROGRESS:73:Requesting SSL certificate" >&3
+                ;;
+            *"Certificate saved"*)
+                echo "PROGRESS:76:SSL ready" >&3
+                ;;
+                
+            # NGINX (78-83%)
+            *"Creating nginx configuration"*)
+                echo "PROGRESS:78:Configuring web server" >&3
+                ;;
+            *"nginx configuration file test is successful"*)
+                echo "PROGRESS:82:Nginx configured" >&3
+                ;;
+                
+            # HOME PAGE (83-87%)
+            *"Creating Windows 10-style home page"*)
+                echo "PROGRESS:83:Building dashboard" >&3
+                ;;
+            *"Windows 10-style home page created"*)
+                echo "PROGRESS:86:Dashboard ready" >&3
+                ;;
+                
+            # FINAL STEPS (87-95%)
+            *"Creating monitoring script"*)
+                echo "PROGRESS:87:Setting up monitoring" >&3
+                ;;
+            *"Patching KasmVNC"*)
+                echo "PROGRESS:90:Applying final tweaks" >&3
+                ;;
+            *"Background script scheduled"*)
+                echo "PROGRESS:93:Finalizing" >&3
+                ;;
+                
+            # COMPLETE (100%)
+            *"WINEJS SETUP COMPLETE"*)
+                echo "PROGRESS:100:Installation complete!" >&3
+                echo "PING:complete" >&3
+                ;;
+            *"Main domain: https://"*)
+                # Extract domain from the line
+                domain=$(echo "$line" | grep -o 'https://[^ ]*')
+                echo "DOMAIN:$domain" >&3
+                ;;
+                
+            # Password captures
+            *"Upload: https://"*" (password:"*)
+                echo "UPLOAD_INFO:$line" >&3
+                ;;
+            *"Download: https://"*" (password:"*)
+                echo "DOWNLOAD_INFO:$line" >&3
+                ;;
+            *"MilkShape: https://"*" (VNC pass:"*)
+                echo "MILKSHAPE_INFO:$line" >&3
+                ;;
+                
+            # Gamepad/Wiimote success messages
+            *"Gamepad/Webcam support will be built"*)
+                echo "PROGRESS:24:Gamepad/webcam configured" >&3
+                ;;
+        esac
+        
+        # Also catch any percentage numbers in the wild (like docker build)
+        if [[ "$line" =~ ([0-9]+)% ]]; then
+            echo "PROGRESS:${BASH_REMATCH[1]}:${line:0:40}" >&3
+        fi
+    done < "$ECHO_MONITOR_HOOK"
+) &
+ECHO_MONITOR_HOOK_PID=$!
+
+# Cleanup function to kill monitor on exit
+cleanup_ECHO_MONITOR_HOOK() {
+    rm -f "$ECHO_MONITOR_HOOK"
+    kill $ECHO_MONITOR_HOOK_PID 2>/dev/null
+}
+trap cleanup_ECHO_MONITOR_HOOK EXIT
+
 export DEBIAN_FRONTEND=noninteractive
 set -e
 
@@ -156,6 +379,7 @@ while true; do
     fi
 done
 
+
 # DON'T MODIFY THE DOMAIN - use exactly what the user entered
 info "Using domain: $DOMAIN_NAME"
 echo ""
@@ -163,6 +387,119 @@ echo ""
 info "Great! Upload will be at: https://$DOMAIN_NAME/upload"
 info "Download will be at: https://$DOMAIN_NAME/download"
 info "Apps will be at: https://$DOMAIN_NAME/milkshape, etc"
+
+DROPLET_IP=$(curl -s --fail ifconfig.me 2>/dev/null || curl -s --fail http://checkip.amazonaws.com 2>/dev/null || echo "UNKNOWN")
+info "Detected droplet IP: $DROPLET_IP"
+
+# ============= DNS CHECKER FUNCTION =============
+check_dns() {
+    local domain="$1"
+    local expected_ip="$2"
+    local max_attempts=3
+    local attempt=1
+        
+    info "Checking if $domain resolves to $expected_ip..."
+    info "Note: DNS changes can take up to 48 hours to propagate worldwide"
+    echo ""
+    
+    while [ $attempt -le $max_attempts ]; do
+        info "Attempt $attempt of $max_attempts..."
+        
+        # Try multiple DNS servers for better accuracy
+        local resolved_ip=""
+        
+        # Try Google DNS first
+        resolved_ip=$(dig +short @8.8.8.8 "$domain" 2>/dev/null | head -1)
+        
+        # If that fails, try Cloudflare DNS
+        if [ -z "$resolved_ip" ]; then
+            resolved_ip=$(dig +short @1.1.1.1 "$domain" 2>/dev/null | head -1)
+        fi
+        
+        # If both external DNS fail, try system resolver
+        if [ -z "$resolved_ip" ]; then
+            resolved_ip=$(dig +short "$domain" 2>/dev/null | head -1)
+        fi
+        
+        # Last resort: use host command
+        if [ -z "$resolved_ip" ]; then
+            resolved_ip=$(host -t A "$domain" 2>/dev/null | grep "has address" | head -1 | awk '{print $NF}')
+        fi
+        
+        if [ -n "$resolved_ip" ]; then
+            info "✅ $domain resolves to: $resolved_ip"
+            
+            if [ "$resolved_ip" = "$expected_ip" ]; then
+                success "✓ DNS is correctly configured! ✓"
+                echo ""
+                return 0
+            else
+                error "❌ Domain points to $resolved_ip, but your droplet IP is $expected_ip"
+                echo ""
+                error "DNS MISMATCH - CANNOT CONTINUE"
+                error "══════════════════════════════════════════════════"
+                error ""
+                error "Your domain $domain resolves to: $resolved_ip"
+                error "Your droplet IP is: $expected_ip"
+                error ""
+                error "These MUST match for the installation to work!"
+                error ""
+                error "To fix this:"
+                error "  1. Log in to your domain registrar (GoDaddy, Namecheap, etc.)"
+                error "  2. Create/update the A record for $domain"
+                error "  3. Set it to point to: $expected_ip"
+                error "  4. Wait 5-10 minutes for DNS to propagate"
+                error "  5. Run this installer again"
+                error ""
+                error "After updating DNS, you can verify with:"
+                error "  dig +short $domain"
+                error "══════════════════════════════════════════════════"
+                exit 1
+            fi
+        else
+            if [ $attempt -lt $max_attempts ]; then
+                warn "⚠ Could not resolve $domain (attempt $attempt/$max_attempts)"
+                info "Retrying in 10 seconds..."
+                sleep 10
+            else
+                error "❌ FAILED TO RESOLVE DOMAIN AFTER $max_attempts ATTEMPTS"
+                echo ""
+                error "DNS RESOLUTION FAILED - CANNOT CONTINUE"
+                error "══════════════════════════════════════════════════"
+                error ""
+                error "Your domain $domain could not be resolved!"
+                error ""
+                error "This usually means:"
+                error "  • No A record exists for $domain"
+                error "  • The domain hasn't been registered yet"
+                error "  • DNS servers are not responding"
+                error ""
+                error "To fix this:"
+                error "  1. Verify the domain is registered and active"
+                error "  2. Create an A record for $domain"
+                error "  3. Point it to: $expected_ip"
+                error "  4. Wait for DNS propagation"
+                error "  5. Run this installer again"
+                error ""
+                error "After configuring DNS, verify with:"
+                error "  dig +short $domain"
+                error "══════════════════════════════════════════════════"
+                exit 1
+            fi
+        fi
+        
+        attempt=$((attempt + 1))
+    done
+}
+
+# Add this to your configuration section after getting DOMAIN_NAME and DROPLET_IP
+echo ""
+header "═══════════════════════════════════════════════════════════════"
+header "                    DNS VALIDATION"
+header "═══════════════════════════════════════════════════════════════"
+echo ""
+# Run DNS check - this will exit if DNS is not properly configured
+check_dns "$DOMAIN_NAME" "$DROPLET_IP"
 
 while true; do
     get_input "Enter email for SSL certificate (Let's Encrypt)" "admin@$DOMAIN_NAME" SSL_EMAIL
@@ -252,7 +589,8 @@ fi
 # Game models, textures, audio, video - everything a modder needs!
 DEFAULT_EXTENSIONS=".ms3d,.obj,.3ds,.x,.mqo,.blend,.fbx,.dae,.md2,.md3,.md5,.bsp,.pk3,.wad,.lmp,.tga,.pcx,.jpg,.png,.bmp,.tif,.wal,.shader,.cfg,.skin,.arena,.map,.rift,.tr3,.mp3,.wav,.ogg,.flac,.aac,.mid,.xm,.it,.s3m,.mp4,.avi,.mov,.wmv,.webm,.mkv,.bik,.roq"
 
-echo ""
+echo "DUMBDROP UPLOAD::::::::::::::::::::::"
+echo "-------------------------------------"
 info "Allowed file extensions configuration"
 echo "-------------------------------------"
 echo "Default extensions include:"
@@ -292,8 +630,7 @@ info "MilkShape VNC password (for first-time setup): $MILKSHAPE_VNC_PASS"
 echo ""
 
 
-DROPLET_IP=$(curl -s --fail ifconfig.me 2>/dev/null || curl -s --fail http://checkip.amazonaws.com 2>/dev/null || echo "UNKNOWN")
-info "Detected droplet IP: $DROPLET_IP"
+
 
 # ============= SYSTEM UPDATE =============
 echo ""
@@ -1211,31 +1548,7 @@ app.get("/apps", async (req, res) => {
   res.json(apps);
 });
 
-// Helper function to generate HTML head with proper meta tags
-function generateHead(appName, app) {
-  const title = app ? `${app.name} - WineJS` : 'WINEJS - Windows Apps in Browser';
-  const iconUrl = app && app.icon ? app.icon : '/icons/wine-placeholder.png';
-  const fullIconUrl = `https://${req.headers.host}${iconUrl}`;
-  const previewUrl = `https://img.sdappnet.cloud/?url=https://${req.headers.host}/${appName}&w=1920&h=1080`;
-  
-  return `
-    <link rel="icon" href="${iconUrl}" type="image/png">
-    <link rel="apple-touch-icon" href="${iconUrl}" sizes="180x180">
-    <link rel="icon" type="image/png" href="${iconUrl}" sizes="192x192">
-    <link rel="icon" type="image/png" href="${iconUrl}" sizes="512x512">
-    <meta itemprop="name" content="${title}">
-    <meta itemprop="image" content="${previewUrl}">
-    <meta property="og:title" content="${title}">
-    <meta property="og:image" content="${previewUrl}">
-    <meta property="og:url" content="https://${req.headers.host}/${appName}">
-    <meta property="og:type" content="website">
-    <meta name="twitter:title" content="${title}">
-    <meta name="twitter:image" content="${previewUrl}">
-    <meta name="twitter:card" content="summary_large_image">
-    <link rel="apple-touch-icon" href="${iconUrl}" sizes="180x180">
-    <title>${title}</title>
-  `;
-}
+
 
 // Dynamic favicon based on app name
 app.get('/:appName/favicon.ico', async (req, res) => {
@@ -1263,44 +1576,179 @@ app.get('/favicon.ico', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/icons/milkshape.jpg'));
 });
 
+// Helper function to generate HTML head with proper meta tags
+function generateHead(req, appName, app) {
+  const title = app ? `${app.name} - WineJS` : 'WINEJS - Windows Apps in Browser';
+  const iconUrl = app && app.icon ? app.icon : '/icons/wine-placeholder.png';
+  const fullIconUrl = `https://${req.headers.host}${iconUrl}`;
+  const previewUrl = `https://img.sdappnet.cloud/?url=https://${req.headers.host}/${appName}&w=1920&h=1080`;
+  
+  return `
+    <link rel="icon" href="${iconUrl}" type="image/png">
+    <link rel="apple-touch-icon" href="${iconUrl}" sizes="180x180">
+    <link rel="icon" type="image/png" href="${iconUrl}" sizes="192x192">
+    <link rel="icon" type="image/png" href="${iconUrl}" sizes="512x512">
+    <meta itemprop="name" content="${title}">
+    <meta itemprop="image" content="${previewUrl}">
+    <meta property="og:title" content="${title}">
+    <meta property="og:image" content="${previewUrl}">
+    <meta property="og:url" content="https://${req.headers.host}/${appName}">
+    <meta property="og:type" content="website">
+    <meta name="twitter:title" content="${title}">
+    <meta name="twitter:image" content="${previewUrl}">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="apple-touch-icon" href="${iconUrl}" sizes="180x180">
+    <title>${title}</title>
+  `;
+}
+
 // Main translator - routes /appname to KasmVNC with meta injection
 app.get("/:appName*", async (req, res, next) => {
   const appName = req.params.appName;
+  const fullPath = req.params[0] || ''; // Get the rest of the path after appName
+  const fullUrl = req.url;
+
+  // Request arrives
+  //     │
+  //     ├─► Is it a system path? → Proxy to upload/download/etc
+  //     │
+  //     ├─► Is it consoles? → Generate special embed page
+  //     │
+  //     ├─► Is it a registered app? 
+  //     │       ├─► Root path → Serve VNC client with custom head
+  //     │       └─► Subpath → Proxy to app container
+  //     │
+  //     └─► 404 with available apps list
 
   // Special case: don't handle WebSocket paths
-  if (req.url.includes("/websockify")) {
+  if (fullUrl.includes("/websockify")) {
     return next();
   }
 
   // Skip special paths
-  if (
-    appName === "upload" ||
-    appName === "download" ||
-    appName === "health" ||
-    appName === "apps" ||
-    appName === "api" ||
-    appName === "icons" ||
-    appName === "package.json"
-  ) {
+  const skipPaths = [
+    "upload", "download", "health", "apps", 
+    "api", "icons", "package.json", "favicon.ico"
+  ];
+  
+  if (skipPaths.includes(appName)) {
     return next();
   }
 
+  // ============= CONSOLE HANDLERS CONFIGURATION =============
+  const consoleHandlers = {
+    xemu: {
+      pathPattern: (path) => path.startsWith("/titles/"),
+      extractTitle: (path) => {
+        // Check if there's a fragment with the game title
+        if (path.includes('#')) {
+          // Extract the title from the fragment (after #)
+          const fragmentMatch = path.match(/#(.+)$/);
+          if (fragmentMatch && fragmentMatch[1]) {
+            // Decode URI component and clean up
+            return decodeURIComponent(fragmentMatch[1]).replace(/-/g, ' ');
+          }
+        }
+        // Fallback to just the ID part (46530002) if no fragment
+        const match = path.match(/\/titles\/([^#]+)/);
+        return match ? match[1] : path.replace('/titles/', '');
+      },
+      searchSuffix: "xbox xemu",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/xbox-logo-original.png",
+      displayName: "XEMU"
+    },
+    ps2: {
+      pathPattern: (path) => true, // Any path works
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "ps2 pcsx2",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/pcsx2.png",
+      displayName: "PS2"
+    },
+    wii: {
+      pathPattern: (path) => true,
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "wii dolphin",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/dolphin_wii_icon.png", 
+      displayName: "Wii"
+    },
+    gamecube: {
+      pathPattern: (path) => true,
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "gamecube dolphin",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/gamecube-icon.png",
+      displayName: "GameCube"
+    },
+    dreamcast: {
+      pathPattern: (path) => true,
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "dreamcast flycast",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/dreamcast-icon.png",
+      displayName: "Dreamcast"
+    },
+    psp: {
+      pathPattern: (path) => true,
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "psp ppsspp",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/psp-icon.png",
+      displayName: "PSP"
+    },
+    n64: {
+      pathPattern: (path) => true,
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "n64 mupen64",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/n64-icon.png",
+      displayName: "N64"
+    },
+    snes: {
+      pathPattern: (path) => true,
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "snes snes9x",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/snes-icon.png",
+      displayName: "SNES"
+    },
+    genesis: {
+      pathPattern: (path) => true,
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "genesis blastem",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/genesis-icon.png",
+      displayName: "Genesis"
+    }
+  };
+
+  // Check if this is a console handler request
+  if (consoleHandlers[appName]) {
+    const handler = consoleHandlers[appName];
+    
+    // Check if path matches pattern (for xemu's special /titles/ path)
+    if (handler.pathPattern(fullPath)) {
+      // Get the full URL including fragment
+      const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+      
+      // Extract title using the handler but pass the full URL
+      const title = handler.extractTitle(fullUrl); // Pass full URL instead of fullPath
+      
+      const searchTerm = title.replace(/-/g, ' ') + " " + handler.searchSuffix;
+      const urlFriendlySearch = searchTerm.replace(/\s+/g, '-');
+      const iframeSrc = `https://meyt.netlify.app/search/${encodeURIComponent(urlFriendlySearch)}`;
+      
+      return res.send(generateConsolePage(
+        handler.displayName,
+        title,
+        iframeSrc,
+        handler.icon
+      ));
+    }
+  }
+
+  // ============= REGISTERED APP HANDLING =============
   const app = appRegistry[appName];
 
   if (!app) {
-    return res.status(404).send(`
-      <html>
-        <head><title>App Not Found</title></head>
-        <body style="font-family: Arial; background: #1a1a1a; color: white; text-align: center; padding: 50px;">
-          <h1>❌ App Not Found</h1>
-          <p>The app "${appName}" is not installed.</p>
-          <p>Available apps: ${Object.keys(appRegistry).join(", ")}</p>
-          <p><a href="/" style="color: #00ff9d;">Go Home</a></p>
-        </body>
-      </html>
-    `);
+    // App not found in registry and not a special handler
+    return res.status(404).send(generate404Page(appName, appRegistry));
   }
 
+  // Check if instance is running, start if needed
   const running = await isInstanceRunning(appName, app.port);
   if (!running) {
     const started = await startInstance(appName, app.port);
@@ -1311,68 +1759,293 @@ app.get("/:appName*", async (req, res, next) => {
 
   app.lastUsed = new Date().toISOString();
 
-  // Intercept the response to inject custom head
-  const target = `https://127.0.0.1:${app.port}`;
+  // If this is a request for the root of the app, serve VNC client
+  if (fullPath === '' || fullPath === '/') {
+    try {
+      const response = await axios.get(`https://127.0.0.1:${app.port}/vnc.html`, {
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        responseType: "text",
+      });
 
-  // Make request to KasmVNC
-  try {
-    const response = await axios.get(`${target}/vnc.html`, {
-      httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-      responseType: "text",
-    });
+      let html = response.data;
 
-    let html = response.data;
+      // Generate custom head with app-specific metadata
+      const newHead = generateHead(req, appName, app);
 
-    // Generate custom head with app-specific metadata
-    const title = app ? `${app.name} - WineJS` : "WINEJS - Windows Apps in Browser";
-    const iconUrl = app && app.icon ? app.icon : "/icons/wine-placeholder.png";
-    
-    // Create the new head content
-    const newHead = `
-<head>
-    <title>${title}</title>
-    <meta charset="utf-8">
-    <link rel="icon" href="${iconUrl}" type="image/png">
-    <link rel="apple-touch-icon" href="${iconUrl}" sizes="180x180">
-    <link rel="icon" type="image/png" href="${iconUrl}" sizes="192x192">
-    <link rel="icon" type="image/png" href="${iconUrl}" sizes="512x512">
-    <meta itemprop="name" content="${title}">
-    <meta property="og:title" content="${title}">
-    <meta property="og:url" content="https://${req.headers.host}/${appName}">
-    <meta property="og:type" content="website">
-    <meta name="twitter:title" content="${title}">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-`;
-
-    // Replace the entire head section - more robust approach
-    // First, find where the head ends
-    const headEndIndex = html.indexOf('</head>');
-    if (headEndIndex !== -1) {
-      // Find where the head starts
-      const headStartIndex = html.indexOf('<head');
-      if (headStartIndex !== -1) {
-        // Replace everything from head start to head end
-        html = html.substring(0, headStartIndex) + newHead + html.substring(headEndIndex);
+      // Replace the entire head section
+      const headEndIndex = html.indexOf('</head>');
+      if (headEndIndex !== -1) {
+        const headStartIndex = html.indexOf('<head');
+        if (headStartIndex !== -1) {
+          html = html.substring(0, headStartIndex) + newHead + html.substring(headEndIndex);
+        } else {
+          html = newHead + html;
+        }
       } else {
-        // If no head tag found, just prepend
         html = newHead + html;
       }
-    } else {
-      // If no closing head tag, just prepend
-      html = newHead + html;
+
+      return res.send(html);
+    } catch (err) {
+      console.error("Failed to fetch vnc.html, falling back to proxy:", err.message);
+      // Fallback to proxy if fetch fails
+      req.url = "/vnc.html";
+      return proxy.web(req, res, { target: `https://127.0.0.1:${app.port}`, changeOrigin: true });
+    }
+  }
+
+  // For any other paths (static assets, etc), proxy directly to the app
+  const target = `https://127.0.0.1:${app.port}${fullPath}`;
+  proxy.web(req, res, { target, changeOrigin: true });
+});
+
+// SINGLE console page generator with HTTPS icon support
+function generateConsolePage(consoleName, title, iframeSrc, iconUrl) {
+  const winTitleBarCSS = getTitleBarCSS();
+  
+  // Use the provided icon URL directly (supports HTTPS)
+  // Add "💽 Not installed" to the console name
+  const displayConsoleName = `${consoleName} 💽 Not installed`;
+  
+  // Use the provided icon URL directly (supports HTTPS)
+  const winTitleBarHTML = getTitleBarHTML(iconUrl, displayConsoleName);
+
+  // Clean title for display
+  const displayTitle = title.replace(/-/g, ' ');
+
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${consoleName}: ${displayTitle}</title>
+      <link rel="icon" href="${iconUrl}" type="image/png">
+      <link rel="apple-touch-icon" href="${iconUrl}">
+      <meta property="og:title" content="${consoleName}: ${displayTitle}">
+      <meta property="og:image" content="${iconUrl}">
+      <meta property="og:type" content="website">
+      <meta name="twitter:card" content="summary_large_image">
+      <meta name="twitter:title" content="${consoleName}: ${displayTitle}">
+      <meta name="twitter:image" content="${iconUrl}">
+      <style>${winTitleBarCSS}</style>
+    </head>
+    <body>
+      ${winTitleBarHTML}
+      <div class="content">
+        <iframe src="${iframeSrc}" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; gamepad; microphone; camera"></iframe>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+function generate404Page(appName, appRegistry) {
+  const winTitleBarCSS = getTitleBarCSS();
+  const winTitleBarHTML = getTitleBarHTML(
+    'https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png',
+    'WINEJS'
+  );
+
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>App Not Found</title>
+        <link rel="icon" href="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" type="image/png">
+        <style>
+          ${winTitleBarCSS}
+          
+          /* Additional styles for 404 content */
+          .error-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            background: #1a1a1a;
+          }
+          
+          h1 { 
+            font-size: 2.5em; 
+            margin-bottom: 20px; 
+            color: #ff6b6b;
+          }
+          
+          p { 
+            margin: 10px 0; 
+            color: #ccc; 
+            font-size: 1.1em;
+          }
+          
+          .app-list {
+            background: #2d2d2d;
+            padding: 15px 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #404040;
+            max-width: 500px;
+          }
+          
+          .app-list span {
+            color: #00ff9d;
+            font-weight: 500;
+          }
+          
+          a { 
+            color: #00ff9d; 
+            text-decoration: none;
+            padding: 10px 20px;
+            background: #2d2d2d;
+            border-radius: 4px;
+            border: 1px solid #404040;
+            transition: all 0.2s;
+            display: inline-block;
+            margin-top: 10px;
+          }
+          
+          a:hover { 
+            background: #404040;
+            border-color: #00ff9d;
+            text-decoration: none;
+          }
+        </style>
+      </head>
+      <body>
+        ${winTitleBarHTML}
+        
+        <div class="error-content">
+          <h1>❌ App Not Found</h1>
+          <p>The app "<strong>${appName}</strong>" is not installed.</p>
+          
+          <div class="app-list">
+            <p style="margin-bottom: 10px;">📦 Available apps:</p>
+            <span>${Object.keys(appRegistry).join(" • ")}</span>
+          </div>
+          
+          <a href="/">← Go Home</a>
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+function getTitleBarCSS() {
+  return `
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Lucida Grande', 'Arial', sans-serif;
+    }
+    
+    body {
+      background-color: #000;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .win-titlebar {
+      background: #2d2d2d;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 0px;
+      border-bottom: 1px solid #404040;
+      user-select: none;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      flex-shrink: 0;
     }
 
-    res.send(html);
-  } catch (err) {
-    console.error("Failed to fetch vnc.html, falling back to proxy:", err.message);
-    // Fallback to proxy if fetch fails
-    req.url = "/vnc.html";
-    proxy.web(req, res, { target, changeOrigin: true });
-  }
-});
+    .win-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 20px;
+      flex-shrink: 0;
+    }
+
+    .win-logo img {
+      height: 28px;
+      width: auto;
+      object-fit: contain;
+    }
+
+    .win-logo span {
+      font-size: 16px;
+      font-weight: 500;
+      color: #fff;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 300px;
+    }
+
+    .win-controls {
+      display: flex;
+      margin-left: auto;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+
+    .win-btn {
+      width: 46px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e0e0e0;
+      font-size: 20px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .win-btn:hover {
+      background: #404040;
+    }
+
+    .win-btn.close:hover {
+      background: #c42b1c;
+      color: white;
+    }
+    
+    .content {
+      flex: 1;
+      min-height: 0;
+      position: relative;
+    }
+    
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+  `;
+}
+
+function getTitleBarHTML(iconUrl, title) {
+  return `
+    <div class="win-titlebar">
+      <div class="win-logo">
+        <img src="${iconUrl}" alt="${title}" onerror="this.src='https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png'">
+        <span>${title}</span>
+      </div>
+      <div class="win-controls">
+        <div class="win-btn">─</div>
+        <div class="win-btn">□</div>
+        <div class="win-btn close">×</div>
+      </div>
+    </div>
+  `;
+}
 
 // WebSocket support for VNC - Attached to server, not app!
 server.on("upgrade", (req, socket, head) => {
@@ -1386,7 +2059,7 @@ server.on("upgrade", (req, socket, head) => {
 
   // Handle different path patterns
   if (pathParts.length > 0) {
-    // Check if first part is an app name
+    // Check if first part is an app name (including special handlers)
     if (appRegistry[pathParts[0]]) {
       appName = pathParts[0];
       // Remove app name from path for target
@@ -1397,16 +2070,51 @@ server.on("upgrade", (req, socket, head) => {
     }
     // Check if it's a direct websockify path
     else if (pathParts[0] === "websockify") {
-      appName = "milkshape";
+      // Try to determine app from the query string or default
+      const urlObj = new URL(req.url, `http://${req.headers.host}`);
+      const token = urlObj.searchParams.get('token');
+      if (token && token.includes(':')) {
+        const tokenApp = token.split(':')[0];
+        if (appRegistry[tokenApp]) {
+          appName = tokenApp;
+        }
+      }
+      
+      if (!appName) {
+        appName = "milkshape"; // Default
+      }
+      
       targetPath = req.url;
-      console.log("Direct websockify path, defaulting to milkshape");
+      console.log(`Websockify path, using app: ${appName}`);
     }
   }
 
-  // If no app name found, default to milkshape
+  // If no app name found, check if it's in the token
+  if (!appName && req.url.includes('token=')) {
+    const tokenMatch = req.url.match(/token=([^&]+)/);
+    if (tokenMatch && tokenMatch[1]) {
+      const tokenApp = tokenMatch[1].split(':')[0];
+      if (appRegistry[tokenApp]) {
+        appName = tokenApp;
+        console.log(`Found app from token: ${appName}`);
+      }
+    }
+  }
+
+  // Final fallback
   if (!appName) {
     appName = "milkshape";
+    targetPath = req.url;
     console.log("No app found in path, defaulting to milkshape");
+  }
+
+  // For special handlers (xemu, ps2, wii, etc), we can't proxy WebSockets
+  const consoleHandlersList = ['xemu', 'ps2', 'wii', 'gamecube', 'dreamcast', 'psp', 'n64', 'snes', 'genesis'];
+  if (consoleHandlersList.includes(appName)) {
+    console.log(`❌ WebSocket not supported for special handler: ${appName}`);
+    socket.write("HTTP/1.1 400 Bad Request\r\n\r\nWebSocket not supported for this endpoint");
+    socket.destroy();
+    return;
   }
 
   const app = appRegistry[appName];
@@ -1828,10 +2536,10 @@ cat > /opt/winejs/translator/public/index.html << 'EOF'
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WINEJS - Windows Apps in Browser</title>
-    <link rel="icon" href="https://cdn.sdappnet.cloud/rtx/images/wineskin.png" type="image/png">
-    <link rel="apple-touch-icon" href="https://cdn.sdappnet.cloud/rtx/images/wineskin.png" sizes="180x180">
-    <link rel="icon" type="image/png" href="https://cdn.sdappnet.cloud/rtx/images/wineskin.png" sizes="192x192">
-    <link rel="icon" type="image/png" href="https://cdn.sdappnet.cloud/rtx/images/wineskin.png" sizes="512x512">
+    <link rel="icon" href="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" sizes="180x180">
+    <link rel="icon" type="image/png" href="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" sizes="512x512">
     <meta itemprop="name" content="WINEJS - Windows Apps in Browser">
     <meta itemprop="image"
         content="https://img.sdappnet.cloud/?url=${DOMAIN-MAIN}&w=1920&h=1080">
@@ -1844,7 +2552,7 @@ cat > /opt/winejs/translator/public/index.html << 'EOF'
     <meta name="twitter:image"
         content="https://img.sdappnet.cloud/?url=${DOMAIN-MAIN}&w=1920&h=1080">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="apple-touch-icon" href="https://cdn.sdappnet.cloud/rtx/images/wineskin.png" sizes="180x180">
+    <link rel="apple-touch-icon" href="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" sizes="180x180">
     <style>
         * {
             margin: 0;
@@ -2245,6 +2953,24 @@ cat > /opt/winejs/translator/public/index.html << 'EOF'
             margin-bottom: 2px;
         }
 
+        /* Windows 10-style wine bar */
+        .wine-info-bar {
+            padding: 16px 20px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .wine-info-bar img {
+            border-radius: 4px;
+        }
+
+        .wine-info-bar a {
+          text-decoration: none;
+        }
+
         /* No results message */
         .no-results {
             grid-column: 1 / -1;
@@ -2265,18 +2991,174 @@ cat > /opt/winejs/translator/public/index.html << 'EOF'
             color: #888;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
+        /* Windows 10-style navigation - UPDATED for single row */
+        .win-nav {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #252525;
+            border-bottom: 1px solid #333;
+            flex-wrap: nowrap; /* CRITICAL: Keep everything in one row */
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .win-nav-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 8px;
+            border-radius: 4px;
+            color: #ccc;
+            font-size: 13px;
+            transition: all 0.2s;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .win-nav-item:hover {
+            background: #404040;
+            color: #fff;
+        }
+
+        .win-nav-item.active {
+            background: #0078d4;
+            color: white;
+        }
+
+        .win-nav-divider {
+            display: inline-block;
+            width: 1px;
+            height: 20px;
+            background: #404040;
+            margin: 0 4px;
+        }
+
+        /* Search bar - takes remaining space */
+        .win-search {
+            background: #3a3a3a;
+            border: 1px solid #4a4a4a;
+            border-radius: 4px;
+            padding: 2px 8px;
+            display: flex;
+            align-items: center;
+            flex: 1 1 auto;
+            min-width: 120px;
+        }
+
+        .win-search input {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 13px;
+            padding: 4px 4px;
+            width: 100%;
+            outline: none;
+        }
+
+        .win-search input::placeholder {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .win-search span {
+            color: #888;
+            font-size: 14px;
+            margin-right: 2px;
+        }
+
+        /* Responsive - iPhone SE and smaller */
+        @media (max-width: 480px) {
             .win-nav {
-                flex-wrap: wrap;
+                padding: 6px 8px;
+                gap: 4px;
             }
-
+            
+            .nav-links {
+                gap: 2px;
+            }
+            
+            .win-nav-item {
+                padding: 6px 5px;
+                font-size: 12px;
+            }
+            
+            /* Hide text on very small screens, show only icons */
+            .win-nav-item .nav-text {
+                display: none;
+            }
+            
+            .win-nav-divider {
+                height: 18px;
+                margin: 0 2px;
+            }
+            
             .win-search {
-                max-width: 100%;
-                order: 3;
-                margin-top: 8px;
+                min-width: 90px;
+                padding: 2px 4px;
             }
+            
+            .win-search input {
+                font-size: 11px;
+                padding: 3px 2px;
+            }
+            
+            .win-search input::placeholder {
+                font-size: 10px;
+            }
+            
+            .win-search span {
+                font-size: 12px;
+            }
+        }
 
+        /* iPhone SE specific (375px and below) */
+        @media (max-width: 375px) {
+            .win-nav {
+                padding: 4px 4px;
+                gap: 2px;
+            }
+            
+            .nav-links {
+                gap: 1px;
+            }
+            
+            .win-nav-item {
+                padding: 4px 4px;
+                font-size: 11px;
+            }
+            
+            .win-search {
+                min-width: 70px;
+            }
+            
+            .win-search input {
+                padding: 2px 2px;
+            }
+        }
+
+        /* Even smaller (iPhone SE in landscape with small width) */
+        @media (max-width: 340px) {
+            .win-search {
+                min-width: 60px;
+            }
+            
+            .win-search input::placeholder {
+                content: "🔍"; /* Just show search icon as placeholder */
+            }
+        }
+
+        /* Remove the old responsive section that was causing wrapping */
+        /* The old @media (max-width: 768px) block has been replaced */
+
+        /* Keep other responsive styles but ensure they don't affect .win-nav */
+        @media (max-width: 768px) {
             .win-info-bar {
                 flex-direction: column;
                 align-items: flex-start;
@@ -2293,7 +3175,7 @@ cat > /opt/winejs/translator/public/index.html << 'EOF'
     <!-- Windows 10-style title bar -->
     <div class="win-titlebar">
         <div class="win-logo">
-            <img src="https://cdn.sdappnet.cloud/rtx/images/wineskin.png" alt="WINEJS">
+            <img src="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" alt="WINEJS">
             <span>WINEJS</span>
         </div>
         <div class="win-controls">
@@ -2325,8 +3207,6 @@ cat > /opt/winejs/translator/public/index.html << 'EOF'
             <input type="text" id="search-input" placeholder="Search...">
         </div>
     </div>
-
-
     <!-- Windows 10-style status bar -->
     <div class="win-status">
         <div class="win-status-item">
@@ -2387,6 +3267,73 @@ cat > /opt/winejs/translator/public/index.html << 'EOF'
                     Client-side rendering
                 </div>
             </div>
+        </div>
+        <div class="wine-info-bar">
+            <!-- WineHQ -->
+            <a href="https://gitlab.winehq.org/wine/wine" target="_blank" rel="noopener noreferrer">
+                <img src="https://dl.winehq.org/share/images/winehq_logo_glass.png" style="height: 30px" alt="WineHQ Logo" />
+                <img src="https://dl.winehq.org/share/images/winehq_logo_text.png" style="height: 25px;" alt="WineHQ Text" />
+            </a>
+            <!-- macOS Title -->
+            <a href="https://cdn.sdappnet.cloud/rtx/macosx-apps.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/mac-os-x.png" style="height: 45px;" alt="macOS Apps" />
+            </a>
+            <!-- Wine Winery -->
+            <a href="https://github.com/igiteam/wine_wineskin_source" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/wine_winery.png" style="height: 45px;" alt="Wine Winery" />
+            </a>
+            <!-- Wine Wineskin -->
+            <a href="https://igiteam.github.io/wine_engines/" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/wine_wineskin.png" style="height: 45px;" alt="Wine Wineskin" />
+            </a>
+            <!-- Wine Wineskin x64 -->
+            <a href="https://igiteam.github.io/wine_engines/" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/wineskin_x64.png" style="height: 45px;" alt="Wine Wineskin x64" />
+            </a>
+            <!-- macOS Apps on Windows -->
+            <a href="https://cdn.sdappnet.cloud/rtx/macosx-apps_windows.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/windowsnt.png" style="height: 45px;" alt="macOS Apps on Windows" />
+            </a>
+            <!-- XEMU / Xbox -->
+            <a href="https://cdn.sdappnet.cloud/rtx/xbox_games_xemu.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/xbox-logo-original.png" style="height: 45px;" alt="Xbox XEMU Games" />
+            </a>
+            <!-- PS2 / PCSX2 -->
+            <a href="https://cdn.sdappnet.cloud/rtx/ps2_games_pcsx2.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/pcsx2.png" style="height: 45px;" alt="PS2 PCSX2 Games" />
+            </a>
+            <!-- Wii / Dolphin -->
+            <a href="https://cdn.sdappnet.cloud/rtx/wii_games_dolphin.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/dolphin_wii_icon.png" style="height: 45px;" alt="Wii Dolphin Emulator" />
+            </a>
+            <!-- GameCube / Dolphin -->
+            <a href="https://cdn.sdappnet.cloud/rtx/gamecube_games_dolphin.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/gamecube-icon.png" style="height: 45px;" alt="GameCube Dolphin Emulator" />
+            </a>
+            <!-- N64 / N64JS -->
+            <a href="https://cdn.sdappnet.cloud/rtx/n64_games_dolphin.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/n64-icon.png" style="height: 45px;" alt="N64 Emulator" />
+            </a>
+            <!-- Dreamcast / Demul -->
+            <a href="https://cdn.sdappnet.cloud/rtx/dreamcast_games_demul.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/dreamcast-icon.png" style="height: 45px;" alt="Dreamcast Demul Emulator" />
+            </a>
+            <!-- PSP / PPSSPP -->
+            <a href="https://cdn.sdappnet.cloud/rtx/psp_games_ppsspp.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/psp-icon.png" style="height: 45px;" alt="PSP PPSSPP Emulator" />
+            </a>
+            <!-- GBA / JS -->
+            <a href="https://cdn.sdappnet.cloud/rtx/gba_games_js.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/gba-icon.png" style="height: 45px;" alt="GBA mGBA Emulator" />
+            </a>
+            <!-- SNES / Snes9x -->
+            <a href="https://cdn.sdappnet.cloud/rtx/snes_games_snes9x.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/snes-icon.png" style="height: 45px;" alt="SNES Snes9x Emulator" />
+            </a>
+            <!-- Genesis / BlastEm -->
+            <a href="https://cdn.sdappnet.cloud/rtx/genesis_games_blastem.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/genesis-icon.png" style="height: 45px;" alt="Genesis BlastEm Emulator" />
+            </a>
         </div>
     </div>
 
@@ -2697,6 +3644,66 @@ fix_kasmvnc_permissions "milkshape"
 # Verify container is running
 if docker ps | grep -q winejs-milkshape; then
     log "✅ MilkShape container is running"
+
+    # ============= PATCH KASMVNC TO DISABLE CONTROL BAR ANIMATION =============
+    log "🔧 Patching KasmVNC to stop control bar animation..."
+
+    # Run commands as root with -u 0
+    docker exec -u 0 winejs-milkshape bash -c 'cat > /usr/share/kasmvnc/www/no-animation.css << "EOF"
+    /* Disable all control bar animations */
+    #noVNC_control_bar,
+    #noVNC_control_bar_handle,
+    #noVNC_control_bar_anchor,
+    .noVNC_control_bar_animated {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    #noVNC_control_bar {
+        transform: translateX(-280px) !important;
+        opacity: 0 !important;
+    }
+
+    #noVNC_control_bar_handle {
+        transform: translateY(0px) !important;
+        left: 0 !important;
+    }
+
+    #noVNC_control_bar.noVNC_open {
+        transform: translateX(-280px) !important;
+        opacity: 0 !important;
+    }
+
+    .noVNC_idle #noVNC_control_bar {
+        transform: translateX(-280px) !important;
+    }
+    EOF'
+
+    docker exec -u 0 winejs-milkshape bash -c 'sed -i "/<\/head>/i <link rel=\"stylesheet\" type=\"text\/css\" href=\"no-animation.css\">" /usr/share/kasmvnc/www/index.html'
+
+    docker exec -u 0 winejs-milkshape bash -c 'cat > /usr/share/kasmvnc/www/start-minimized.js << "EOF"
+    (function() {
+        function forceMinimized() {
+            const bar = document.getElementById("noVNC_control_bar");
+            if (bar) {
+                bar.className = bar.className.replace("noVNC_open", "") + " noVNC_closed";
+            }
+            const handle = document.getElementById("noVNC_control_bar_handle");
+            if (handle) {
+                handle.style.transform = "translateY(0px)";
+            }
+        }
+        document.addEventListener("DOMContentLoaded", forceMinimized);
+        setTimeout(forceMinimized, 100);
+        setTimeout(forceMinimized, 500);
+    })();
+    EOF'
+
+    docker exec -u 0 winejs-milkshape bash -c 'sed -i "/<\/body>/i <script src=\"start-minimized.js\"></script>" /usr/share/kasmvnc/www/index.html'
+
+    docker exec -u 0 winejs-milkshape bash -c 'chown 1000:1000 /usr/share/kasmvnc/www/no-animation.css /usr/share/kasmvnc/www/start-minimized.js 2>/dev/null || chmod 644 /usr/share/kasmvnc/www/no-animation.css /usr/share/kasmvnc/www/start-minimized.js'
+
+    log "✅ KasmVNC patched successfully - control bar will start minimized with no animation"
 
     # ============= SET DESKTOP BACKGROUND (with 30s delay) =============
     log "🎨 Will set desktop snapshot to mirror $DOMAIN_NAME in 30 seconds..."

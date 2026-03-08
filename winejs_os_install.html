@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WINEJS · OS Install Screen</title>
+    <style>
+        /* RESET & GLOBAL DARK BASE */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* FULLSCREEN INSTALL OVERLAY – macOS / Windows hybrid style */
+        .winejs-install {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            /* logo sticky top, content scrolls */
+            overflow-y: auto;
+            padding: 20px 0;
+            box-sizing: border-box;
+            color: white;
+        }
+
+        /* STICKY GLOSSY LOGO CONTAINER */
+        .winejs-logo-container {
+            text-align: center;
+            margin: 20px 0 30px 0;
+            flex-shrink: 0;
+            position: sticky;
+            top: 20px;
+            z-index: 10;
+            padding: 20px 40px;
+            border-radius: 16px;
+            backdrop-filter: blur(8px);
+            width: auto;
+            display: inline-block;
+        }
+
+        /* SIMPLE IMAGE LOGO – using provided URL */
+        .winejs-logo img {
+            max-width: 180px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            filter: drop-shadow(0 4px 12px rgba(0, 150, 255, 0.3));
+        }
+
+        /* PROGRESS BAR – now with elapsed time */
+        .progress-section {
+            width: 100%;
+            max-width: 580px;
+            margin: 20px 0 25px;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            color: #e0e0e0;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: 300;
+            text-transform: uppercase;
+        }
+
+        .progress-track {
+            background: #1e1e1e;
+            height: 4px;
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid #333;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #3b8cff, #6eb5ff);
+            border-radius: 4px;
+            transition: width 0.25s linear;
+            /* linear continuous animation */
+            box-shadow: 0 0 10px #3b8cff88;
+        }
+
+        /* LOG WINDOW – terminal simulation – NOW SCROLLABLE INSIDE */
+        .log-window {
+            width: 100%;
+            max-width: 620px;
+            background: rgba(12, 12, 12, 0.8);
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin: 10px 0 20px;
+            font-family: 'Menlo', 'Consolas', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #c0c0c0;
+            box-shadow: 0 20px 40px -15px black;
+            backdrop-filter: blur(2px);
+            max-height: 280px;
+            /* fixed height, scrollable */
+            overflow-y: auto;
+            /* scroll inside the container */
+        }
+
+        .log-line {
+            white-space: pre-wrap;
+            word-break: break-word;
+            border-bottom: 1px solid #222;
+            padding: 4px 0;
+            opacity: 0.9;
+        }
+
+        .log-line:last-child {
+            border-bottom: none;
+        }
+
+        .log-line.success {
+            color: #6eca8b;
+            font-weight: 500;
+        }
+
+        .log-line.info {
+            color: #7aa9ff;
+        }
+
+        .log-line.warning {
+            color: #f9c35f;
+        }
+
+        /* STATUS & ACTION BUTTONS */
+        .status-area {
+            width: 100%;
+            max-width: 600px;
+            padding: 15px 20px 30px;
+            text-align: center;
+            color: #aaa;
+            font-size: 14px;
+            letter-spacing: 0.8px;
+        }
+
+        .main-action-btn {
+            display: inline-block;
+            margin: 20px auto 10px;
+            padding: 10px 36px;
+            background: linear-gradient(to bottom, #f0f0f0 0%, #d8d8d8 100%);
+            color: #000;
+            border: 1px solid #6b6b6b;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            transition: 0.1s ease;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+        }
+
+        .main-action-btn:hover {
+            background: linear-gradient(to bottom, #ffffff, #e8e8e8);
+            border-color: #8a8a8a;
+        }
+
+        .main-action-btn.hidden {
+            display: none;
+        }
+
+        .reset-btn {
+            background: transparent;
+            border: 1px solid #3c3c3c;
+            color: #aaa;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-size: 12px;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .reset-btn:hover {
+            border-color: #777;
+            color: #fff;
+        }
+
+        /* POPUP OVERLAY (hidden by default) */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s ease;
+        }
+
+        .popup-overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .popup-card {
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            color: white;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.8);
+        }
+
+        .popup-card h3 {
+            margin-bottom: 20px;
+            font-weight: 300;
+            text-align: center;
+            color: #ddd;
+        }
+
+        .popup-card label {
+            display: block;
+            margin: 15px 0 5px;
+            color: #aaa;
+            font-size: 13px;
+        }
+
+        .popup-card input {
+            width: 100%;
+            padding: 10px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .popup-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .popup-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 30px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .popup-btn.cancel {
+            background: #333;
+            color: #ccc;
+        }
+
+        .popup-btn.cancel:hover {
+            background: #444;
+        }
+
+        .popup-btn.confirm {
+            background: #3b8cff;
+            color: white;
+        }
+
+        .popup-btn.confirm:hover {
+            background: #2a7ae0;
+        }
+
+        .signature {
+            margin-top: 25px;
+            color: #3a3a3a;
+            font-size: 11px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- MAIN INSTALL SCREEN -->
+    <div class="winejs-install" id="installOverlay">
+        <!-- STICKY LOGO (CENTERED, ALWAYS VISIBLE) -->
+        <div class="winejs-logo-container">
+            <div class="winejs-logo">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" alt="WINEJS Logo"
+                    onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'180\' height=\'80\' viewBox=\'0 0 180 80\'%3E%3Crect width=\'180\' height=\'80\' fill=\'%231a1a1a\'/%3E%3Ctext x=\'20\' y=\'48\' font-family=\'Arial\' font-size=\'24\' fill=\'%23ffffff\'%3EWINEJS%3C/text%3E%3C/svg%3E';">
+            </div>
+        </div>
+
+        <!-- PROGRESS BAR with elapsed time -->
+        <div class="progress-section">
+            <div class="progress-label">
+                <span id="progressStatus">Ready</span>
+                <span id="progressElapsed">00:00</span>
+            </div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- LOG WINDOW (SCROLLABLE INSIDE) -->
+        <div class="log-window" id="logWindow">
+            <div class="log-line info">[0.000] WINEJS installer ready</div>
+        </div>
+
+        <!-- STATUS + BUTTONS -->
+        <div class="status-area">
+            <div id="statusMessage" class="status-message">Click start to begin</div>
+            <button class="main-action-btn" id="startInstallBtn">▶ START INSTALLATION</button>
+            <a href="#" class="main-action-btn hidden" id="openDomainBtn" target="_blank">🌐 OPEN WINEJS</a>
+            <div><button class="reset-btn" id="resetBtn">⟲ reset demo</button></div>
+            <div class="signature">WINEJS · OS install simulation</div>
+        </div>
+    </div>
+
+    <!-- POPUP DIALOG (for user input) initially hidden -->
+    <div class="popup-overlay" id="popupOverlay">
+        <div class="popup-card">
+            <h3>⚙️ Installation settings</h3>
+            <label>Main domain</label>
+            <input type="text" id="popupDomain" value="wine.local" placeholder="e.g. wine.yourdomain.com">
+            <label>SSL email</label>
+            <input type="email" id="popupEmail" value="admin@wine.local" placeholder="admin@example.com">
+            <label>Download password (min 8 chars)</label>
+            <input type="password" id="popupPassword" value="MyPassword12345">
+            <div class="popup-buttons">
+                <button class="popup-btn cancel" id="popupCancel">Cancel</button>
+                <button class="popup-btn confirm" id="popupConfirm">Install</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            "use strict";
+
+            // ---------- ORIGINAL 8‑BIT PING (single note – you liked it) ----------
+            function playPing() {
+                try {
+                    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    const now = audioCtx.currentTime;
+                    const osc = audioCtx.createOscillator();
+                    const gainNode = audioCtx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(880, now); // A5
+                    gainNode.gain.setValueAtTime(0.15, now);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+                    osc.connect(gainNode);
+                    gainNode.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.15);
+                } catch (e) {
+                    console.log('ping unavailable');
+                }
+            }
+
+            // ---------- DOM elements ----------
+            const logWindow = document.getElementById('logWindow');
+            const progressFill = document.getElementById('progressFill');
+            const progressStatus = document.getElementById('progressStatus');
+            const progressElapsed = document.getElementById('progressElapsed');
+            const statusMsg = document.getElementById('statusMessage');
+            const startBtn = document.getElementById('startInstallBtn');
+            const openBtn = document.getElementById('openDomainBtn');
+            const resetBtn = document.getElementById('resetBtn');
+
+            // popup elements
+            const popup = document.getElementById('popupOverlay');
+            const popupCancel = document.getElementById('popupCancel');
+            const popupConfirm = document.getElementById('popupConfirm');
+            const popupDomain = document.getElementById('popupDomain');
+            const popupEmail = document.getElementById('popupEmail');
+            const popupPassword = document.getElementById('popupPassword');
+
+            // ---------- simulation state ----------
+            let progress = 0;               // 0..100 (controls bar width)
+            let intervalId = null;
+            let completed = false;
+            let startTime = null;
+            let timerInterval = null;
+
+            // helper: add a line to the log window
+            function addLogLine(text, className = '') {
+                const line = document.createElement('div');
+                line.className = 'log-line' + (className ? ' ' + className : '');
+                line.textContent = text;
+                logWindow.appendChild(line);
+                logWindow.scrollTop = logWindow.scrollHeight; // auto-scroll
+            }
+
+            // update elapsed time display
+            function updateTimer() {
+                if (!startTime) {
+                    progressElapsed.innerText = '00:00';
+                    return;
+                }
+                const elapsed = Date.now() - startTime;
+                const totalSec = Math.floor(elapsed / 1000);
+                const mins = Math.floor(totalSec / 60);
+                const secs = totalSec % 60;
+                progressElapsed.innerText =
+                    mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
+            }
+
+            // stop everything and reset UI (keep popup hidden)
+            function resetSimulation() {
+                if (intervalId) clearInterval(intervalId);
+                if (timerInterval) clearInterval(timerInterval);
+                intervalId = null;
+                timerInterval = null;
+                completed = false;
+                startTime = null;
+
+                progress = 0;
+                progressFill.style.width = '0%';
+                progressStatus.innerText = 'Ready';
+                progressElapsed.innerText = '00:00';
+                statusMsg.innerText = 'Click start to begin';
+                startBtn.classList.remove('hidden');
+                openBtn.classList.add('hidden');
+
+                // clear log and add one line
+                logWindow.innerHTML = '';
+                addLogLine('[0.000] WINEJS installer ready', 'info');
+            }
+
+            // progress tick – moves bar continuously, independent of time
+            function tick() {
+                if (completed) return;
+
+                // advance progress linearly up to 100
+                progress += 0.5;  // 0.5% per tick → ~200 ticks = 100%
+                if (progress >= 100) {
+                    progress = 100;
+                    completed = true;
+                    if (intervalId) clearInterval(intervalId);
+                    if (timerInterval) clearInterval(timerInterval);
+                    finishInstallation();
+                }
+
+                // update bar width
+                progressFill.style.width = progress + '%';
+
+                // update status message based on progress
+                if (progress < 10) progressStatus.innerText = 'Preparing';
+                else if (progress < 25) progressStatus.innerText = 'Downloading';
+                else if (progress < 45) progressStatus.innerText = 'Configuring';
+                else if (progress < 70) progressStatus.innerText = 'Installing';
+                else if (progress < 90) progressStatus.innerText = 'Optimizing';
+                else progressStatus.innerText = 'Finalizing';
+
+                // occasional log lines
+                if (Math.floor(progress) % 12 === 0) {
+                    const logs = [
+                        'Extracting wine package ...',
+                        'Setting up winetricks ...',
+                        'Registering DLLs ...',
+                        'Creating shortcuts ...',
+                        'Configuring user prefix ...',
+                        'Installing fonts ...',
+                        'Checking dependencies ... ok',
+                    ];
+                    const idx = Math.floor(Math.random() * logs.length);
+                    addLogLine('[' + (progress * 0.1).toFixed(1) + 's] ' + logs[idx]);
+                }
+
+                // ping at interesting moments
+                if (progress === 25 || progress === 50 || progress === 75 || progress === 95) {
+                    playPing();
+                }
+            }
+
+            function finishInstallation() {
+                statusMsg.innerText = '✅ Installation complete!';
+                progressStatus.innerText = 'Completed';
+                addLogLine('[✔] Domain: https://' + popupDomain.value + ' (simulated)', 'success');
+                playPing();
+
+                startBtn.classList.add('hidden');
+                openBtn.classList.remove('hidden');
+                openBtn.href = '#';
+                openBtn.onclick = (e) => {
+                    e.preventDefault();
+                    alert('✨ Demo: this would open your WINEJS dashboard.\n(Simulated)');
+                };
+            }
+
+            // start the whole process: popup first, then install
+            function requestUserInput() {
+                // prefill popup with default values
+                popupDomain.value = 'wine.local';
+                popupEmail.value = 'admin@wine.local';
+                popupPassword.value = 'MyPassword12345';
+                popup.classList.add('show');
+            }
+
+            // called when user confirms popup
+            function startInstallWithInput() {
+                const domain = popupDomain.value.trim();
+                const email = popupEmail.value.trim();
+                const pass = popupPassword.value.trim();
+
+                if (!domain.includes('.')) {
+                    alert('Please enter a valid domain (e.g. wine.local)');
+                    return;
+                }
+                if (!email.includes('@')) {
+                    alert('Enter a valid email');
+                    return;
+                }
+                if (pass.length < 8) {
+                    alert('Password must be at least 8 characters');
+                    return;
+                }
+
+                // hide popup
+                popup.classList.remove('show');
+
+                // reset and start fresh
+                resetSimulation();
+
+                // set start time for timer
+                startTime = Date.now();
+                timerInterval = setInterval(updateTimer, 100);
+
+                // add first log with user info (mocked)
+                addLogLine('[0.000] Using domain: ' + domain, 'info');
+                addLogLine('[0.000] SSL email: ' + email, 'info');
+                addLogLine('[0.000] Download password: ********', 'info');
+                addLogLine('[0.023] Starting installation ...', 'info');
+                playPing();
+
+                progressStatus.innerText = 'Preparing';
+                statusMsg.innerText = 'Installing...';
+
+                // begin progress animation
+                intervalId = setInterval(tick, 80); // 80ms ticks → ~8 seconds total
+            }
+
+            // ---------- event listeners ----------
+            startBtn.addEventListener('click', function () {
+                // show popup instead of immediate install
+                requestUserInput();
+            });
+
+            popupCancel.addEventListener('click', function () {
+                popup.classList.remove('show');
+            });
+
+            popupConfirm.addEventListener('click', function () {
+                startInstallWithInput();
+            });
+
+            // optional: close popup if user clicks outside?
+            popup.addEventListener('click', function (e) {
+                if (e.target === popup) popup.classList.remove('show');
+            });
+
+            resetBtn.addEventListener('click', function () {
+                resetSimulation();
+                playPing();
+            });
+
+            // extra ping on logo double-click (fun)
+            document.querySelector('.winejs-logo')?.addEventListener('dblclick', playPing);
+
+            // initial state
+            resetSimulation();
+        })();
+    </script>
+</body>
+
+</html>
