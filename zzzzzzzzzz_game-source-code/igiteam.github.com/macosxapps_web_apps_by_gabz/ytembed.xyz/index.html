@@ -1,0 +1,1737 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Full-Screen</title>
+
+    <meta name="description" content="Full screen YouTube embed">
+    <link rel="icon" href="https://cdn.sdappnet.cloud/rtx/images/ytembedblack.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://cdn.sdappnet.cloud/rtx/images/ytembedblack.png" sizes="180x180">
+    <link rel="icon" type="image/png" href="https://cdn.sdappnet.cloud/rtx/images/ytembedblack.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="https://cdn.sdappnet.cloud/rtx/images/ytembedblack.png" sizes="512x512">
+    <meta itemprop="name" content="YouTube Full-Screen">
+    <meta itemprop="description" content="Full screen YouTube embed">
+    <meta itemprop="image" content="https://cdn.sdappnet.cloud/rtx/images/YouTube%20Full-Screen%20Embed.png">
+    <meta property="og:title" content="YouTube Full-Screen">
+    <meta property="og:description" content="Full screen YouTube embed">
+    <meta property="og:image" content="https://cdn.sdappnet.cloud/rtx/images/YouTube%20Full-Screen%20Embed.png">
+    <meta property="og:url" content="">
+    <meta property="og:type" content="website">
+    <meta name="twitter:title" content="YouTube Full-Screen">
+    <meta name="twitter:description" content="Full screen YouTube embed">
+    <meta name="twitter:image" content="https://cdn.sdappnet.cloud/rtx/images/YouTube%20Full-Screen%20Embed.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="apple-touch-icon" href="https://cdn.sdappnet.cloud/rtx/images/ytembedblack.png" sizes="180x180">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+        }
+
+        /* Force no scrollbars anywhere */
+        html,
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overscroll-behavior: none;
+            background: #000;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Hide all scrollbars */
+        ::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        * {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+        }
+
+        .container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        .drop-zone {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+            width: 100%;
+            height: 100%;
+        }
+
+        .drop-zone.drag-over {
+            background-color: rgba(255, 0, 0, 0.05);
+        }
+
+        .drop-zone-content {
+            text-align: center;
+            padding: 40px;
+            max-width: 600px;
+            z-index: 2;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .drop-icon {
+            font-size: 80px;
+            color: #ff0000;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .drop-zone p {
+            color: #aaa;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        .example-url {
+            background-color: #202020;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-family: monospace;
+            color: #ff6b6b;
+            border-left: 3px solid #ff0000;
+            overflow: hidden;
+            word-break: break-word;
+        }
+
+        .url-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .url-input input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            background-color: #202020;
+            border: 1px solid #303030;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .url-input input:focus {
+            outline: none;
+            border-color: #ff0000;
+        }
+
+        .url-input button {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .url-input button:hover {
+            background-color: #cc0000;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Video Container */
+        .video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            transform: translate3d(0, 0, 0);
+            /* Force high-quality rendering on iOS */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+        }
+
+        .video-container iframe {
+            width: 100% !important;
+            height: 100% !important;
+            border: none;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            transform: translateZ(0);
+            /* Force hardware acceleration for better quality */
+            -webkit-transform: translateZ(0);
+            -moz-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            -o-transform: translateZ(0);
+            transform: translateZ(0);
+            /* Prevent blurry rendering on iOS */
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ==================== PRECISION SLIDER OVERLAY (MOBILE ONLY) ==================== */
+        .precision-overlay {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            opacity: 0;
+            /* Hide on desktop by default */
+            display: none;
+        }
+
+        /* Show precision slider only on mobile phones */
+        @media (max-width: 768px) and (hover: none) and (pointer: coarse) {
+            .precision-overlay {
+                display: flex;
+            }
+        }
+
+        .precision-overlay.visible {
+            opacity: 1;
+        }
+
+        /* Time displays - left and right */
+        .time-display-left,
+        .time-display-right {
+            position: absolute;
+            bottom: 70px;
+            font-family: 'SF Mono', 'Courier New', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.6);
+            padding: 3px 8px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            pointer-events: none;
+            z-index: 51;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            /* Hide on desktop */
+            display: none;
+        }
+
+        @media (max-width: 768px) and (hover: none) and (pointer: coarse) {
+
+            .time-display-left,
+            .time-display-right {
+                display: block;
+            }
+        }
+
+        .time-display-left {
+            left: 15px;
+        }
+
+        .time-display-right {
+            right: 15px;
+        }
+
+        .precision-overlay.visible .time-display-left,
+        .precision-overlay.visible .time-display-right {
+            opacity: 0.7;
+        }
+
+        .precision-slider-container-overlay {
+            position: relative;
+            width: 94%;
+            max-width: 900px;
+            height: 50px;
+            background: rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            touch-action: pan-x pinch-zoom;
+            border-radius: 8px;
+            user-select: none;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            pointer-events: all;
+            transform: translate3d(0, 0, 0);
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
+            /* Hide on desktop */
+            display: none;
+        }
+
+        @media (max-width: 768px) and (hover: none) and (pointer: coarse) {
+            .precision-slider-container-overlay {
+                display: block;
+            }
+        }
+
+        .precision-track-wrapper-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            user-select: none;
+            border-radius: 8px;
+        }
+
+        .precision-track-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            user-select: none;
+        }
+
+        .precision-notch-overlay {
+            position: absolute;
+            width: 1.5px;
+            background-color: rgba(255, 255, 255, 0.15);
+            user-select: none;
+        }
+
+        .precision-notch-overlay.long {
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.3);
+            width: 2px;
+        }
+
+        .precision-notch-overlay.short {
+            height: 12px;
+        }
+
+        .precision-center-line-overlay {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 3px;
+            height: 100%;
+            background-color: #ff416c;
+            transform: translateX(-50%);
+            z-index: 10;
+            border-radius: 1.5px;
+            box-shadow: 0 0 8px rgba(255, 65, 108, 0.5);
+            pointer-events: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .precision-center-line-overlay.playing {
+            background-color: #ff416c;
+        }
+
+        .precision-center-line-overlay.paused {
+            background-color: transparent;
+        }
+
+        .precision-mask-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+            background: linear-gradient(90deg,
+                    rgba(0, 0, 0, 0.7) 0%,
+                    transparent 15%,
+                    transparent 85%,
+                    rgba(0, 0, 0, 0.7) 100%);
+            pointer-events: none;
+            border-radius: 8px;
+        }
+
+        /* ==================== SHARE BUTTON OVERLAY (TOP-RIGHT) ==================== */
+        .share-button-overlay {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background-color: rgba(255, 255, 255, 0.35);
+            color: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 60;
+        }
+
+        .share-button-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .share-button-overlay:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-1px);
+        }
+
+        .share-button-overlay i {
+            font-size: 11px;
+        }
+
+        /* ==================== DESKTOP BOTTOM-CENTER SHARE BUTTON ==================== */
+        .share-button-bottom-center {
+            position: absolute;
+            bottom: 0px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgb(255, 255, 255);
+            color: black;
+            border: none;
+            padding: 8px 16px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 60;
+            white-space: nowrap;
+            /* Hide on mobile by default */
+            display: none;
+        }
+
+        /* Show bottom-center share button only on non-mobile */
+        @media (min-width: 769px),
+        (hover: hover) and (pointer: fine) {
+            .share-button-bottom-center {
+                display: flex;
+            }
+        }
+
+        .share-button-bottom-center.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .share-button-bottom-center:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+            transform: translateX(-50%) translateY(-1px);
+        }
+
+        .share-button-bottom-center i {
+            font-size: 12px;
+        }
+
+        /* ==================== SHARE MODAL ==================== */
+        .share-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .share-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .share-modal {
+            background-color: #202020;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            border: 1px solid #333;
+        }
+
+        .share-modal h3 {
+            margin-bottom: 15px;
+            color: white;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .share-modal h3 i {
+            color: #ff0000;
+        }
+
+        .share-url-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .share-url-input {
+            flex-grow: 1;
+            padding: 10px 12px;
+            background-color: #252525;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: white;
+            font-size: 13px;
+            font-family: monospace;
+        }
+
+        .copy-button {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            transition: background-color 0.2s ease;
+        }
+
+        .copy-button:hover {
+            background-color: #cc0000;
+        }
+
+        .share-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .close-button {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            transition: background-color 0.2s ease;
+        }
+
+        .close-button:hover {
+            background-color: #444;
+        }
+
+        /* iOS Safari specific - HIGH QUALITY RENDERING */
+        @supports (-webkit-touch-callout: none) {
+
+            .container,
+            .main-content,
+            .drop-zone,
+            .video-container {
+                height: 100vh;
+                height: -webkit-fill-available;
+            }
+
+            html,
+            body {
+                height: 100vh;
+                height: -webkit-fill-available;
+            }
+
+            /* Force high-quality rendering on iOS */
+            .video-container iframe {
+                -webkit-backface-visibility: hidden;
+                -webkit-perspective: 1000;
+                -webkit-transform-style: preserve-3d;
+                transform-style: preserve-3d;
+                backface-visibility: hidden;
+                perspective: 1000;
+            }
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) and (hover: none) and (pointer: coarse) {
+            .drop-zone-content {
+                padding: 20px;
+            }
+
+            .drop-icon {
+                font-size: 60px;
+            }
+
+            .drop-zone h2 {
+                font-size: 24px;
+            }
+
+            .precision-slider-container-overlay {
+                height: 40px;
+                width: 96%;
+                border-radius: 6px;
+            }
+
+            .precision-notch-overlay.long {
+                height: 18px;
+            }
+
+            .precision-notch-overlay.short {
+                height: 10px;
+            }
+
+            .time-display-left,
+            .time-display-right {
+                font-size: 10px;
+                bottom: 55px;
+                padding: 2px 6px;
+            }
+
+            .time-display-left {
+                left: 10px;
+            }
+
+            .time-display-right {
+                right: 10px;
+            }
+
+            .share-button-overlay {
+                top: 10px;
+                right: 10px;
+                padding: 5px 10px;
+                font-size: 11px;
+            }
+
+            /* Hide bottom-center button on mobile */
+            .share-button-bottom-center {
+                display: none !important;
+            }
+        }
+
+        @media (max-height: 600px) and (max-width: 768px) and (hover: none) and (pointer: coarse) {
+            .precision-overlay {
+                bottom: 8px;
+            }
+
+            .precision-slider-container-overlay {
+                height: 35px;
+            }
+
+            .time-display-left,
+            .time-display-right {
+                bottom: 45px;
+                font-size: 9px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="main-content">
+            <div class="drop-zone" id="dropZone">
+                <div class="drop-zone-content" id="dropZoneContent">
+                    <i class="fas fa-cloud-upload-alt drop-icon"></i>
+                    <h2>Drop YouTube Link Here</h2>
+                    <p>Drag and drop any YouTube video link onto this area to embed it in full screen.</p>
+
+                    <div class="example-url">
+                        Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+                    </div>
+
+                    <div class="url-input">
+                        <input type="text" id="urlInput" placeholder="Or paste YouTube URL here...">
+                        <button id="loadBtn">Load Video</button>
+                    </div>
+                </div>
+
+                <div class="video-container hidden" id="videoContainer">
+                    <!-- YouTube iframe will be inserted here -->
+                </div>
+
+                <!-- Precision Slider Overlay (MOBILE ONLY) -->
+                <div class="precision-overlay hidden" id="precisionOverlay">
+                    <!-- Small time displays left and right -->
+                    <div class="time-display-left" id="timeDisplayLeft">0:00</div>
+                    <div class="time-display-right" id="timeDisplayRight">0:00</div>
+
+                    <!-- Precision Slider -->
+                    <div class="precision-slider-container-overlay" id="precision-slider-container-overlay">
+                        <div class="precision-track-wrapper-overlay">
+                            <div class="precision-track-overlay" id="precision-track-overlay"></div>
+                        </div>
+                        <div class="precision-center-line-overlay paused" id="precision-center-line-overlay"></div>
+                        <div class="precision-mask-overlay"></div>
+                    </div>
+                </div>
+
+                <!-- Share Button Overlay (Top-Right) - For Mobile -->
+                <button class="share-button-overlay hidden" id="shareButtonOverlay">
+                    <i class="fas fa-share-alt"></i> Share
+                </button>
+
+                <!-- NEW: Share Button (Bottom-Center) - For Desktop -->
+                <button class="share-button-bottom-center hidden" id="shareButtonBottomCenter">
+                    <i class="fas fa-share-alt"></i> Share Video
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div class="share-overlay" id="shareOverlay">
+        <div class="share-modal">
+            <h3><i class="fab fa-youtube"></i> Share YouTube Video</h3>
+            <div class="share-url-container">
+                <input type="text" class="share-url-input" id="shareUrlInput" readonly>
+                <button class="copy-button" id="copyButton">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+            <div class="share-actions">
+                <button class="close-button" id="closeShareButton">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const dropZone = document.getElementById('dropZone');
+        const dropZoneContent = document.getElementById('dropZoneContent');
+        const videoContainer = document.getElementById('videoContainer');
+        const urlInput = document.getElementById('urlInput');
+        const loadBtn = document.getElementById('loadBtn');
+        const shareOverlay = document.getElementById('shareOverlay');
+        const shareUrlInput = document.getElementById('shareUrlInput');
+        const copyButton = document.getElementById('copyButton');
+        const closeShareButton = document.getElementById('closeShareButton');
+
+        // Precision Slider Overlay Elements
+        const precisionOverlay = document.getElementById('precisionOverlay');
+        const timeDisplayLeft = document.getElementById('timeDisplayLeft');
+        const timeDisplayRight = document.getElementById('timeDisplayRight');
+        const precisionSliderContainer = document.getElementById('precision-slider-container-overlay');
+        const precisionTrack = document.getElementById('precision-track-overlay');
+        const precisionCenterLine = document.getElementById('precision-center-line-overlay');
+        const shareButtonOverlay = document.getElementById('shareButtonOverlay');
+        const shareButtonBottomCenter = document.getElementById('shareButtonBottomCenter'); // NEW
+
+        // YouTube Player Variables
+        let player = null;
+        let currentVideoId = null;
+        let isPrecisionDragging = false;
+        let videoDuration = 0;
+        let notchCount = 31;
+        let startX = 0;
+        let startScrollX = 0;
+        let touchStartTime = 0;
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        // Auto-hide variables
+        let inactivityTimer = null;
+        const INACTIVITY_DELAY = 2000; // 2 seconds for overlay controls
+
+        // Update interval for time display
+        let updateInterval = null;
+
+        // Quality settings
+        let targetQuality = 'hd1080'; // Default target quality
+        let qualityCheckInterval = null;
+
+        // Favicon elements
+        let favicons = {
+            favicon: document.querySelector("link[rel='icon']"),
+            appleTouchIcon: document.querySelector("link[rel='apple-touch-icon']"),
+            icon192: document.querySelector("link[rel='icon'][sizes='192x192']"),
+            icon512: document.querySelector("link[rel='icon'][sizes='512x512']")
+        };
+
+        // Create any missing favicon elements
+        if (!favicons.favicon) {
+            favicons.favicon = document.createElement('link');
+            favicons.favicon.rel = 'icon';
+            document.head.appendChild(favicons.favicon);
+        }
+
+        if (!favicons.appleTouchIcon) {
+            favicons.appleTouchIcon = document.createElement('link');
+            favicons.appleTouchIcon.rel = 'apple-touch-icon';
+            favicons.appleTouchIcon.sizes = '180x180';
+            document.head.appendChild(favicons.appleTouchIcon);
+        }
+
+        if (!favicons.icon192) {
+            favicons.icon192 = document.createElement('link');
+            favicons.icon192.rel = 'icon';
+            favicons.icon192.type = 'image/png';
+            favicons.icon192.sizes = '192x192';
+            document.head.appendChild(favicons.icon192);
+        }
+
+        if (!favicons.icon512) {
+            favicons.icon512 = document.createElement('link');
+            favicons.icon512.rel = 'icon';
+            favicons.icon512.type = 'image/png';
+            favicons.icon512.sizes = '512x512';
+            document.head.appendChild(favicons.icon512);
+        }
+
+        function updateFavicon(videoId) {
+            const thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+            const fallbackUrl = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+
+            // Update all favicon sizes with the YouTube thumbnail
+            Object.values(favicons).forEach(favicon => {
+                if (favicon) {
+                    favicon.href = thumbnailUrl;
+                }
+            });
+
+            // Fallback check
+            const img = new Image();
+            img.onerror = function () {
+                // If maxresdefault fails, use hqdefault for all favicons
+                Object.values(favicons).forEach(favicon => {
+                    if (favicon) {
+                        favicon.href = fallbackUrl;
+                    }
+                });
+            };
+            img.src = thumbnailUrl;
+        }
+
+        async function updateVideoTitle(videoId) {
+            try {
+                const response = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+                const data = await response.json();
+                if (data && data.title) {
+                    document.title = `${data.title} - YouTube Full-Screen Embed`;
+                    return data.title;
+                }
+            } catch (error) {
+                console.error('Error fetching video title:', error);
+                document.title = `YouTube Video (${videoId}) - YouTube Full-Screen Embed`;
+            }
+            return null;
+        }
+
+        // Check if device is mobile
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                (window.matchMedia && window.matchMedia('(max-width: 768px) and (hover: none) and (pointer: coarse)').matches);
+        }
+
+        // Check if device is iOS
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+
+        // Check if device supports high quality
+        function canPlayHighQuality() {
+            if (isIOS()) {
+                // iPhones can definitely play HD
+                const screenWidth = window.screen.width;
+                const screenHeight = window.screen.height;
+                const isRetina = window.devicePixelRatio >= 2;
+
+                // iPhone models that support HD
+                if (screenWidth >= 375 && screenHeight >= 667) { // iPhone 6 and above
+                    return true;
+                }
+            }
+            return true;
+        }
+
+        // ==================== QUALITY CONTROL FUNCTIONS ====================
+
+        function setQuality(quality) {
+            if (player && player.setPlaybackQuality) {
+                try {
+                    player.setPlaybackQuality(quality);
+                    console.log('Setting quality to:', quality);
+                } catch (e) {
+                    console.log('Could not set quality:', e);
+                }
+            }
+        }
+
+        function checkAndImproveQuality() {
+            if (!player || !player.getPlaybackQuality) return;
+
+            try {
+                const currentQuality = player.getPlaybackQuality();
+                console.log('Current quality:', currentQuality);
+
+                // If quality is low, try to improve it
+                if (currentQuality === 'small' || currentQuality === 'medium' || currentQuality === 'large') {
+                    // Try to set higher quality
+                    if (canPlayHighQuality()) {
+                        // For iOS devices, try high quality
+                        setQuality('hd1080');
+                    } else {
+                        // For other devices, try at least 720p
+                        setQuality('hd720');
+                    }
+                }
+            } catch (e) {
+                console.log('Could not check quality:', e);
+            }
+        }
+
+        function monitorQuality() {
+            // Check quality every 3 seconds for the first 15 seconds
+            if (qualityCheckInterval) clearInterval(qualityCheckInterval);
+
+            let checks = 0;
+            qualityCheckInterval = setInterval(() => {
+                checkAndImproveQuality();
+                checks++;
+                if (checks >= 5) { // Stop after 5 checks (15 seconds)
+                    clearInterval(qualityCheckInterval);
+                    qualityCheckInterval = null;
+                }
+            }, 3000);
+        }
+
+        // ==================== iOS SAFARI HEIGHT ADJUSTMENT ====================
+        function adjustHeightForIOSSafari() {
+            // Check if it's iOS Safari
+            const isIOSSafari = /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+                /Safari/.test(navigator.userAgent) &&
+                !/CriOS/.test(navigator.userAgent) &&
+                !/FxiOS/.test(navigator.userAgent);
+
+            if (isIOSSafari) {
+                // Get the visual viewport height (accounts for keyboard/URL bar)
+                const visualViewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+
+                // Calculate the difference between document and visual viewport
+                const heightDifference = window.innerHeight - visualViewportHeight;
+
+                // If there's a URL bar (height difference > 0), adjust the iframe
+                if (heightDifference > 0) {
+                    const iframe = videoContainer.querySelector('iframe');
+                    if (iframe) {
+                        // Set iframe height to visual viewport height
+                        iframe.style.height = `${visualViewportHeight}px !important`;
+
+                        // Also adjust the video container
+                        videoContainer.style.height = `${visualViewportHeight}px`;
+                    }
+                }
+
+                // Listen for viewport changes (URL bar hiding/showing)
+                if (window.visualViewport) {
+                    window.visualViewport.addEventListener('resize', () => {
+                        const vpHeight = window.visualViewport.height;
+                        const iframe = videoContainer.querySelector('iframe');
+                        if (iframe) {
+                            iframe.style.height = `${vpHeight}px !important`;
+                            videoContainer.style.height = `${vpHeight}px`;
+                        }
+
+                        // Also adjust overlay position if needed
+                        if (isMobileDevice()) {
+                            adjustOverlayPosition();
+                        }
+                    });
+
+                    // Also handle orientation changes
+                    window.addEventListener('orientationchange', () => {
+                        setTimeout(() => {
+                            const vpHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+                            const iframe = videoContainer.querySelector('iframe');
+                            if (iframe) {
+                                iframe.style.height = `${vpHeight}px !important`;
+                                videoContainer.style.height = `${vpHeight}px`;
+                            }
+
+                            // Recreate precision notches on orientation change (mobile only)
+                            if (isMobileDevice() && !videoContainer.classList.contains('hidden')) {
+                                setTimeout(() => {
+                                    createPrecisionNotches();
+                                    if (player && player.getCurrentTime) {
+                                        const currentTime = player.getCurrentTime();
+                                        setPrecisionSliderToTime(currentTime);
+                                    }
+                                }, 300);
+                            }
+                        }, 300); // Delay to wait for orientation change to complete
+                    });
+                }
+            }
+        }
+
+        // Adjust overlay position based on viewport
+        function adjustOverlayPosition() {
+            if (window.visualViewport && isMobileDevice()) {
+                const vpHeight = window.visualViewport.height;
+                const windowHeight = window.innerHeight;
+                const heightDifference = windowHeight - vpHeight;
+
+                // If URL bar is visible (height difference > 0), adjust overlay bottom position
+                if (heightDifference > 0 && vpHeight < windowHeight) {
+                    // Adjust overlay to be above the URL bar
+                    const adjustedBottom = Math.max(10, heightDifference + 10);
+                    precisionOverlay.style.bottom = `${adjustedBottom}px`;
+
+                    // Adjust time displays
+                    const timeDisplayBottom = adjustedBottom;
+                    document.querySelectorAll('.time-display-left, .time-display-right').forEach(el => {
+                        el.style.bottom = `${timeDisplayBottom}px`;
+                    });
+                } else {
+                    // Reset to default
+                    precisionOverlay.style.bottom = '10px';
+                    document.querySelectorAll('.time-display-left, .time-display-right').forEach(el => {
+                        el.style.bottom = '50px';
+                    });
+                }
+            }
+        }
+
+        // ==================== AUTO-HIDE FUNCTIONALITY ====================
+
+        function showOverlayControls() {
+            if (!videoContainer.classList.contains('hidden')) {
+                // Clear any existing timer
+                if (inactivityTimer) {
+                    clearTimeout(inactivityTimer);
+                }
+
+                // Show overlay controls based on device
+                if (isMobileDevice()) {
+                    // Mobile: Show precision slider and top-right share button
+                    precisionOverlay.classList.add('visible');
+                    shareButtonOverlay.classList.add('visible');
+                } else {
+                    // Desktop: Show bottom-center share button
+                    shareButtonBottomCenter.classList.add('visible');
+                }
+
+                // Set timer to hide after inactivity
+                inactivityTimer = setTimeout(hideOverlayControls, INACTIVITY_DELAY);
+            }
+        }
+
+        function hideOverlayControls() {
+            if (isMobileDevice()) {
+                precisionOverlay.classList.remove('visible');
+                shareButtonOverlay.classList.remove('visible');
+            } else {
+                shareButtonBottomCenter.classList.remove('visible');
+            }
+        }
+
+        function resetInactivityTimer() {
+            showOverlayControls();
+            if (isMobileDevice()) {
+                adjustHeightForIOSSafari();
+            }
+        }
+
+        function setupAutoHide() {
+            // Show controls on interaction
+            document.addEventListener('mousemove', resetInactivityTimer);
+            document.addEventListener('touchstart', resetInactivityTimer);
+            document.addEventListener('click', resetInactivityTimer);
+
+            // Hide initially
+            hideOverlayControls();
+
+            // Show briefly when video loads
+            if (!videoContainer.classList.contains('hidden')) {
+                setTimeout(showOverlayControls, 1000);
+            }
+        }
+
+        // ==================== PRECISION SLIDER FUNCTIONS (MOBILE ONLY) ====================
+
+        function createPrecisionNotches() {
+            if (!precisionTrack || !precisionSliderContainer || !isMobileDevice()) return;
+
+            precisionTrack.innerHTML = '';
+            const containerWidth = precisionSliderContainer.offsetWidth;
+            const notchSpacing = Math.floor(containerWidth / notchCount);
+            const offsetY = precisionSliderContainer.offsetHeight / 2;
+
+            for (let i = 0; i < notchCount; i++) {
+                const notch = document.createElement('div');
+                notch.className = 'precision-notch-overlay';
+                const x = i * notchSpacing;
+
+                if (i % 5 === 0) {
+                    notch.classList.add('long');
+                    notch.style.height = '20px';
+                    notch.style.top = (offsetY - 10) + 'px';
+                } else {
+                    notch.classList.add('short');
+                    notch.style.height = '12px';
+                    notch.style.top = (offsetY - 6) + 'px';
+                }
+
+                notch.style.left = x + 'px';
+                precisionTrack.appendChild(notch);
+            }
+
+            const lastNotch = precisionTrack.children[notchCount - 1];
+            const contentWidth = lastNotch.offsetLeft + 2;
+            precisionTrack.style.width = contentWidth + 'px';
+
+            const inset = contentWidth / 2 + (Math.max(0, containerWidth - contentWidth) / 2);
+            precisionTrack.style.transform = `translateX(${-inset}px)`;
+        }
+
+        function setupPrecisionSlider() {
+            if (!precisionSliderContainer || !isMobileDevice()) return;
+
+            precisionSliderContainer.addEventListener('mousedown', handleSliderMouseDown);
+            precisionSliderContainer.addEventListener('click', handleSliderClick);
+            precisionSliderContainer.addEventListener('touchstart', handleSliderTouchStart, { passive: false });
+            precisionSliderContainer.addEventListener('touchend', handleSliderTouchEnd);
+            document.addEventListener('mousemove', handleSliderMouseMove);
+            document.addEventListener('mouseup', handleSliderMouseUp);
+            document.addEventListener('touchmove', handleSliderTouchMove, { passive: false });
+        }
+
+        function handleSliderMouseDown(e) {
+            if (!isMobileDevice()) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+            isPrecisionDragging = true;
+            startX = e.clientX;
+            startScrollX = getTrackScrollX();
+            precisionSliderContainer.style.cursor = 'grabbing';
+            resetInactivityTimer();
+        }
+
+        function handleSliderClick(e) {
+            if (!isMobileDevice()) return;
+
+            if (!isPrecisionDragging) {
+                e.preventDefault();
+                e.stopPropagation();
+                togglePlayPause();
+            }
+        }
+
+        function handleSliderTouchStart(e) {
+            if (!isMobileDevice()) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (e.touches.length === 1) {
+                const touch = e.touches[0];
+                touchStartTime = Date.now();
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+                isPrecisionDragging = true;
+                startX = touch.clientX;
+                startScrollX = getTrackScrollX();
+            }
+            resetInactivityTimer();
+        }
+
+        function handleSliderTouchEnd(e) {
+            if (!isMobileDevice()) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const touch = e.changedTouches[0];
+            const touchDuration = Date.now() - touchStartTime;
+            const moveX = Math.abs(touch.clientX - touchStartX);
+            const moveY = Math.abs(touch.clientY - touchStartY);
+
+            if (touchDuration < 300 && moveX < 10 && moveY < 10) {
+                togglePlayPause();
+            }
+
+            isPrecisionDragging = false;
+            precisionSliderContainer.style.cursor = 'pointer';
+            resetInactivityTimer();
+        }
+
+        function getTrackScrollX() {
+            const transform = precisionTrack.style.transform;
+            if (transform && transform.includes('translateX')) {
+                const match = transform.match(/translateX\(([^)]+)px\)/);
+                if (match) {
+                    return parseFloat(match[1]) || 0;
+                }
+            }
+            return 0;
+        }
+
+        function setTrackScrollX(x) {
+            precisionTrack.style.transform = `translateX(${x}px)`;
+            precisionTrack.style.transition = isPrecisionDragging ? 'none' : 'transform 0.2s ease';
+        }
+
+        function handleSliderMouseMove(e) {
+            if (!isPrecisionDragging || !isMobileDevice()) return;
+
+            e.preventDefault();
+            const deltaX = e.clientX - startX;
+            const newScrollX = startScrollX + deltaX;
+            setTrackScrollX(newScrollX);
+            updateVideoFromPrecisionScroll(newScrollX);
+        }
+
+        function handleSliderTouchMove(e) {
+            if (!isPrecisionDragging || !isMobileDevice()) return;
+
+            e.preventDefault();
+            if (e.touches.length === 1) {
+                const touch = e.touches[0];
+                const deltaX = touch.clientX - startX;
+                const newScrollX = startScrollX + deltaX;
+                setTrackScrollX(newScrollX);
+                updateVideoFromPrecisionScroll(newScrollX);
+            }
+        }
+
+        function handleSliderMouseUp() {
+            if (!isPrecisionDragging || !isMobileDevice()) return;
+            isPrecisionDragging = false;
+            precisionSliderContainer.style.cursor = 'pointer';
+            resetInactivityTimer();
+        }
+
+        function updateVideoFromPrecisionScroll(scrollX) {
+            if (isPrecisionDragging && player && videoDuration > 0 && isMobileDevice()) {
+                const containerWidth = precisionSliderContainer.offsetWidth;
+                const trackWidth = parseFloat(precisionTrack.style.width);
+                const inset = trackWidth / 2 + (Math.max(0, containerWidth - trackWidth) / 2);
+                const progress = (-scrollX + inset) / trackWidth;
+                const clampedProgress = Math.max(0, Math.min(1, progress));
+                const targetTime = clampedProgress * videoDuration;
+
+                timeDisplayLeft.textContent = formatTime(targetTime);
+
+                if (player && player.seekTo) {
+                    player.seekTo(targetTime, true);
+                }
+            }
+        }
+
+        function setPrecisionSliderToTime(time) {
+            if (videoDuration > 0 && precisionTrack.style.width && isMobileDevice()) {
+                const progress = time / videoDuration;
+                const containerWidth = precisionSliderContainer.offsetWidth;
+                const trackWidth = parseFloat(precisionTrack.style.width);
+                const inset = trackWidth / 2 + (Math.max(0, containerWidth - trackWidth) / 2);
+                const targetScrollX = -(trackWidth * progress - inset);
+
+                if (!isPrecisionDragging) {
+                    setTrackScrollX(targetScrollX);
+                }
+
+                timeDisplayLeft.textContent = formatTime(time);
+            }
+        }
+
+        // ==================== YOUTUBE FUNCTIONS ====================
+
+        function extractYouTubeId(url) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/,
+                /youtube\.com\/embed\/([^&\n?#]+)/,
+                /youtube\.com\/v\/([^&\n?#]+)/
+            ];
+
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match && match[1]) {
+                    return match[1];
+                }
+            }
+            return null;
+        }
+
+        function formatTime(seconds) {
+            if (isNaN(seconds)) return "0:00";
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return mins + ':' + (secs < 10 ? '0' : '') + secs;
+        }
+
+        // Load YouTube API
+        const loadYouTubeAPI = () => {
+            const tag = document.createElement('script');
+            tag.src = "https://www.youtube.com/iframe_api";
+            const firstScriptTag = document.getElementsByTagName('script')[0];
+            firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+        };
+
+        // YouTube Player Ready
+        window.onYouTubeIframeAPIReady = () => {
+            player = new YT.Player(videoContainer.querySelector('iframe'), {
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange,
+                    'onPlaybackQualityChange': onPlaybackQualityChange
+                }
+            });
+        };
+
+        // Player Ready Event
+        function onPlayerReady(event) {
+            videoDuration = player.getDuration();
+            timeDisplayRight.textContent = formatTime(videoDuration);
+
+            // Setup precision slider only on mobile
+            if (isMobileDevice()) {
+                createPrecisionNotches();
+                setupPrecisionSlider();
+
+                // Start update interval for mobile
+                if (updateInterval) clearInterval(updateInterval);
+                updateInterval = setInterval(updateTimeDisplay, 100);
+
+                // Set initial slider position
+                setPrecisionSliderToTime(0);
+            }
+
+            // Show overlay controls briefly
+            setTimeout(showOverlayControls, 500);
+
+            // iOS adjustments after player is ready
+            setTimeout(adjustHeightForIOSSafari, 100);
+
+            // Start quality monitoring
+            setTimeout(monitorQuality, 2000);
+        }
+
+        // Playback Quality Change Event
+        function onPlaybackQualityChange(event) {
+            console.log('Quality changed to:', event.data);
+
+            // If quality is low, try to improve it
+            if (event.data === 'small' || event.data === 'medium' || event.data === 'large') {
+                setTimeout(() => {
+                    if (canPlayHighQuality()) {
+                        setQuality('hd1080');
+                    } else {
+                        setQuality('hd720');
+                    }
+                }, 1000);
+            }
+        }
+
+        // Player State Change
+        function onPlayerStateChange(event) {
+            if (!isMobileDevice()) return;
+
+            if (event.data === YT.PlayerState.PLAYING) {
+                precisionCenterLine.classList.add('playing');
+                precisionCenterLine.classList.remove('paused');
+
+                // Check quality when video starts playing
+                setTimeout(checkAndImproveQuality, 1000);
+            } else if (event.data === YT.PlayerState.PAUSED || event.data === YT.PlayerState.ENDED) {
+                precisionCenterLine.classList.add('paused');
+                precisionCenterLine.classList.remove('playing');
+            }
+        }
+
+        // Update time display (mobile only)
+        function updateTimeDisplay() {
+            if (!player || !player.getCurrentTime || !isMobileDevice()) return;
+
+            try {
+                const currentTime = player.getCurrentTime();
+                timeDisplayLeft.textContent = formatTime(currentTime);
+
+                if (videoDuration > 0) {
+                    // Update precision slider (only if not dragging)
+                    if (!isPrecisionDragging) {
+                        setPrecisionSliderToTime(currentTime);
+                    }
+                }
+            } catch (e) {
+                // Ignore errors
+            }
+        }
+
+        // Toggle play/pause (works on both desktop and mobile)
+        function togglePlayPause() {
+            if (!player || !player.getPlayerState) return;
+
+            const state = player.getPlayerState();
+            if (state === YT.PlayerState.PLAYING) {
+                player.pauseVideo();
+            } else {
+                player.playVideo();
+            }
+
+            resetInactivityTimer();
+        }
+
+        async function loadVideo(videoId) {
+            currentVideoId = videoId;
+
+            // Hide drop zone, show video
+            dropZoneContent.classList.add('hidden');
+            videoContainer.classList.remove('hidden');
+            shareButtonOverlay.classList.remove('hidden');
+            shareButtonBottomCenter.classList.remove('hidden'); // NEW
+
+            // Show precision overlay only on mobile
+            if (isMobileDevice()) {
+                precisionOverlay.classList.remove('hidden');
+            }
+
+            // Create iframe with DIFFERENT parameters based on device
+            let iframeParams;
+
+            if (isMobileDevice()) {
+                // MOBILE: Hide YouTube controls, use our custom slider
+                // Added: vq=hd1080 parameter to request high quality
+                iframeParams = `autoplay=1&controls=0&rel=0&modestbranding=1&playsinline=1&enablejsapi=1&showinfo=0&vq=${canPlayHighQuality() ? 'hd1080' : 'hd720'}`;
+            } else {
+                // DESKTOP: Show normal YouTube controls
+                iframeParams = `autoplay=1&controls=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1`;
+            }
+
+            videoContainer.innerHTML = `
+                <iframe 
+                    id="youtube-player"
+                    src="https://www.youtube.com/embed/${videoId}?${iframeParams}"
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            `;
+
+            // Update UI
+            updateFavicon(videoId);
+            await updateVideoTitle(videoId);
+
+            // Reset time display (mobile only)
+            if (isMobileDevice()) {
+                timeDisplayLeft.textContent = '0:00';
+                timeDisplayRight.textContent = '0:00';
+            }
+
+            // Update browser URL with shareable link
+            updateBrowserUrl(videoId);
+
+            // Load YouTube API if not loaded
+            if (!window.YT) {
+                loadYouTubeAPI();
+            } else {
+                // API already loaded, create player directly
+                setTimeout(() => {
+                    player = new YT.Player('youtube-player', {
+                        events: {
+                            'onReady': onPlayerReady,
+                            'onStateChange': onPlayerStateChange,
+                            'onPlaybackQualityChange': onPlaybackQualityChange
+                        }
+                    });
+                }, 500);
+            }
+
+            // Setup auto-hide
+            setupAutoHide();
+            setTimeout(showOverlayControls, 1000);
+
+            // Adjust for iOS Safari
+            setTimeout(adjustHeightForIOSSafari, 100);
+
+            // Listen for iOS viewport changes
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', adjustHeightForIOSSafari);
+            }
+        }
+
+        // ==================== URL MANAGEMENT FUNCTIONS ====================
+
+        function encodeYouTubeUrl(youtubeUrl) {
+            const videoId = extractYouTubeId(youtubeUrl);
+            if (!videoId) return null;
+            return btoa(videoId)
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/, '');
+        }
+
+        function decodeYouTubeCode(shortCode) {
+            let base64 = shortCode
+                .replace(/-/g, '+')
+                .replace(/_/g, '/');
+            while (base64.length % 4) {
+                base64 += '=';
+            }
+            return atob(base64);
+        }
+
+        function generateShareableUrl(videoId) {
+            const code = encodeYouTubeUrl(`https://youtu.be/${videoId}`);
+            if (!code) return null;
+            return `${window.location.origin}${window.location.pathname}?${code}`;
+        }
+
+        // NEW: Update browser URL when video loads
+        function updateBrowserUrl(videoId) {
+            const shareUrl = generateShareableUrl(videoId);
+            if (shareUrl) {
+                // Update browser URL without reloading the page
+                window.history.pushState({ videoId: videoId }, '', shareUrl);
+                console.log('Updated browser URL to:', shareUrl);
+            }
+        }
+
+        function showShareDialog() {
+            if (!currentVideoId) return;
+            const shareUrl = generateShareableUrl(currentVideoId);
+            if (shareUrl) {
+                shareUrlInput.value = shareUrl;
+                shareOverlay.classList.add('active');
+            }
+        }
+
+        function hideShareDialog() {
+            shareOverlay.classList.remove('active');
+        }
+
+        function copyShareUrl() {
+            shareUrlInput.select();
+            shareUrlInput.setSelectionRange(0, 99999);
+
+            try {
+                navigator.clipboard.writeText(shareUrlInput.value).then(() => {
+                    const originalText = copyButton.innerHTML;
+                    copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    copyButton.style.backgroundColor = '#28a745';
+                    setTimeout(() => {
+                        copyButton.innerHTML = originalText;
+                        copyButton.style.backgroundColor = '';
+                    }, 2000);
+                });
+            } catch (err) {
+                document.execCommand('copy');
+                const originalText = copyButton.innerHTML;
+                copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                copyButton.style.backgroundColor = '#28a745';
+                setTimeout(() => {
+                    copyButton.innerHTML = originalText;
+                    copyButton.style.backgroundColor = '';
+                }, 2000);
+            }
+        }
+
+        // ==================== DRAG & DROP ====================
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            if (!dropZone.contains(e.relatedTarget)) {
+                dropZone.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+
+            const url = e.dataTransfer.getData('text/plain');
+            if (!url) {
+                alert('No text dropped. Please drop a YouTube URL.');
+                return;
+            }
+
+            const videoId = extractYouTubeId(url);
+            if (!videoId) {
+                alert('Invalid YouTube URL. Please drop a valid YouTube link.');
+                return;
+            }
+
+            loadVideo(videoId);
+            urlInput.value = url;
+        }
+
+        // ==================== AUTO-PASTE DETECTION ====================
+
+        function setupAutoPasteDetection() {
+            document.addEventListener('paste', function (e) {
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                if (pastedText) {
+                    const videoId = extractYouTubeId(pastedText);
+                    if (videoId) {
+                        e.preventDefault();
+                        loadVideo(videoId);
+                        urlInput.value = pastedText;
+                    }
+                }
+            });
+        }
+
+        // ==================== URL PARAMETER LOADING ====================
+
+        async function loadFromUrlParam() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.keys().next().value;
+
+            if (code && code.length > 0) {
+                try {
+                    const decoded = decodeYouTubeCode(code);
+                    const videoId = extractYouTubeId(decoded) || decoded;
+                    if (videoId && videoId.length === 11) {
+                        await loadVideo(videoId);
+                        return true;
+                    }
+                } catch (e) {
+                    console.error('Failed to decode URL parameter:', e);
+                }
+            }
+            return false;
+        }
+
+        // ==================== EVENT LISTENERS ====================
+
+        // Drag and drop
+        dropZone.addEventListener('dragover', handleDragOver);
+        dropZone.addEventListener('dragleave', handleDragLeave);
+        dropZone.addEventListener('drop', handleDrop);
+
+        // Load button
+        loadBtn.addEventListener('click', () => {
+            const url = urlInput.value.trim();
+            if (!url) {
+                alert('Please enter a YouTube URL');
+                return;
+            }
+            const videoId = extractYouTubeId(url);
+            if (!videoId) {
+                alert('Invalid YouTube URL');
+                return;
+            }
+            loadVideo(videoId);
+        });
+
+        // Enter key in input
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loadBtn.click();
+        });
+
+        // Share buttons
+        shareButtonOverlay.addEventListener('click', showShareDialog);
+        shareButtonBottomCenter.addEventListener('click', showShareDialog); // NEW
+
+        // Share modal
+        copyButton.addEventListener('click', copyShareUrl);
+        closeShareButton.addEventListener('click', hideShareDialog);
+        shareOverlay.addEventListener('click', (e) => {
+            if (e.target === shareOverlay) hideShareDialog();
+        });
+
+        // Window resize
+        window.addEventListener('resize', () => {
+            if (isMobileDevice()) {
+                createPrecisionNotches();
+                if (player && player.getCurrentTime) {
+                    const currentTime = player.getCurrentTime();
+                    setPrecisionSliderToTime(currentTime);
+                }
+            }
+            // iOS adjustments on resize
+            adjustHeightForIOSSafari();
+        });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', async (event) => {
+            // Reload video from URL when user navigates back/forward
+            await loadFromUrlParam();
+        });
+
+        // ==================== INITIALIZATION ====================
+
+        window.addEventListener('load', async () => {
+            // Try to load from URL parameter
+            await loadFromUrlParam();
+
+            // Setup auto-paste
+            setupAutoPasteDetection();
+
+            // Adjust for iOS Safari
+            setTimeout(adjustHeightForIOSSafari, 100);
+
+            // Load YouTube API
+            loadYouTubeAPI();
+        });
+    </script>
+</body>
+
+</html>

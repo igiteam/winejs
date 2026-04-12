@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimal Whiteboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: white;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            cursor: default;
+        }
+
+        #whiteboard {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            position: relative;
+            cursor: default;
+            user-select: none;
+        }
+
+        .image-item {
+            position: absolute;
+            cursor: move;
+            user-select: none;
+            touch-action: none;
+            border: 1px solid transparent;
+            transition: border-color 0.2s;
+        }
+
+        .image-item:hover {
+            border: 1px dashed #ccc;
+        }
+
+        .image-item.selected {
+            border: 1px solid #3498db;
+            z-index: 1000;
+        }
+
+        .image-item img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+        }
+
+        .resize-handle {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: #3498db;
+            border: 2px solid white;
+            border-radius: 50%;
+            z-index: 1001;
+            cursor: nwse-resize;
+            display: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-item:hover .resize-handle {
+            display: block;
+        }
+
+        .image-item.selected .resize-handle {
+            display: block;
+            background-color: #2980b9;
+        }
+
+        .resize-handle.top-left {
+            top: -6px;
+            left: -6px;
+            cursor: nwse-resize;
+        }
+
+        .resize-handle.bottom-right {
+            right: -6px;
+            bottom: -6px;
+            cursor: nwse-resize;
+        }
+
+        .delete-handle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            z-index: 1002;
+            cursor: pointer;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            user-select: none;
+        }
+
+        .image-item:hover .delete-handle {
+            display: flex;
+        }
+
+        .delete-handle:hover {
+            background-color: #c0392b;
+            transform: scale(1.1);
+        }
+
+        /* Welcome message */
+        #welcome {
+            color: #ccc;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        /* Hidden file input for keyboard accessibility */
+        #hiddenFileInput {
+            display: none;
+        }
+
+        .copy-paste-handle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #2ecc71;
+            color: white;
+            border-radius: 50%;
+            z-index: 1002;
+            cursor: pointer;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+            user-select: none;
+            left: -10px;
+            bottom: -10px;
+        }
+
+        .image-item:hover .copy-paste-handle {
+            display: flex;
+        }
+
+        .copy-paste-handle:hover {
+            background-color: #27ae60;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="whiteboard"></div>
+
+    <!-- Hidden file input for keyboard accessibility -->
+    <input type="file" id="hiddenFileInput" accept="image/*" multiple>
+
+    <script>
+        // DOM elements
+        const whiteboard = document.getElementById('whiteboard');
+        const hiddenFileInput = document.getElementById('hiddenFileInput');
+        let isTopLeftResize = false;
+        // Add to your state variables at the top:
+        let startImageLeft = 0;
+        let startImageTop = 0;
+        // State variables
+        let selectedImage = null;
+        let isDragging = false;
+        let isResizing = false;
+        let dragOffset = { x: 0, y: 0 };
+        let startSize = { width: 0, height: 0 };
+        let startPos = { x: 0, y: 0 };
+
+        // Initialize the whiteboard
+        function initWhiteboard() {
+            // Clear any existing welcome messages
+            const existingWelcome = document.getElementById('welcome');
+            if (existingWelcome) {
+                existingWelcome.remove();
+            }
+
+            // Show welcome message
+            showWelcomeMessage();
+
+            // Set up event listeners
+            whiteboard.addEventListener('dragover', handleDragOver);
+            whiteboard.addEventListener('drop', handleDrop);
+            document.addEventListener('paste', handlePaste);
+            document.addEventListener('keydown', handleKeyDown);
+
+            // Mouse events on document
+            document.addEventListener('mousedown', handleMouseDown);
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+
+            // Focus on whiteboard for keyboard events
+            whiteboard.tabIndex = 0;
+            whiteboard.focus();
+
+            // Allow file input trigger via keyboard
+            hiddenFileInput.addEventListener('change', handleFileInput);
+
+            // Focus whiteboard when clicking anywhere
+            document.addEventListener('click', function (e) {
+                if (e.target === document.body || e.target === whiteboard) {
+                    whiteboard.focus();
+                    deselectImage();
+                }
+            });
+        }
+
+        // Show welcome message
+        function showWelcomeMessage() {
+            // Remove any existing welcome messages first
+            const existingWelcome = document.getElementById('welcome');
+            if (existingWelcome) {
+                existingWelcome.remove();
+            }
+
+            const welcome = document.createElement('div');
+            welcome.style.position = "fixed";
+            welcome.style.bottom = "0px";
+            welcome.style.left = "0";
+            welcome.style.width = "100%";
+            welcome.style.textAlign = "center";
+            welcome.style.padding = "10px";
+            welcome.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+            welcome.id = 'welcome';
+            welcome.textContent = 'Drop images or paste (Ctrl+V)';
+            whiteboard.appendChild(welcome);
+        }
+
+        // Handle drag over event
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+        }
+
+        // Handle drop event
+        function handleDrop(e) {
+            e.preventDefault();
+
+            const files = Array.from(e.dataTransfer.files);
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    addImageFromFile(file, e.clientX, e.clientY);
+                }
+            });
+        }
+
+        // Handle paste event
+        function handlePaste(e) {
+            const items = Array.from(e.clipboardData.items);
+
+            items.forEach(item => {
+                if (item.type.startsWith('image/')) {
+                    const file = item.getAsFile();
+                    if (file) {
+                        addImageFromFile(file, window.innerWidth / 2, window.innerHeight / 2);
+                    }
+                }
+            });
+        }
+
+        // Handle key events
+        function handleKeyDown(e) {
+            // Delete selected image
+            if ((e.key === 'Delete' || e.key === 'Backspace') && selectedImage) {
+                deleteSelected();
+            }
+
+            // Deselect with Escape
+            if (e.key === 'Escape' && selectedImage) {
+                deselectImage();
+            }
+
+            // Enter to open file dialog
+            if (e.key === 'Enter' && !selectedImage) {
+                hiddenFileInput.click();
+            }
+        }
+
+        // Handle file input selection
+        function handleFileInput(e) {
+            const files = Array.from(e.target.files);
+            files.forEach(file => {
+                addImageFromFile(file, window.innerWidth / 2, window.innerHeight / 2);
+            });
+
+            // Reset the input so the same file can be selected again
+            hiddenFileInput.value = '';
+        }
+
+        // Handle mouse down on document
+        function handleMouseDown(e) {
+            // Check if clicking on delete handle
+            if (e.target.classList.contains('delete-handle')) {
+                e.stopPropagation();
+                const imageItem = e.target.closest('.image-item');
+                if (imageItem) {
+                    deleteImage(imageItem);
+                }
+                return;
+            }
+
+            // Check if clicking on resize handle
+            if (e.target.classList.contains('resize-handle')) {
+                isResizing = true;
+                startSize.width = selectedImage.offsetWidth;
+                startSize.height = selectedImage.offsetHeight;
+                startPos.x = e.clientX;
+                startPos.y = e.clientY;
+
+                // Store the ORIGINAL position too!
+                startImageLeft = parseInt(selectedImage.style.left) || 0;
+                startImageTop = parseInt(selectedImage.style.top) || 0;
+
+                // Check if it's top-left handle
+                isTopLeftResize = e.target.classList.contains('top-left');
+
+                e.stopPropagation();
+                return;
+            }
+
+            // Check if clicking on an image
+            const imageItem = e.target.closest('.image-item');
+            if (imageItem) {
+                // Select the image
+                selectImage(imageItem);
+
+                // Start dragging
+                isDragging = true;
+                const rect = imageItem.getBoundingClientRect();
+                dragOffset.x = e.clientX - rect.left;
+                dragOffset.y = e.clientY - rect.top;
+
+                e.stopPropagation();
+                return;
+            }
+
+            // Clicked on whiteboard, deselect current image
+            deselectImage();
+        }
+
+        // Handle mouse move for dragging and resizing
+        function handleMouseMove(e) {
+            if (!isDragging && !isResizing) return;
+
+            if (isDragging && selectedImage) {
+                // Calculate new position
+                const whiteboardRect = whiteboard.getBoundingClientRect();
+                const x = e.clientX - whiteboardRect.left - dragOffset.x;
+                const y = e.clientY - whiteboardRect.top - dragOffset.y;
+
+                // Apply boundaries (keep image within whiteboard)
+                const maxX = whiteboardRect.width - selectedImage.offsetWidth;
+                const maxY = whiteboardRect.height - selectedImage.offsetHeight;
+
+                selectedImage.style.left = `${Math.max(0, Math.min(x, maxX))}px`;
+                selectedImage.style.top = `${Math.max(0, Math.min(y, maxY))}px`;
+            }
+
+            if (isResizing && selectedImage) {
+                // Calculate new size based on mouse movement
+                const deltaX = e.clientX - startPos.x;
+                const deltaY = e.clientY - startPos.y;
+
+                // Get aspect ratio
+                const aspectRatio = selectedImage.dataset.aspectRatio || 1;
+
+                if (isTopLeftResize) {
+                    // For top-left handle
+                    const newWidth = Math.max(50, startSize.width - deltaX);
+                    const newHeight = newWidth / aspectRatio;
+
+                    // Skip if height would be too small
+                    if (newHeight < 50) return;
+
+                    // Calculate how much the image grew/shrunk
+                    const widthChange = newWidth - startSize.width;
+                    const heightChange = newHeight - startSize.height;
+
+                    // Calculate NEW position from ORIGINAL position
+                    const newLeft = startImageLeft - widthChange;
+                    const newTop = startImageTop - heightChange;
+
+                    // Update position AND size
+                    selectedImage.style.left = `${newLeft}px`;
+                    selectedImage.style.top = `${newTop}px`;
+                    selectedImage.style.width = `${newWidth}px`;
+                    selectedImage.style.height = `${newHeight}px`;
+
+                } else {
+                    // For bottom-right handle: normal resize
+                    const newWidth = Math.max(50, startSize.width + deltaX);
+                    const newHeight = newWidth / aspectRatio;
+
+                    // Check if new height is too small
+                    if (newHeight < 50) {
+                        const adjustedWidth = 50 * aspectRatio;
+                        selectedImage.style.width = `${Math.max(50, adjustedWidth)}px`;
+                        selectedImage.style.height = `50px`;
+                    } else {
+                        selectedImage.style.width = `${newWidth}px`;
+                        selectedImage.style.height = `${newHeight}px`;
+                    }
+                }
+            }
+        }
+
+        // Handle mouse up
+        function handleMouseUp() {
+            isDragging = false;
+            isResizing = false;
+            isTopLeftResize = false;
+        }
+
+        // Add image from file
+        function addImageFromFile(file, x, y) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const imgSrc = e.target.result;
+                addImageToWhiteboard(imgSrc, x, y);
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        // Add image to whiteboard
+        function addImageToWhiteboard(src, x, y) {
+            // Remove welcome message if it exists
+            const welcome = document.getElementById('welcome');
+            if (welcome) {
+                whiteboard.removeChild(welcome);
+            }
+
+            // Create image container
+            const imageItem = document.createElement('div');
+            imageItem.className = 'image-item';
+
+            // Calculate initial size (60% of window width)
+            const imageWidth = Math.min(window.innerWidth * 0.6, 800);
+
+            // Set initial position (centered on drop/paste location)
+            const whiteboardRect = whiteboard.getBoundingClientRect();
+            const posX = x - whiteboardRect.left - (imageWidth / 2);
+            const posY = y - whiteboardRect.top - (imageWidth / 2);
+
+            imageItem.style.left = `${Math.max(10, Math.min(posX, whiteboardRect.width - imageWidth - 10))}px`;
+            imageItem.style.top = `${Math.max(10, Math.min(posY, whiteboardRect.height - imageWidth - 10))}px`;
+            imageItem.style.width = `${imageWidth}px`;
+            imageItem.style.height = `${imageWidth}px`;
+
+            // Create image element
+            const img = document.createElement('img');
+            img.src = src;
+
+            img.onload = function () {
+                // Calculate and maintain aspect ratio
+                const aspectRatio = img.naturalWidth / img.naturalHeight;
+                imageItem.dataset.aspectRatio = aspectRatio;
+
+                // Adjust height based on aspect ratio
+                const newHeight = imageWidth / aspectRatio;
+                imageItem.style.height = `${newHeight}px`;
+
+                // Ensure image stays within viewport
+                const maxTop = whiteboardRect.height - newHeight - 10;
+                const currentTop = parseInt(imageItem.style.top);
+                if (currentTop > maxTop) {
+                    imageItem.style.top = `${Math.max(10, maxTop)}px`;
+                }
+
+                // Adjust position if image is too wide
+                const currentLeft = parseInt(imageItem.style.left);
+                const maxLeft = whiteboardRect.width - imageWidth - 10;
+                if (currentLeft > maxLeft) {
+                    imageItem.style.left = `${Math.max(10, maxLeft)}px`;
+                }
+            };
+
+            // Create resize handles
+            const resizeHandleBottomRight = document.createElement('div');
+            resizeHandleBottomRight.className = 'resize-handle bottom-right';
+
+            // Create top-left resize handle
+            const resizeHandleTopLeft = document.createElement('div');
+            resizeHandleTopLeft.className = 'resize-handle top-left';
+
+            // Create delete handle
+            const deleteHandle = document.createElement('div');
+            deleteHandle.className = 'delete-handle';
+            deleteHandle.style.top = '-10px';
+            deleteHandle.style.right = '-10px';
+            deleteHandle.textContent = '×';
+
+            // Create copy/paste handle
+            const copyPasteHandle = document.createElement('div');
+            copyPasteHandle.className = 'copy-paste-handle';
+            copyPasteHandle.textContent = '📋'; // Using clipboard emoji
+            copyPasteHandle.title = 'Copy image to clipboard';
+
+            // Add click event to copy image to clipboard - FIXED VERSION
+            copyPasteHandle.addEventListener('click', async function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+
+                // Show loading state
+                const originalText = this.textContent;
+                const originalBg = this.style.backgroundColor;
+                this.textContent = '...';
+                this.style.backgroundColor = '#f39c12';
+
+                try {
+                    await copyImageToClipboard(imageItem);
+                } catch (err) {
+                    console.error('Copy failed:', err);
+                    // Show error state
+                    this.style.backgroundColor = '#e74c3c';
+                    this.textContent = '✗';
+
+                    setTimeout(() => {
+                        this.style.backgroundColor = originalBg;
+                        this.textContent = originalText;
+                    }, 1000);
+                }
+            });
+
+            // Add elements to container
+            imageItem.appendChild(img);
+            imageItem.appendChild(resizeHandleBottomRight);
+            imageItem.appendChild(resizeHandleTopLeft);
+            imageItem.appendChild(deleteHandle);
+            imageItem.appendChild(copyPasteHandle);
+
+            // Add to whiteboard
+            whiteboard.appendChild(imageItem);
+
+            // Select the new image
+            selectImage(imageItem);
+        }
+
+        // Select an image
+        function selectImage(imageItem) {
+            // Deselect current image if any
+            if (selectedImage && selectedImage !== imageItem) {
+                selectedImage.classList.remove('selected');
+            }
+
+            // Select new image
+            selectedImage = imageItem;
+            selectedImage.classList.add('selected');
+
+            // Bring to front
+            const allImages = document.querySelectorAll('.image-item');
+            let maxZIndex = 1;
+            allImages.forEach(img => {
+                const zIndex = parseInt(window.getComputedStyle(img).zIndex) || 1;
+                if (zIndex > maxZIndex) maxZIndex = zIndex;
+                if (img !== selectedImage) {
+                    img.style.zIndex = '1';
+                }
+            });
+            selectedImage.style.zIndex = (maxZIndex + 1).toString();
+        }
+
+        // Deselect current image
+        function deselectImage() {
+            if (selectedImage) {
+                selectedImage.classList.remove('selected');
+                selectedImage = null;
+
+                // Show welcome message if no images left
+                const images = document.querySelectorAll('.image-item');
+                if (images.length === 0) {
+                    showWelcomeMessage();
+                }
+            }
+        }
+
+        // Delete specific image
+        function deleteImage(imageItem) {
+            if (imageItem === selectedImage) {
+                selectedImage = null;
+            }
+            whiteboard.removeChild(imageItem);
+
+            // Show welcome message if no images left
+            const images = document.querySelectorAll('.image-item');
+            if (images.length === 0) {
+                showWelcomeMessage();
+            }
+        }
+
+        // Delete selected image
+        function deleteSelected() {
+            if (selectedImage) {
+                deleteImage(selectedImage);
+            }
+        }
+
+        // Copy image to clipboard - SIMPLIFIED AND FIXED VERSION
+        async function copyImageToClipboard(imageItem) {
+            const imgElement = imageItem.querySelector('img');
+            const copyPasteHandle = imageItem.querySelector('.copy-paste-handle');
+
+            if (!imgElement) {
+                throw new Error('No image element found');
+            }
+
+            // Create a canvas
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set canvas size to image size
+            canvas.width = imgElement.naturalWidth || imgElement.width;
+            canvas.height = imgElement.naturalHeight || imgElement.height;
+
+            // Draw image to canvas
+            ctx.drawImage(imgElement, 0, 0);
+
+            // Return a promise that resolves when canvas is ready
+            return new Promise((resolve, reject) => {
+                canvas.toBlob(async (blob) => {
+                    try {
+                        // Try to copy using modern Clipboard API
+                        await navigator.clipboard.write([
+                            new ClipboardItem({
+                                'image/png': blob
+                            })
+                        ]);
+
+                        // Success - update UI
+                        if (copyPasteHandle) {
+                            copyPasteHandle.style.backgroundColor = '#27ae60';
+                            copyPasteHandle.textContent = '✓';
+
+                            setTimeout(() => {
+                                copyPasteHandle.style.backgroundColor = '';
+                                copyPasteHandle.textContent = '📋';
+                            }, 1000);
+                        }
+
+                        console.log('Image copied to clipboard successfully');
+                        resolve();
+
+                    } catch (clipboardErr) {
+                        console.warn('Modern clipboard API failed, trying fallback:', clipboardErr);
+
+                        // Fallback: try to create download link
+                        try {
+                            const url = URL.createObjectURL(blob);
+                            const link = document.createElement('a');
+                            link.href = url;
+                            link.download = 'whiteboard-image.png';
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            URL.revokeObjectURL(url);
+
+                            if (copyPasteHandle) {
+                                copyPasteHandle.style.backgroundColor = '#f39c12';
+                                copyPasteHandle.textContent = '⬇';
+
+                                setTimeout(() => {
+                                    copyPasteHandle.style.backgroundColor = '';
+                                    copyPasteHandle.textContent = '📋';
+                                }, 1000);
+                            }
+
+                            console.log('Image downloaded as fallback');
+                            resolve();
+
+                        } catch (fallbackErr) {
+                            console.error('All copy methods failed:', fallbackErr);
+                            reject(new Error('Copy failed. Try a different browser or check permissions.'));
+                        }
+                    }
+                }, 'image/png');
+            });
+        }
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', initWhiteboard);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Full-Screen Embed</title>
+
+    <meta name="description" content="Full screen YouTube embed with shareable link">
+    <meta name="keywords" content="youtube-embed, embed video, website, utilities, html website">
+    <link rel="icon" href="https://cdn.sdappnet.cloud/rtx/images/ytembedblack.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://cdn.sdappnet.cloud/rtx/images/ytembedblack.png" sizes="180x180">
+    <link rel="icon" type="image/png" href="https://cdn.sdappnet.cloud/rtx/images/ytembedblack.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="https://cdn.sdappnet.cloud/rtx/images/ytembedblack.png" sizes="512x512">
+    <meta itemprop="name" content="YouTube Full-Screen Embed">
+    <meta itemprop="description" content="Full screen YouTube embed with shareable link">
+    <meta itemprop="image" content="https://cdn.sdappnet.cloud/rtx/images/youtubeembed.png">
+    <meta property="og:title" content="YouTube Full-Screen Embed">
+    <meta property="og:description" content="Full screen YouTube embed with shareable link">
+    <meta property="og:image" content="https://cdn.sdappnet.cloud/rtx/images/youtubeembed.png">
+    <meta property="og:url" content="">
+    <meta property="og:type" content="website">
+    <meta name="twitter:title" content="YouTube Full-Screen Embed">
+    <meta name="twitter:description" content="Full screen YouTube embed with shareable link">
+    <meta name="twitter:image" content="https://cdn.sdappnet.cloud/rtx/images/youtubeembed.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="apple-touch-icon" href="https://cdn.sdappnet.cloud/rtx/images/youtubeembed.png" sizes="180x180">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Force no scrollbars anywhere */
+        html,
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        /* Hide all scrollbars */
+        ::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        * {
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
+        }
+
+        .container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        .drop-zone {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+            position: relative;
+            overflow: hidden;
+            cursor: default;
+            width: 100%;
+            height: 100%;
+        }
+
+        .drop-zone.drag-over {
+            background-color: rgba(255, 0, 0, 0.05);
+        }
+
+        .drop-zone-content {
+            text-align: center;
+            padding: 40px;
+            max-width: 600px;
+            z-index: 2;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .drop-icon {
+            font-size: 80px;
+            color: #ff0000;
+            margin-bottom: 20px;
+        }
+
+        .drop-zone h2 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .drop-zone p {
+            color: #aaa;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            overflow: hidden;
+        }
+
+        .example-url {
+            background-color: #202020;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-family: monospace;
+            color: #ff6b6b;
+            border-left: 3px solid #ff0000;
+            overflow: hidden;
+            word-break: break-word;
+        }
+
+        /* FIX FOR IFRAME WIDTH ISSUE */
+        .video-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        .video-container iframe {
+            width: calc(100% + 15px) !important;
+            height: 100% !important;
+            border: none;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            transform: translateZ(0);
+            /* Force hardware acceleration */
+        }
+
+        .url-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .url-input input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            background-color: #202020;
+            border: 1px solid #303030;
+            border-radius: 5px;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .url-input input:focus {
+            outline: none;
+            border-color: #ff0000;
+        }
+
+        .url-input button {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .url-input button:hover {
+            background-color: #cc0000;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Share Button Styles */
+        .share-button {
+            position: absolute;
+            bottom: 0px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            background-color: white;
+            color: #333;
+            border: none;
+            padding: 8px 16px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .share-button.visible {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .share-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .share-button i {
+            font-size: 16px;
+        }
+
+        /* Share Modal Styles */
+        .share-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .share-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .share-modal {
+            background-color: #202020;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .share-modal h3 {
+            margin-bottom: 15px;
+            color: white;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .share-modal h3 i {
+            color: #ff0000;
+        }
+
+        .share-url-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .share-url-input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            background-color: #303030;
+            border: 1px solid #404040;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+            font-family: monospace;
+        }
+
+        .copy-button {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background-color: #cc0000;
+        }
+
+        .share-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .close-button {
+            background-color: #404040;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        .close-button:hover {
+            background-color: #505050;
+        }
+
+        @media (max-width: 768px) {
+            .drop-zone-content {
+                padding: 20px;
+            }
+
+            .drop-icon {
+                font-size: 60px;
+            }
+
+            .drop-zone h2 {
+                font-size: 24px;
+            }
+
+            .share-button {
+                padding: 6px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="main-content">
+            <div class="drop-zone" id="dropZone">
+                <div class="drop-zone-content" id="dropZoneContent">
+                    <i class="fas fa-cloud-upload-alt drop-icon"></i>
+                    <h2>Drop YouTube Link Here</h2>
+                    <p>Drag and drop any YouTube video link onto this area to embed it in full screen. The favicon will
+                        automatically update to show the video thumbnail.</p>
+
+                    <div class="example-url">
+                        Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+                    </div>
+
+                    <div class="url-input">
+                        <input type="text" id="urlInput" placeholder="Or paste YouTube URL here...">
+                        <button id="loadBtn">Load Video</button>
+                    </div>
+                </div>
+
+                <div class="video-container hidden" id="videoContainer">
+                    <!-- YouTube iframe will be inserted here -->
+                </div>
+
+                <!-- Share buttons (one for video, one for initial state) -->
+                <button class="share-button" id="shareButton">
+                    <i class="fas fa-share-alt"></i> Share Video
+                </button>
+
+                <button class="share-button" id="initialShareButton">
+                    <i class="fas fa-share-alt"></i> Share Video
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Overlay Modal -->
+    <div class="share-overlay" id="shareOverlay">
+        <div class="share-modal">
+            <h3><i class="fab fa-youtube"></i> Share YouTube Video</h3>
+            <div class="share-url-container">
+                <input type="text" class="share-url-input" id="shareUrlInput" readonly>
+                <button class="copy-button" id="copyButton">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+            <div class="share-actions">
+                <button class="close-button" id="closeShareButton">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements
+        const dropZone = document.getElementById('dropZone');
+        const dropZoneContent = document.getElementById('dropZoneContent');
+        const videoContainer = document.getElementById('videoContainer');
+        const urlInput = document.getElementById('urlInput');
+        const loadBtn = document.getElementById('loadBtn');
+        const shareButton = document.getElementById('shareButton');
+        const initialShareButton = document.getElementById('initialShareButton');
+        const shareOverlay = document.getElementById('shareOverlay');
+        const shareUrlInput = document.getElementById('shareUrlInput');
+        const copyButton = document.getElementById('copyButton');
+        const closeShareButton = document.getElementById('closeShareButton');
+
+        // Current video ID for sharing
+        let currentVideoId = null;
+
+        // Auto-hide variables
+        let inactivityTimer = null;
+        const INACTIVITY_DELAY = 10000; // 5 seconds
+
+        // Favicon element
+        let favicon = document.querySelector("link[rel~='icon']");
+        if (!favicon) {
+            favicon = document.createElement('link');
+            favicon.rel = 'icon';
+            document.head.appendChild(favicon);
+        }
+
+        // ==================== AUTO-HIDE FUNCTIONALITY ====================
+
+        function showShareButton() {
+            // Clear any existing timer
+            if (inactivityTimer) {
+                clearTimeout(inactivityTimer);
+            }
+
+            // Show appropriate share button
+            if (!videoContainer.classList.contains('hidden')) {
+                // Video is playing - show video share button
+                shareButton.classList.add('visible');
+                initialShareButton.classList.remove('visible');
+            } else {
+                // No video - show initial share button
+                initialShareButton.classList.add('visible');
+                shareButton.classList.remove('visible');
+            }
+
+            // Set timer to hide after inactivity
+            inactivityTimer = setTimeout(hideShareButton, INACTIVITY_DELAY);
+        }
+
+        function hideShareButton() {
+            shareButton.classList.remove('visible');
+            initialShareButton.classList.remove('visible');
+        }
+
+        function resetInactivityTimer() {
+            showShareButton();
+        }
+
+        function setupAutoHide() {
+            // Show share button on mouse movement
+            document.addEventListener('mousemove', resetInactivityTimer);
+
+            // Also show on touch events for mobile
+
+            // Mouse movement anywhere on page
+            document.addEventListener('mousemove', resetInactivityTimer);
+            document.addEventListener('touchstart', resetInactivityTimer);
+
+            // Mouse over video container
+            if (videoContainer.firstElementChild && videoContainer.firstElementChild.tagName === 'IFRAME') {
+                // The iframe exists, attach hover/mousemove listeners to the container
+                videoContainer.addEventListener('mousemove', resetInactivityTimer);
+                videoContainer.addEventListener('mouseenter', resetInactivityTimer);
+            }
+
+            // Hide initially
+            hideShareButton();
+
+            // Show briefly when page loads
+            setTimeout(showShareButton, 1000);
+        }
+
+        // ==================== YOUTUBE FUNCTIONS ====================
+
+        function extractYouTubeId(url) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\n?#]+)/,
+                /youtube\.com\/embed\/([^&\n?#]+)/,
+                /youtube\.com\/v\/([^&\n?#]+)/
+            ];
+
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match && match[1]) {
+                    return match[1];
+                }
+            }
+            return null;
+        }
+
+        // URL encoding/decoding
+        function encodeYouTubeUrl(youtubeUrl) {
+            const videoId = extractYouTubeId(youtubeUrl);
+            if (!videoId) return null;
+            return btoa(videoId)
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/, '');
+        }
+
+        function decodeYouTubeCode(shortCode) {
+            let base64 = shortCode
+                .replace(/-/g, '+')
+                .replace(/_/g, '/');
+            while (base64.length % 4) {
+                base64 += '=';
+            }
+            return atob(base64);
+        }
+
+        function generateShareableUrl(videoId) {
+            const code = encodeYouTubeUrl(`https://youtu.be/${videoId}`);
+            if (!code) return null;
+            const baseUrl = 'https://cdn.sdappnet.cloud/rtx/youtubeembed.html';
+            return `${baseUrl}?${code}`;
+        }
+
+        // ==================== VIDEO FUNCTIONS ====================
+
+        async function updateVideoTitle(videoId) {
+            try {
+                const response = await fetch(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${videoId}`);
+                const data = await response.json();
+                if (data && data.title) {
+                    document.title = `${data.title} - YouTube Full-Screen Embed`;
+                    return data.title;
+                }
+            } catch (error) {
+                console.error('Error fetching video title:', error);
+                document.title = `YouTube Video (${videoId}) - YouTube Full-Screen Embed`;
+            }
+            return null;
+        }
+
+        function updateFavicon(videoId) {
+            const thumbnailUrl = `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`;
+            favicon.href = thumbnailUrl;
+
+            // Fallback
+            const img = new Image();
+            img.onerror = function () {
+                favicon.href = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+            };
+            img.src = thumbnailUrl;
+        }
+
+        async function loadVideo(videoId) {
+            currentVideoId = videoId;
+
+            // Hide drop zone, show video
+            dropZoneContent.classList.add('hidden');
+            videoContainer.classList.remove('hidden');
+
+            // Create iframe with loop enabled
+            videoContainer.innerHTML = `
+                <iframe 
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&controls=1&modestbranding=1&loop=1&playlist=${videoId}" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            `;
+
+            // Update UI
+            updateFavicon(videoId);
+            await updateVideoTitle(videoId);
+
+            // Show share button briefly
+            setTimeout(showShareButton, 500);
+
+            // Log share URL
+            console.log('Share URL:', generateShareableUrl(videoId));
+        }
+
+        // ==================== SHARE MODAL FUNCTIONS ====================
+
+        function showShareDialog() {
+            if (!currentVideoId) return;
+            const shareUrl = generateShareableUrl(currentVideoId);
+            if (shareUrl) {
+                shareUrlInput.value = shareUrl;
+                shareOverlay.classList.add('active');
+            }
+        }
+
+        function hideShareDialog() {
+            shareOverlay.classList.remove('active');
+        }
+
+        function copyShareUrl() {
+            shareUrlInput.select();
+            shareUrlInput.setSelectionRange(0, 99999);
+
+            try {
+                navigator.clipboard.writeText(shareUrlInput.value).then(() => {
+                    const originalText = copyButton.innerHTML;
+                    copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                    copyButton.style.backgroundColor = '#28a745';
+                    setTimeout(() => {
+                        copyButton.innerHTML = originalText;
+                        copyButton.style.backgroundColor = '';
+                    }, 2000);
+                });
+            } catch (err) {
+                document.execCommand('copy');
+                const originalText = copyButton.innerHTML;
+                copyButton.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                copyButton.style.backgroundColor = '#28a745';
+                setTimeout(() => {
+                    copyButton.innerHTML = originalText;
+                    copyButton.style.backgroundColor = '';
+                }, 2000);
+            }
+        }
+
+        // ==================== DRAG & DROP ====================
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            if (!dropZone.contains(e.relatedTarget)) {
+                dropZone.classList.remove('drag-over');
+            }
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+
+            const url = e.dataTransfer.getData('text/plain');
+            if (!url) {
+                alert('No text dropped. Please drop a YouTube URL.');
+                return;
+            }
+
+            const videoId = extractYouTubeId(url);
+            if (!videoId) {
+                alert('Invalid YouTube URL. Please drop a valid YouTube link.');
+                return;
+            }
+
+            loadVideo(videoId);
+            urlInput.value = url;
+        }
+
+        // ==================== AUTO-PASTE DETECTION ====================
+
+        function setupAutoPasteDetection() {
+            document.addEventListener('paste', function (e) {
+                const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+                if (pastedText) {
+                    const videoId = extractYouTubeId(pastedText);
+                    if (videoId) {
+                        e.preventDefault();
+                        loadVideo(videoId);
+                        urlInput.value = pastedText;
+                    }
+                }
+            });
+        }
+
+        // ==================== URL PARAMETER LOADING ====================
+
+        async function loadFromUrlParam() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.keys().next().value;
+
+            if (code && code.length > 0) {
+                try {
+                    const decoded = decodeYouTubeCode(code);
+                    const videoId = extractYouTubeId(decoded) || decoded;
+                    if (videoId && videoId.length === 11) {
+                        await loadVideo(videoId);
+                        return true;
+                    }
+                } catch (e) {
+                    console.error('Failed to decode URL parameter:', e);
+                }
+            }
+            return false;
+        }
+
+        // ==================== EVENT LISTENERS ====================
+
+        // Drag and drop
+        dropZone.addEventListener('dragover', handleDragOver);
+        dropZone.addEventListener('dragleave', handleDragLeave);
+        dropZone.addEventListener('drop', handleDrop);
+
+        // Load button
+        loadBtn.addEventListener('click', () => {
+            const url = urlInput.value.trim();
+            if (!url) {
+                alert('Please enter a YouTube URL');
+                return;
+            }
+            const videoId = extractYouTubeId(url);
+            if (!videoId) {
+                alert('Invalid YouTube URL');
+                return;
+            }
+            loadVideo(videoId);
+        });
+
+        // Enter key in input
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') loadBtn.click();
+        });
+
+        // Share buttons
+        shareButton.addEventListener('click', showShareDialog);
+        initialShareButton.addEventListener('click', showShareDialog);
+
+        // Share modal
+        copyButton.addEventListener('click', copyShareUrl);
+        closeShareButton.addEventListener('click', hideShareDialog);
+        shareOverlay.addEventListener('click', (e) => {
+            if (e.target === shareOverlay) hideShareDialog();
+        });
+
+        // ==================== INITIALIZATION ====================
+
+        window.addEventListener('load', async () => {
+            // Setup auto-hide first
+            setupAutoHide();
+
+            // Try to load from URL parameter
+            const loadedFromUrl = await loadFromUrlParam();
+
+            // If no video loaded from URL, show initial share button
+            if (!loadedFromUrl) {
+                showShareButton();
+            }
+
+            // Setup auto-paste
+            setupAutoPasteDetection();
+        });
+    </script>
+</body>
+
+</html>

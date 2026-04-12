@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# Get the directory where the .app bundle is located
+APP_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && cd ../.. && pwd)"
+APP_NAME="$(basename "$APP_PATH" .app)"
+RESOURCES_DIR="$APP_PATH/Contents/Resources"
+SCRIPTS_DIR="$RESOURCES_DIR/Scripts"
+
+# Export environment variables for the script
+export APP_PATH
+export APP_NAME
+export RESOURCES_DIR
+export SCRIPTS_DIR
+
+# Change to app directory
+cd "$RESOURCES_DIR"
+
+# Check if we should run in terminal
+RUN_IN_TERMINAL=false
+for arg in "$@"; do
+    if [[ "$arg" == "--terminal" ]] || [[ "$arg" == "-t" ]]; then
+        RUN_IN_TERMINAL=true
+    fi
+done
+
+if [[ "$RUN_IN_TERMINAL" == "true" ]] || [[ -f "$RESOURCES_DIR/run-in-terminal" ]]; then
+    # Run in Terminal.app
+    osascript << EOF
+tell application "Terminal"
+    do script "clear; echo '=== $APP_NAME ==='; cd \"$RESOURCES_DIR\"; \"$SCRIPTS_DIR/main.sh\"; echo -e \"\\n\\nPress Cmd+W to close this window\"; bash"
+    activate
+end tell
+EOF
+else
+    # Run the main script directly
+    "$SCRIPTS_DIR/main.sh"
+    
+    # If script exited and we're not in a terminal, keep window open
+    if [[ -z "$TERM_PROGRAM" ]]; then
+        osascript -e "tell app \"System Events\" to display dialog \"$APP_NAME has finished.\" buttons {\"OK\"} default button 1 with title \"$APP_NAME\""
+    fi
+fi

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Video Game Evolution: Consoles & Engines</title>
+
+    <meta name="description" content="Collection of video games and engines">
+    <meta name="keywords" content="video games, video game consoles, all games, videos, gaming">
+    <link rel="icon" href="https://cdn.sdappnet.cloud/rtx/images/consoles-icon.jpg" type="image/png">
+    <meta itemprop="name" content="Video Game Evolution: Consoles & Engines">
+    <meta itemprop="description" content="Collection of video games and engines">
+    <meta itemprop="image" content="https://cdn.sdappnet.cloud/rtx/images/consoles.jpg">
+    <meta property="og:title" content="Video Game Evolution: Consoles & Engines">
+    <meta property="og:description" content="Collection of video games and engines">
+    <meta property="og:image" content="https://cdn.sdappnet.cloud/rtx/images/consoles.jpg">
+    <meta property="og:url" content="https://cdn.sdappnet.cloud/rtx/incredibuild-community-onboarding-guide.html">
+    <meta property="og:type" content="website">
+    <meta name="twitter:title" content="Video Game Evolution: Consoles & Engines">
+    <meta name="twitter:description" content="Collection of video games and engines">
+    <meta name="twitter:image" content="https://cdn.sdappnet.cloud/rtx/images/consoles.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #d946ef;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --border: #e2e8f0;
+            --highlight: #f43f5e;
+            --engine-color: #8b5cf6;
+            --engine-dark: #6d28d9;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+        }
+
+        h1 {
+            padding: 0px;
+            margin: 0px;
+            color: var(--primary-dark);
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.75rem;
+            font-weight: 700;
+            position: relative;
+        }
+
+        p {
+            margin: 1.25rem 0;
+            font-size: 1.05rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0 3rem;
+            background: var(--card-bg);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-radius: 0.5rem;
+            overflow: hidden;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(241, 245, 249, 0.5);
+        }
+
+        tr:hover {
+            background-color: rgba(224, 242, 254, 0.5);
+        }
+
+        caption {
+            caption-side: top;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            color: var(--primary);
+            text-align: left;
+            padding: 0.5rem 0;
+        }
+
+        .highlight {
+            color: var(--highlight);
+            font-weight: 600;
+            background-color: rgba(244, 63, 94, 0.1);
+            padding: 0.15rem 0.3rem;
+            border-radius: 0.25rem;
+        }
+
+        /* Video Grid Styles */
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.75rem;
+            margin: 1rem 0;
+        }
+
+        .video-item {
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .video-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .video-item iframe {
+            width: 100%;
+            height: 180px;
+            border: none;
+            display: block;
+        }
+
+        .video-title {
+            font-size: 0.95rem;
+            text-align: center;
+            color: var(--text);
+            font-weight: 600;
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .engine-grid .video-title {
+            background: linear-gradient(to right, rgba(139, 92, 246, 0.1), transparent);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            body {
+                padding: 1.5rem 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th,
+            td {
+                padding: 0.75rem 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .video-item iframe {
+                height: 160px;
+            }
+        }
+
+        /* Decorative elements */
+        .intro {
+            font-size: 1.1rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            text-align: center;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        strong {
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        /* Footer style */
+        footer {
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .green {
+            color: #00a200;
+        }
+
+        .section-intro {
+            background-color: rgba(139, 92, 246, 0.05);
+            border-left: 4px solid var(--engine-color);
+            padding: 1.25rem;
+            border-radius: 0 8px 8px 0;
+            margin: 2rem 0;
+            font-size: 1.05rem;
+            color: var(--text);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Video Game Evolution: Consoles & Engines</h1>
+
+    <div class="intro">
+        Explore the history of gaming through console generations and the engines that powered them
+    </div>
+
+    <h2>Classic Console Game Collections</h2>
+    <div class="video-grid">
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/4FfcaBOX0XA" allowfullscreen style="height: 260px"></iframe>
+            <div class="video-title">The PlayStation 1 Project - All 4221 PS1 Games (US/EU/JP)</div>
+        </div>
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/Hz8mW7DrOxY" allowfullscreen style="height: 260px"></iframe>
+            <div class="video-title">The Nintendo 64 Project - All 388 N64 Games (US/EU/JP)</div>
+        </div>
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/NOGYEqForOU" allowfullscreen style="height: 260px"></iframe>
+            <div class="video-title">The Dreamcast Project - All 636 DC Games (US/EU/JP)</div>
+        </div>
+    </div>
+
+    <div class="video-grid">
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/ixeRUJQ5yPc" allowfullscreen></iframe>
+            <div class="video-title">The PlayStation 2 Project - All 4218 PS2 Games (US/EU/JP)</div>
+        </div>
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/zbIrpq4Msa0" allowfullscreen></iframe>
+            <div class="video-title">The Xbox Classic Project - All 1002 Xbox Games (US/EU/JP/AU)</div>
+        </div>
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/abyGtaNV8tE" allowfullscreen></iframe>
+            <div class="video-title">The GameCube Project - All 651 GC Games (US/EU/JP)</div>
+        </div>
+    </div>
+
+    <div class="video-grid">
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/MM7UuB193po" allowfullscreen></iframe>
+            <div class="video-title">The PS3 Project - All 2519 PlayStation 3 Games (US/EU/JP/AU)</div>
+        </div>
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/5T5bIaoHxQQ" allowfullscreen></iframe>
+            <div class="video-title">All Xbox 360 Games In One Video</div>
+        </div>
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/WW6JBgM82Ds" allowfullscreen></iframe>
+            <div class="video-title">The Wii Project - All 1624 Wii Games (US/EU/JP/AU)</div>
+        </div>
+    </div>
+    <div class="video-grid">
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/aScAadiJrZM" allowfullscreen></iframe>
+            <div class="video-title">PlayStation Portable (PSP) - All Games (US/EU)</div>
+        </div>
+        <div class="video-item">
+            <iframe src="https://www.youtube.com/embed/9pyMz4-fPgk" allowfullscreen></iframe>
+            <div class="video-title">The SEGA Saturn Project - All 1107 Saturn Games - Every Game (US/EU/JP)</div>
+        </div>
+    </div>
+    <!-- New Video Game Engines Section -->
+    <div class="engine-section">
+        <h2>Revolutionary Game Engines</h2>
+        <div class="section-intro">
+            Game engines are the technological foundations that power video games. This section showcases
+            landmark engines that revolutionized graphics, physics, and game development workflows throughout
+            gaming history.
+        </div>
+
+        <div class="video-grid engine-grid">
+            <!-- First row -->
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/Ljo_lwNXNAM" allowfullscreen></iframe>
+                <div class="video-title">Wolfenstein 3D Engine</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/jmeqC_b4kGA" allowfullscreen></iframe>
+                <div class="video-title">Doom Engine</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/NqdLH34Pb8I" allowfullscreen></iframe>
+                <div class="video-title">Quake Engine</div>
+            </div>
+
+            <!-- Second row -->
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/vRYXgglLNh8" allowfullscreen></iframe>
+                <div class="video-title">Quake 2 Engine</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/W-nT41Fw4NM" allowfullscreen></iframe>
+                <div class="video-title">Goldsrc Engine</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/UmSv6mhkcQc" allowfullscreen></iframe>
+                <div class="video-title">Unreal Engine 1</div>
+            </div>
+
+            <!-- Third row -->
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/9aZeGhqDVe0" allowfullscreen></iframe>
+                <div class="video-title">Id Tech 3 Engine</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/_XhNLR-bf_M" allowfullscreen></iframe>
+                <div class="video-title">Build Engine</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/YK8uAwvJMLY" allowfullscreen></iframe>
+                <div class="video-title">CatCore Engine</div>
+            </div>
+
+            <!-- Fourth row -->
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/zHTCmzAaeBU" allowfullscreen></iframe>
+                <div class="video-title">Source Engine</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/4iWjCM-nCvs" allowfullscreen></iframe>
+                <div class="video-title">LithTech Engine</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/Pww7VdB2Lgk" allowfullscreen></iframe>
+                <div class="video-title">Unreal Engine 2</div>
+            </div>
+
+            <!-- Fifth row -->
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/mJkKy5tRCQ8" allowfullscreen></iframe>
+                <div class="video-title">Unreal Engine 3</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/i86aGAvjtkA" allowfullscreen></iframe>
+                <div class="video-title">Id Tech 4 Engine</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/T4SsqVbbd9g" allowfullscreen></iframe>
+                <div class="video-title">MaxFX Engine</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/W-nT41Fw4NM" allowfullscreen></iframe>
+                <div class="video-title">GoldSRC Engine</div>
+            </div>
+            <!-- Sixth row -->
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/h9NMvv9TxvQ" allowfullscreen></iframe>
+                <div class="video-title">Voxel Engine (Novalogic)</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/gYc_IdDqjoE" allowfullscreen></iframe>
+                <div class="video-title">Blade of Darkness Engine</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/_mS3GDvHS58" allowfullscreen></iframe>
+                <div class="video-title">RenderWare Engine</div>
+            </div>
+            <!-- Seventh row -->
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/oW8mVX-bhn8" allowfullscreen></iframe>
+                <div class="video-title">Cry Engine</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/vRYXgglLNh8" allowfullscreen></iframe>
+                <div class="video-title">Quake 2 Engine (id Tech 2.5)</div>
+            </div>
+            <div class="video-item">
+                <iframe src="https://www.youtube.com/embed/jmeqC_b4kGA" allowfullscreen></iframe>
+                <div class="video-title">Quake 1 Engine (id Tech 1)</div>
+            </div>
+        </div>
+
+        <footer>
+            Data compiled from various sources | Analysis by Video Game Industry Observer
+        </footer>
+</body>
+
+</html>

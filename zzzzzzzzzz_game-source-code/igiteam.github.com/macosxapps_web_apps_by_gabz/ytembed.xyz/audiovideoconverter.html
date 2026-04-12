@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio to Video Converter</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #333;
+            margin-bottom: 30px;
+            flex-shrink: 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #aaa;
+            letter-spacing: 1px;
+        }
+
+        /* MAIN CONTENT - ALWAYS SIDE BY SIDE */
+        .main-content {
+            display: flex;
+            flex: 1;
+            gap: 10px;
+            min-height: 0;
+            overflow: hidden;
+            width: 100%;
+            background-color: red;
+        }
+
+        /* DROP ZONES - ALWAYS 50% WIDTH EACH */
+        .drop-area-container {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .drop-area {
+            background: #111;
+            border: 2px solid #333;
+            background-color: green;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
+
+        .drop-area:hover {
+            border-color: #666;
+            background: #1a1a1a;
+        }
+
+        .drop-area.drag-over {
+            border-color: #fff;
+            background: #222;
+        }
+
+        .drop-area.has-file {
+            border-color: #888;
+            background: #0f0f0f;
+        }
+
+        .icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: #fff;
+            opacity: 0.7;
+        }
+
+        .drop-area h3 {
+            font-size: 1.5rem;
+            font-weight: 400;
+            margin-bottom: 15px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .drop-area p {
+            color: #888;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .file-info {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border: 1px solid #333;
+            border-radius: 4px;
+            max-height: 150px;
+            overflow: hidden;
+        }
+
+        .file-info img {
+            max-width: 100px;
+            max-height: 100px;
+            border: 1px solid #333;
+            margin-bottom: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .file-info p {
+            color: #ccc;
+            font-size: 0.8rem;
+            margin: 5px 0;
+            text-align: center;
+            word-break: break-all;
+        }
+
+        /* PROGRESS SECTION - FIXED AT BOTTOM */
+        .progress-section {
+            background: #111;
+            border: 1px solid #333;
+            margin-top: 20px;
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .progress-container {
+            display: none;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .progress-header h3 {
+            font-weight: 400;
+            color: #fff;
+        }
+
+        .progress-bar {
+            height: 2px;
+            background: #333;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #fff;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .status-message {
+            margin-top: 15px;
+            padding: 15px;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            color: #ccc;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: 1px solid #333;
+            background: #111;
+            color: #fff;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        button:hover {
+            background: #222;
+            border-color: #666;
+        }
+
+        button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            border-color: #333;
+            background: #111;
+        }
+
+        /* PREVIEW - OVERLAYS ON TOP */
+        .preview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .preview.active {
+            display: flex;
+        }
+
+        .preview video {
+            width: 80%;
+            max-width: 800px;
+            background: #000;
+            border: 1px solid #333;
+            margin-bottom: 20px;
+        }
+
+        .preview-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, .3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .auto-extracted {
+            background: #1a1a1a;
+            padding: 8px;
+            border: 1px solid #444;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            color: #ccc;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        /* NO SCROLLING ANYWHERE */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        .drop-area-title {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            text-align: center;
+        }
+
+        /* Close button for preview */
+        .close-preview {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #111;
+            border: 1px solid #333;
+            color: #fff;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .close-preview:hover {
+            background: #222;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>AUDIO TO VIDEO CONVERTER</h1>
+            <p class="subtitle">DRAG & DROP AUDIO AND IMAGE • AUTOMATIC CONVERSION</p>
+        </header>
+
+        <!-- MAIN CONTENT - ALWAYS SIDE BY SIDE -->
+        <div class="main-content">
+            <!-- Audio Drop Area - ALWAYS LEFT SIDE -->
+            <div class="drop-area-container">
+                <div class="drop-area-title">AUDIO FILE</div>
+                <div class="drop-area" id="audioDropArea" data-type="audio">
+                    <div class="icon">🎵</div>
+                    <h3>Drop Audio File</h3>
+                    <p>MP3, WAV, M4A, etc.</p>
+                    <p><em>or click to browse</em></p>
+                    <input type="file" id="audioInput" class="file-input" accept="audio/*">
+                    <div class="file-info" id="audioInfo"></div>
+                </div>
+            </div>
+
+            <!-- Image Drop Area - ALWAYS RIGHT SIDE -->
+            <div class="drop-area-container">
+                <div class="drop-area-title">ALBUM ART</div>
+                <div class="drop-area" id="imageDropArea" data-type="image">
+                    <div class="icon">🖼️</div>
+                    <h3>Drop Album Art</h3>
+                    <p>JPG, PNG, etc.</p>
+                    <p><em>or click to browse</em></p>
+                    <input type="file" id="imageInput" class="file-input" accept="image/*">
+                    <div class="file-info" id="imageInfo"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Section - FIXED AT BOTTOM -->
+        <div class="progress-section">
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-header">
+                    <h3>PROCESSING</h3>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text">
+                    <span>CREATING VIDEO</span>
+                    <span id="timeRemaining">--:--</span>
+                </div>
+                <div class="status-message" id="statusMessage">
+                    WAITING FOR FILES
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <button id="startBtn" disabled onclick="startConversion()">
+                    <span class="btn-icon">▶</span>
+                    START CONVERSION
+                </button>
+                <button onclick="resetAll()">
+                    <span class="btn-icon">↻</span>
+                    RESET
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Overlay -->
+    <div class="preview" id="previewSection">
+        <div class="close-preview" onclick="closePreview()">✕</div>
+        <video id="videoPreview" controls></video>
+        <div class="preview-controls">
+            <button onclick="downloadVideo()">
+                <span class="btn-icon">↓</span>
+                DOWNLOAD VIDEO
+            </button>
+            <button onclick="closePreview()">
+                <span class="btn-icon">←</span>
+                BACK
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        const state = {
+            audioFile: null,
+            imageFile: null,
+            extractedImage: null,
+            isProcessing: false,
+            videoBlob: null
+        };
+
+        // DOM Elements
+        const audioDropArea = document.getElementById('audioDropArea');
+        const imageDropArea = document.getElementById('imageDropArea');
+        const audioInput = document.getElementById('audioInput');
+        const imageInput = document.getElementById('imageInput');
+        const audioInfo = document.getElementById('audioInfo');
+        const imageInfo = document.getElementById('imageInfo');
+        const startBtn = document.getElementById('startBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressPercent = document.getElementById('progressPercent');
+        const statusMessage = document.getElementById('statusMessage');
+        const previewSection = document.getElementById('previewSection');
+        const videoPreview = document.getElementById('videoPreview');
+        const timeRemaining = document.getElementById('timeRemaining');
+
+        // Initialize
+        init();
+
+        function init() {
+            setupDragAndDrop();
+            setupFileInputs();
+            updateUI();
+            setupResponsiveLayout();
+        }
+
+        function setupResponsiveLayout() {
+            // Force drop zones to always be side by side
+            const updateLayout = () => {
+                const container = document.querySelector('.main-content');
+                const dropContainers = document.querySelectorAll('.drop-area-container');
+
+                // Always set to 50% width each
+                dropContainers.forEach(container => {
+                    container.style.width = '50%';
+                    container.style.minWidth = '50%';
+                    container.style.maxWidth = '50%';
+                });
+            };
+
+            updateLayout();
+            window.addEventListener('resize', updateLayout);
+        }
+
+        function setupDragAndDrop() {
+            setupDropArea(audioDropArea, 'audio/*', handleAudioDrop);
+            setupDropArea(imageDropArea, 'image/*', handleImageDrop);
+        }
+
+        function setupDropArea(dropArea, acceptType, callback) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => dropArea.classList.add('drag-over'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, () => dropArea.classList.remove('drag-over'), false);
+            });
+
+            dropArea.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files.length > 0) {
+                    callback(files[0]);
+                }
+            }, false);
+        }
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function setupFileInputs() {
+            audioDropArea.addEventListener('click', () => audioInput.click());
+            imageDropArea.addEventListener('click', () => imageInput.click());
+
+            audioInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleAudioDrop(e.target.files[0]);
+                }
+            });
+
+            imageInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    handleImageDrop(e.target.files[0]);
+                }
+            });
+        }
+
+        async function handleAudioDrop(file) {
+            if (!file.type.startsWith('audio/')) {
+                showStatus('ERROR: NOT AN AUDIO FILE', 'error');
+                return;
+            }
+
+            state.audioFile = file;
+            audioDropArea.classList.add('has-file');
+
+            audioInfo.innerHTML = `
+                <p><strong>${file.name}</strong></p>
+                <p>${formatFileSize(file.size)} • ${file.type}</p>
+            `;
+
+            await extractAlbumArtFromAudio(file);
+            updateUI();
+        }
+
+        function handleImageDrop(file) {
+            if (!file.type.startsWith('image/')) {
+                showStatus('ERROR: NOT AN IMAGE FILE', 'error');
+                return;
+            }
+
+            state.imageFile = file;
+            imageDropArea.classList.add('has-file');
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imageInfo.innerHTML = `
+                    <img src="${e.target.result}" alt="Album Art">
+                    <p><strong>${file.name}</strong></p>
+                    <p>${formatFileSize(file.size)} • ${file.type}</p>
+                `;
+            };
+            reader.readAsDataURL(file);
+
+            state.extractedImage = null;
+            updateUI();
+        }
+
+        async function extractAlbumArtFromAudio(audioFile) {
+            try {
+                if (audioFile.type === 'audio/mpeg' || audioFile.name.endsWith('.mp3')) {
+                    await extractID3Cover(audioFile);
+                }
+            } catch (error) {
+                console.log('No album art found');
+            }
+        }
+
+        async function extractID3Cover(audioFile) {
+            try {
+                const arrayBuffer = await audioFile.arrayBuffer();
+                const dataView = new DataView(arrayBuffer);
+
+                if (dataView.getUint32(0) === 0x494433) {
+                    const tagSize = getID3TagSize(dataView);
+                    let offset = 10;
+
+                    while (offset < tagSize + 10) {
+                        const frameID = String.fromCharCode(
+                            dataView.getUint8(offset),
+                            dataView.getUint8(offset + 1),
+                            dataView.getUint8(offset + 2),
+                            dataView.getUint8(offset + 3)
+                        );
+
+                        const frameSize = dataView.getUint32(offset + 4);
+
+                        if (frameID === 'APIC') {
+                            const mimeTypeStart = offset + 10;
+                            let mimeTypeEnd = mimeTypeStart;
+                            while (dataView.getUint8(mimeTypeEnd) !== 0 && mimeTypeEnd < offset + frameSize) {
+                                mimeTypeEnd++;
+                            }
+
+                            const mimeType = String.fromCharCode.apply(
+                                null,
+                                new Uint8Array(arrayBuffer, mimeTypeStart, mimeTypeEnd - mimeTypeStart)
+                            );
+
+                            const pictureType = dataView.getUint8(mimeTypeEnd + 1);
+                            if (pictureType === 0x03) {
+                                const pictureStart = mimeTypeEnd + 2;
+                                const pictureData = arrayBuffer.slice(pictureStart, offset + 10 + frameSize);
+                                const blob = new Blob([pictureData], { type: mimeType });
+
+                                state.extractedImage = blob;
+                                updateImageInfoWithExtractedArt(blob);
+                                break;
+                            }
+                        }
+
+                        offset += 10 + frameSize;
+                    }
+                }
+            } catch (error) {
+                console.log('ID3 parsing failed');
+            }
+        }
+
+        function getID3TagSize(dataView) {
+            let size = 0;
+            for (let i = 6; i < 10; i++) {
+                size = size * 128 + (dataView.getUint8(i) & 0x7F);
+            }
+            return size;
+        }
+
+        function updateImageInfoWithExtractedArt(blob) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imageInfo.innerHTML = `
+                    <img src="${e.target.result}" alt="Extracted Album Art">
+                    <p><strong>EXTRACTED FROM AUDIO</strong></p>
+                    <div class="auto-extracted">
+                        ALBUM ART AUTO-EXTRACTED
+                    </div>
+                `;
+
+                state.imageFile = blob;
+                imageDropArea.classList.add('has-file');
+                updateUI();
+            };
+            reader.readAsDataURL(blob);
+        }
+
+        function updateUI() {
+            const hasAudio = !!state.audioFile;
+            const hasImage = !!(state.imageFile || state.extractedImage);
+
+            startBtn.disabled = !hasAudio || !hasImage || state.isProcessing;
+
+            if (hasAudio && hasImage && !state.isProcessing) {
+                showStatus('READY • AUTO-START IN 3 SECONDS', 'ready');
+                setTimeout(() => {
+                    if (!state.isProcessing && state.audioFile && (state.imageFile || state.extractedImage)) {
+                        startConversion();
+                    }
+                }, 3000);
+            }
+        }
+
+        async function startConversion() {
+            if (state.isProcessing) return;
+
+            state.isProcessing = true;
+            startBtn.disabled = true;
+            startBtn.innerHTML = '<span class="loading"></span> PROCESSING';
+            progressContainer.classList.add('active');
+
+            try {
+                const imageToUse = state.imageFile || state.extractedImage;
+
+                updateProgress(10, 'PREPARING AUDIO');
+
+                const audio = new Audio(URL.createObjectURL(state.audioFile));
+                const duration = await new Promise((resolve) => {
+                    audio.onloadedmetadata = () => resolve(audio.duration);
+                    audio.onerror = () => resolve(30);
+                });
+
+                updateProgress(20, 'CREATING VIDEO FRAMES');
+
+                const videoBlob = await createAudioVideo({
+                    audioBlob: state.audioFile,
+                    imageBlob: imageToUse,
+                    duration: duration
+                });
+
+                updateProgress(90, 'FINALIZING VIDEO');
+
+                state.videoBlob = videoBlob;
+
+                const videoUrl = URL.createObjectURL(videoBlob);
+                videoPreview.src = videoUrl;
+                previewSection.classList.add('active');
+
+                updateProgress(100, 'VIDEO CREATED');
+
+            } catch (error) {
+                console.error('Conversion error:', error);
+                showStatus(`ERROR: ${error.message}`, 'error');
+            } finally {
+                state.isProcessing = false;
+                startBtn.disabled = false;
+                startBtn.innerHTML = '▶ START CONVERSION';
+            }
+        }
+
+        async function createAudioVideo({ audioBlob, imageBlob, duration = 30 }) {
+            return new Promise(async (resolve, reject) => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 1920;
+                    canvas.height = 1080;
+                    const ctx = canvas.getContext('2d');
+
+                    const albumArt = await createImageBitmap(imageBlob);
+                    const audio = new Audio(URL.createObjectURL(audioBlob));
+
+                    const stream = canvas.captureStream(30);
+                    const mediaRecorder = new MediaRecorder(stream, {
+                        mimeType: 'video/webm;codecs=vp9',
+                        videoBitsPerSecond: 2500000
+                    });
+
+                    const chunks = [];
+                    let frameCount = 0;
+                    const totalFrames = Math.ceil(duration * 30);
+
+                    mediaRecorder.ondataavailable = (e) => {
+                        if (e.data.size > 0) {
+                            chunks.push(e.data);
+                            const progress = 20 + (frameCount / totalFrames) * 60;
+                            updateProgress(progress, `ENCODING ${Math.round(frameCount / totalFrames * 100)}%`);
+
+                            const elapsed = frameCount / 30;
+                            const remaining = duration - elapsed;
+                            timeRemaining.textContent = formatTime(remaining);
+                        }
+                    };
+
+                    mediaRecorder.onstop = () => {
+                        const videoBlob = new Blob(chunks, { type: 'video/webm' });
+                        URL.revokeObjectURL(audio.src);
+                        resolve(videoBlob);
+                    };
+
+                    mediaRecorder.onerror = reject;
+
+                    mediaRecorder.start();
+
+                    function drawFrame() {
+                        ctx.fillStyle = '#000000';
+                        ctx.fillRect(0, 0, 1920, 1080);
+
+                        const squareSize = 1080 * 0.8;
+                        const squareX = (1920 - squareSize) / 2;
+                        const squareY = (1080 - squareSize) / 2;
+
+                        ctx.drawImage(albumArt, squareX, squareY, squareSize, squareSize);
+
+                        const pulse = Math.sin(frameCount * 0.1) * 0.5 + 0.5;
+                        ctx.save();
+                        ctx.shadowColor = `rgba(255, 255, 255, ${0.2 + pulse * 0.1})`;
+                        ctx.shadowBlur = 30 + pulse * 20;
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.1)';
+                        ctx.fillRect(squareX - 15, squareY - 15, squareSize + 30, squareSize + 30);
+                        ctx.restore();
+
+                        frameCount++;
+
+                        if (frameCount < totalFrames) {
+                            setTimeout(drawFrame, 33.33);
+                        } else {
+                            mediaRecorder.stop();
+                        }
+                    }
+
+                    audio.play();
+                    drawFrame();
+
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }
+
+        function updateProgress(percent, message) {
+            const clampedPercent = Math.min(100, Math.max(0, percent));
+            progressFill.style.width = `${clampedPercent}%`;
+            progressPercent.textContent = `${Math.round(clampedPercent)}%`;
+            showStatus(message, 'progress');
+        }
+
+        function showStatus(message, type = 'info') {
+            statusMessage.textContent = message;
+            statusMessage.style.color = type === 'error' ? '#ff4444' :
+                type === 'ready' ? '#44ff44' : '#ffffff';
+        }
+
+        function downloadVideo() {
+            if (!state.videoBlob) return;
+
+            const a = document.createElement('a');
+            const url = URL.createObjectURL(state.videoBlob);
+            a.href = url;
+            a.download = `audio-video-${Date.now()}.webm`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function closePreview() {
+            previewSection.classList.remove('active');
+        }
+
+        function resetAll() {
+            state.audioFile = null;
+            state.imageFile = null;
+            state.extractedImage = null;
+            state.isProcessing = false;
+            state.videoBlob = null;
+
+            audioDropArea.classList.remove('has-file');
+            imageDropArea.classList.remove('has-file');
+            progressContainer.classList.remove('active');
+            previewSection.classList.remove('active');
+
+            audioInfo.innerHTML = '';
+            imageInfo.innerHTML = '';
+
+            videoPreview.src = '';
+
+            updateProgress(0, 'WAITING FOR FILES');
+            showStatus('DRAG & DROP FILES TO BEGIN');
+            updateUI();
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+    </script>
+</body>
+
+</html>

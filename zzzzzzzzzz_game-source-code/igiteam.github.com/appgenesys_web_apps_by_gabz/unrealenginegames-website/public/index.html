@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unreal Engine 1-4 Games</title>
+    <link rel="shortcut icon" href="./ue3.png" type="image/x-icon">
+    <style>
+        body {
+            background-color: rgb(16, 16, 16);
+            color: white;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: rgb(23, 23, 23);
+        }
+
+        a {
+            color: white;
+            font-weight: bold;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            vertical-align: middle;
+            word-wrap: break-word;
+        }
+
+        th:nth-child(1) {
+            width: 5%;
+        }
+
+        th:nth-child(2) {
+            width: 15%;
+        }
+
+        th:nth-child(3) {
+            width: 35%;
+        }
+
+        th:nth-child(4) {
+            width: 20%;
+        }
+
+        th:nth-child(5) {
+            width: 25%;
+        }
+
+        td img {
+            width: 80px;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Grid View Styles */
+        .grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+            padding: 10px;
+        }
+
+        .grid-item {
+            text-align: center;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: rgb(23, 23, 23);
+        }
+
+        .grid-item img {
+            width: 100%;
+            max-width: 150px;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .grid-item h3 {
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .grid-item a {
+            text-decoration: none;
+        }
+
+        .grid-item a:hover {
+            text-decoration: underline;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .popup-img {
+            max-width: 80%;
+            max-height: 80%;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            object-fit: contain;
+        }
+
+        .popup-img.zoomed {
+            transform: scale(2);
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 36px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        img {
+            cursor: zoom-in;
+        }
+
+        .head {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .head img {
+            width: 80px;
+            height: auto;
+        }
+
+        .head h1 {
+            margin-left: 10px;
+        }
+
+        .head button {
+            margin: 10px;
+            cursor: pointer;
+            padding: 8px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .head button:hover {
+            background-color: #0056b3;
+        }
+
+        .desc {
+            margin: 10px 4px;
+        }
+
+        @media screen and (max-width: 768px) {
+
+            th,
+            td {
+                padding: 5px;
+                font-size: 12px;
+            }
+
+            td img {
+                width: 50px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="head">
+        <img src="./ue3.png" alt="Unreal Engine" />
+        <h1>Unreal Engine 1-4 Games</h1>
+        <button id="toggleViewBtn">Switch to Grid View</button>
+        <a style="display: flex; justify-content: center; align-items: center; "
+            href="https://meyt.netlify.app/playlist/PLb8oNKiUbnjEyAEJ6hqmN4Wjd9KtFNeyD" target="_blank"
+            rel="noreferrer">
+            <img src="https://cdn.gitgpt.chat/rtx/images/youtube-icon.png"
+                style="width: 30px; cursor: pointer; margin-right: 8px;">
+        </a>
+        <a style="display: flex; justify-content: center; align-items: center;" href="https://unrealarchive.org/"
+            target="_blank" rel="noreferrer">
+            <img src="https://unrealarchive.org/static/images/logo.png" style="width: 30px;">
+            <span>UnrealArchive</span>
+        </a>
+    </div>
+    <div class="desc">Unreal Engine (UE) is a 3D computer graphics game engine developed by Epic Games, first showcased
+        in the 1998
+        first-person shooter video game Unreal. Initially developed for PC first-person shooters, it has since been used
+        in a
+        variety of genres of games and has been adopted by other industries, most notably the film and television
+        industry.</div>
+
+    <!-- Grid view container -->
+    <div id="gameGrid" class="grid-view" style="display: none;">
+        <!-- Grid items will be inserted here -->
+    </div>
+
+    <!-- Table view container -->
+    <table id="gameDataTable" style="display: block;">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Year</th>
+                <th>Title</th>
+                <th>Engine</th>
+                <th>Developer</th>
+            </tr>
+        </thead>
+        <tbody id="gameDataTableBody">
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+
+    <div class="desc">
+        <p style="display: inline; margin-right: 20px;"><strong>1998</strong>: <a
+                href="https://en.wikipedia.org/wiki/Unreal_Engine_1">Unreal Engine 1</a></p>
+        <p style="display: inline; margin-right: 20px;"><strong>2001</strong>: <a
+                href="https://en.wikipedia.org/wiki/Unreal_Engine_2">Unreal Engine 2</a></p>
+        <p style="display: inline; margin-right: 20px;"><strong>2006</strong>: <a
+                href="https://en.wikipedia.org/wiki/Unreal_Engine_3">Unreal Engine 3</a></p>
+        <p style="display: inline; margin-right: 20px;"><strong>2014</strong>: <a
+                href="https://en.wikipedia.org/wiki/Unreal_Engine_4">Unreal Engine 4</a></p>
+        <p style="display: inline; margin-right: 20px;"><strong>2022</strong>: <a
+                href="https://en.wikipedia.org/wiki/Unreal_Engine_5">Unreal Engine 5</a></p>
+    </div>
+    <div class="desc">
+        Unreal Engine 1 was initially developed in 1995 by Epic Games founder Tim Sweeney for Unreal and
+        used software rendering. It supported Windows, Linux, Mac and Unix. Epic later began to license the Engine to
+        other game
+        studios.
+    </div>
+
+    <!-- Popup Modal -->
+    <div class="popup" id="popupModal">
+        <span class="close" id="closeBtn">&times;</span>
+        <img class="popup-img" src="" alt="Zoomed Image">
+    </div>
+
+    <script src="unreal_engine_game_list.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tableBody = document.querySelector("#gameDataTableBody");
+            const gameGrid = document.getElementById("gameGrid");
+            const toggleViewBtn = document.getElementById("toggleViewBtn");
+            const tableElement = document.getElementById("gameDataTable");
+            const headers = document.querySelectorAll("th");
+            let ascending = {};
+            let currentView = "grid"; // Default
+
+            // --- LocalStorage Key ---
+            const STORAGE_KEY = 'user_view_preference_ue3';
+
+            // --- Function to save the current view ---
+            function saveViewPreference(view) {
+                localStorage.setItem(STORAGE_KEY, view);
+                console.log("Saved preference:", view);
+            }
+
+            // --- Function to load and apply the saved view ---
+            function loadViewPreference() {
+                const savedView = localStorage.getItem(STORAGE_KEY);
+                console.log("Loaded preference:", savedView);
+
+                if (savedView === 'grid') {
+                    switchToGridView(false);
+                } else if (savedView === 'table') {
+                    switchToTableView(false);
+                } else {
+                    // Default to table view
+                    switchToTableView(false);
+                }
+            }
+
+            // --- Helper function to switch to Table View ---
+            function switchToTableView(savePreference = true) {
+                if (currentView === 'table') return;
+
+                console.log("Switching to table view");
+                tableElement.style.display = "table";
+                gameGrid.style.display = "none";
+                toggleViewBtn.textContent = "Switch to Grid View";
+                currentView = "table";
+
+                if (savePreference) {
+                    saveViewPreference('table');
+                }
+            }
+
+            // --- Helper function to switch to Grid View ---
+            function switchToGridView(savePreference = true) {
+                if (currentView === 'grid') return;
+
+                console.log("Switching to grid view");
+                tableElement.style.display = "none";
+                gameGrid.style.display = "grid";
+                toggleViewBtn.textContent = "Switch to List View";
+                currentView = "grid";
+
+                if (savePreference) {
+                    saveViewPreference('grid');
+                }
+            }
+
+            // --- Toggle function ---
+            function toggleView() {
+                if (currentView === "table") {
+                    switchToGridView(true);
+                } else {
+                    switchToTableView(true);
+                }
+            }
+
+            function displayGameData() {
+                if (!tableBody || !gameGrid) return;
+
+                tableBody.innerHTML = "";
+                gameGrid.innerHTML = "";
+
+                unreal_engine_game_list.forEach((game, index) => {
+                    // Table View
+                    const row = document.createElement("tr");
+
+                    // Add row number
+                    const numCell = document.createElement("td");
+                    numCell.textContent = index + 1;
+                    row.appendChild(numCell);
+
+                    // Year
+                    const yearCell = document.createElement("td");
+                    yearCell.textContent = game.year;
+                    row.appendChild(yearCell);
+
+                    // Title with YouTube link
+                    const titleCell = document.createElement("td");
+                    const youtubeLink = document.createElement("a");
+                    youtubeLink.href = `https://meyt.netlify.app/search/${encodeURIComponent(game.title + " Gameplay")}`;
+                    youtubeLink.textContent = game.title;
+                    youtubeLink.target = "_blank";
+                    titleCell.appendChild(youtubeLink);
+                    row.appendChild(titleCell);
+
+                    // Engine
+                    const engineCell = document.createElement("td");
+                    engineCell.textContent = game.engine;
+                    row.appendChild(engineCell);
+
+                    // Developer with Wiki link
+                    const devCell = document.createElement("td");
+                    const wikiLink = document.createElement("a");
+                    wikiLink.href = `https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(game.developer)}`;
+                    wikiLink.textContent = game.developer;
+                    wikiLink.target = "_blank";
+                    devCell.appendChild(wikiLink);
+                    row.appendChild(devCell);
+
+                    tableBody.appendChild(row);
+
+                    // Grid View
+                    const gridItem = document.createElement("div");
+                    gridItem.classList.add("grid-item");
+
+                    const gridImage = document.createElement("img");
+                    gridImage.src = game.image || "https://via.placeholder.com/150";
+                    gridImage.alt = game.title;
+                    gridItem.appendChild(gridImage);
+
+                    // Make title clickable
+                    const gridTitle = document.createElement("h3");
+                    const titleLink = document.createElement("a");
+                    titleLink.href = `https://meyt.netlify.app/search/${encodeURIComponent(game.title + " Gameplay")}`;
+                    titleLink.textContent = game.title;
+                    titleLink.target = "_blank";
+                    titleLink.style.color = "white";
+                    titleLink.style.fontWeight = "bold";
+                    titleLink.style.textDecoration = 'underline';
+                    gridTitle.appendChild(titleLink);
+                    gridItem.appendChild(gridTitle);
+
+                    const gridYear = document.createElement("p");
+                    gridYear.textContent = game.year;
+                    gridItem.appendChild(gridYear);
+
+                    // Make developer clickable
+                    const gridDev = document.createElement("p");
+                    gridDev.style.fontSize = "12px";
+                    const devLink = document.createElement("a");
+                    devLink.href = `https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(game.developer)}`;
+                    devLink.textContent = game.developer;
+                    devLink.target = "_blank";
+                    devLink.style.color = "white";
+                    devLink.style.textDecoration = "none";
+                    gridDev.appendChild(devLink);
+                    gridItem.appendChild(gridDev);
+
+                    gameGrid.appendChild(gridItem);
+                });
+
+                attachPopupListeners();
+            }
+
+            function sortTable(columnIndex) {
+                const keyMap = ["year", "title", "engine", "developer"];
+                const key = keyMap[columnIndex - 1];
+
+                if (!key) return;
+
+                ascending[key] = !ascending[key];
+
+                unreal_engine_game_list.sort((a, b) => {
+                    let valA = a[key];
+                    let valB = b[key];
+
+                    if (typeof valA === 'number' && typeof valB === 'number') {
+                        return ascending[key] ? valA - valB : valB - valA;
+                    }
+
+                    valA = (valA || "").toString().toLowerCase();
+                    valB = (valB || "").toString().toLowerCase();
+
+                    return ascending[key] ? valA.localeCompare(valB, undefined, { numeric: true }) : valB.localeCompare(valA, undefined, { numeric: true });
+                });
+
+                displayGameData();
+                updateHeaders(columnIndex, ascending[key]);
+            }
+
+            function updateHeaders(activeIndex, isAscending) {
+                headers.forEach((header, index) => {
+                    if (index === activeIndex) {
+                        header.innerHTML = header.textContent.replace(/[\u25B2\u25BC]/g, "").trim() + (isAscending ? " ▲" : " ▼");
+                    } else {
+                        header.innerHTML = header.textContent.replace(/[\u25B2\u25BC]/g, "").trim();
+                    }
+                });
+            }
+
+            function attachPopupListeners() {
+                const images = document.querySelectorAll('img');
+                const popup = document.getElementById('popupModal');
+                const popupImg = document.querySelector('.popup-img');
+                const closeBtn = document.getElementById('closeBtn');
+
+                function closePopup() {
+                    if (popup) popup.style.display = 'none';
+                    if (popupImg) popupImg.classList.remove('zoomed');
+                }
+
+                images.forEach(img => {
+                    img.removeEventListener('click', popupHandler);
+                    img.addEventListener('click', popupHandler);
+                });
+
+                function popupHandler(e) {
+                    const popupModal = document.getElementById('popupModal');
+                    const popupImage = document.querySelector('.popup-img');
+                    if (popupModal && popupImage) {
+                        popupModal.style.display = 'flex';
+                        popupImage.src = e.target.src;
+                    }
+                }
+
+                if (closeBtn) {
+                    closeBtn.removeEventListener('click', closePopup);
+                    closeBtn.addEventListener('click', closePopup);
+                }
+
+                if (popup) {
+                    popup.removeEventListener('click', function (e) { if (e.target === popup) closePopup(); });
+                    popup.addEventListener('click', function (e) { if (e.target === popup) closePopup(); });
+                }
+
+                if (popupImg) {
+                    popupImg.removeEventListener('click', function () { popupImg.classList.toggle('zoomed'); });
+                    popupImg.addEventListener('click', function () { popupImg.classList.toggle('zoomed'); });
+                }
+
+                document.removeEventListener('keydown', escHandler);
+                document.addEventListener('keydown', escHandler);
+
+                function escHandler(event) {
+                    if (event.key === 'Escape' || event.key === 'Esc') {
+                        closePopup();
+                    }
+                }
+            }
+
+            // Set up header click handlers
+            headers.forEach((header, index) => {
+                if (index > 0) {
+                    header.style.cursor = "pointer";
+                    header.removeEventListener("click", () => sortTable(index));
+                    header.addEventListener("click", () => sortTable(index));
+                }
+            });
+
+            // Event listener for toggle button
+            toggleViewBtn.removeEventListener("click", toggleView);
+            toggleViewBtn.addEventListener("click", toggleView);
+
+            // Initial load of data
+            if (typeof unreal_engine_game_list !== 'undefined' && unreal_engine_game_list.length > 0) {
+                // First, sort the data and display it
+                sortTable(1);
+
+                // Then, apply the saved view preference AFTER data is displayed
+                // Use setTimeout to ensure displayGameData() has completed
+                setTimeout(() => {
+                    loadViewPreference();
+                }, 0);
+            } else {
+                console.error("unreal_engine_game_list.js not loaded or empty");
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Pikwy – Website Screenshot Tool (Clone)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f3f5f8;
+            color: #2e2e2e;
+        }
+
+        main {
+            max-width: 980px;
+            margin: 60px auto;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 30px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            margin-bottom: 36px;
+            font-size: 15px;
+        }
+
+        /* CARD */
+        .card {
+            background: #ffffff;
+            padding: 28px 30px 32px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            text-align: left;
+        }
+
+        /* URL INPUT */
+        .url-input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            margin-bottom: 26px;
+        }
+
+        /* GRID — fixed 3 columns like original */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px 26px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            color: #4b5563;
+            margin-bottom: 6px;
+        }
+
+        .field input[type="number"],
+        .field select {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 14px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+        }
+
+        /* SLIDERS */
+        .field input[type="range"] {
+            width: 100%;
+        }
+
+        /* TOGGLE SWITCH */
+        .switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: #d1d5db;
+            border-radius: 20px;
+            transition: 0.3s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .switch input:checked+.slider {
+            background: #22c55e;
+        }
+
+        .switch input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        /* ACTION ROW */
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 28px;
+        }
+
+        .capture-btn {
+            padding: 12px 26px;
+            background: #2563eb;
+            color: white;
+            border: none;
+            font-size: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* PREVIEW */
+        .preview {
+            display: none;
+            margin-top: 32px;
+        }
+
+        .preview img {
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .preview p {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        footer {
+            margin-top: 70px;
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main>
+        <h1>Take a screenshot website online</h1>
+        <p class="subtitle">An easy way to capture a screenshot of a full webpage</p>
+
+        <div class="card">
+            <input id="url" class="url-input" value="https://wikipedia.org">
+
+            <div class="grid">
+                <div class="field">
+                    <label>Resolution</label>
+                    <select id="resolution">
+                        <optgroup label="Desktop">
+                            <option value="320x240">320×240 (QVGA)</option>
+                            <option value="640x480">640×480 (VGA)</option>
+                            <option value="800x600">800×600 (SVGA)</option>
+                            <option value="1280x720">1280×720 (HD)</option>
+                            <option value="1280x1024">1280×1024 (SXGA)</option>
+                            <option value="1600x900">1600×900 (HD+)</option>
+                            <option value="1920x1080">1920×1080 (FHD)</option>
+                            <option value="2048x1080">2048×1080 (2K)</option>
+                            <option value="3840x2160">3840×2160 (4K UHD)</option>
+                        </optgroup>
+                        <optgroup label="Android Devices">
+                            <option value="360x640">360×640 (Galaxy S7/S7edge/S6)</option>
+                            <option value="360x740">360×740 (Galaxy S8/S8+/Note8/S9)</option>
+                            <option value="360x760">360×760 (Galaxy S10)</option>
+                            <option value="411x731">411×731 (Google Pixel, Pixel 2)</option>
+                            <option value="427x240">427×240 (Google Glass)</option>
+                            <option value="800x1280">800×1280 (Kindle Fire)</option>
+                        </optgroup>
+                        <optgroup label="iOS Devices">
+                            <option value="375x812">375×812 (iPhone X, XS)</option>
+                            <option value="414x736">414×736 (iPhone 6+, 6s+, 7+, 8+)</option>
+                            <option value="414x896">414×896 (iPhone XR, iPhone XS Max)</option>
+                            <option value="768x1024">768×1024 (iPad 3, 4, Air, Air2, Pro 9.7)</option>
+                            <option value="1024x1366">1024×1366 (iPad Pro 12.9)</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Width</label>
+                    <input id="width" type="number" value="1280">
+                </div>
+
+                <div class="field">
+                    <label>Height</label>
+                    <input id="height" type="number" value="1024">
+                </div>
+
+                <div class="field">
+                    <label>Full-size</label>
+                    <label class="switch">
+                        <input id="fullPage" type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="field">
+                    <label>Format</label>
+                    <select id="format">
+                        <option>jpg</option>
+                        <option>png</option>
+                        <option>pdf</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label>Zoom</label>
+                    <input type="range" min="50" max="150" value="100">
+                </div>
+
+                <div class="field">
+                    <label>Scale</label>
+                    <input type="range" min="50" max="200" value="100">
+                </div>
+            </div>
+
+            <div class="actions">
+                <button class="capture-btn" onclick="capture()">Capture screenshot</button>
+            </div>
+            <div class="col-md-9 main-table">
+                <div class="row justify-content-center m-t-30">
+                    <h3 class="main-text-h2-mid">Screenshot details</h3>
+                </div>
+                <div class="row">
+                    <div class="col-8 link-screenshot">
+                        <b>Screenshot link:</b> <a id="txt1" title="This is a link to your screenshot"
+                            href="https://pikwy.com/web/69682e842c7fc207154dc7be">https://pikwy.com/web/69682e842c7fc207154dc7be</a>
+                        <br><b>URL:</b> <a id="txt2" rel="nofollow" target="_blank"
+                            title="This is a link to your screenshot" href="https://dhewm3.org/">https://dhewm3.org/</a>
+                    </div>
+                    <div class="col-4 text-right share-this">
+                        <b>Created:</b> <span id="txt3">15.01.2026 00:02</span> UTC 0:00
+                        <div class="social-networks-icon">
+                            <b>Share to:</b>
+                            <a id="sfb" target="_blank"
+                                href="https://www.facebook.com/sharer.php?src=sp&amp;u=https://pikwy.com/web/69682e842c7fc207154dc7be"
+                                rel="nofollow noopener noreferrer" title="Share the screenshot on Facebook">
+                                <img class="main_img_social" alt="Share the screenshot on Facebook"
+                                    title="Share the screenshot on Facebook"
+                                    src="https://cdn.pikwy.com/r/bs4/img/icon_fb.png">
+                            </a>
+                            <a id="stw" target="_blank"
+                                href="https://twitter.com/intent/tweet?text=https://pikwy.com/web/69682e842c7fc207154dc7be"
+                                rel="nofollow noopener noreferrer" title="Share the screenshot on Twitter">
+                                <img class="main_img_social" alt="Share the screenshot on Twitter"
+                                    title="Share the screenshot on Twitter"
+                                    src="https://cdn.pikwy.com/r/bs4/img/icon_tw.png">
+                            </a>
+                            <a id="sin" target="_blank"
+                                href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https://pikwy.com/web/69682e842c7fc207154dc7be"
+                                rel="nofollow noopener noreferrer" title="Share the screenshot on LinkedIn">
+                                <img class="main_img_social" alt="Share the screenshot on LinkedIn"
+                                    title="Share the screenshot on LinkedIn"
+                                    src="https://cdn.pikwy.com/r/bs4/img/icon_ln.png">
+                            </a>
+                            <a id="svk" target="_blank"
+                                href="https://vk.com/share.php?url=https://pikwy.com/web/69682e842c7fc207154dc7be"
+                                rel="nofollow noopener noreferrer" title="Share the screenshot on Vkontakte">
+                                <img class="main_img_social" alt="Share the screenshot on Vkontakte"
+                                    title="Share the screenshot on Vkontakte"
+                                    src="https://cdn.pikwy.com/r/bs4/img/icon_vk.png">
+                            </a>
+                            <a id="ssk" target="_blank"
+                                href="https://web.skype.com/share?url=https://pikwy.com/web/69682e842c7fc207154dc7be"
+                                rel="nofollow noopener noreferrer" title="Share the screenshot on Skype">
+                                <img class="main_img_social" alt="Share the screenshot on Skype"
+                                    title="Share the screenshot on Skype"
+                                    src="https://cdn.pikwy.com/r/bs4/img/icon_sk.png">
+                            </a>
+                            <a id="swa" target="_blank"
+                                href="https://api.whatsapp.com/send?text=https://pikwy.com/web/69682e842c7fc207154dc7be"
+                                rel="nofollow noopener noreferrer" title="Share the screenshot on WhatsApp">
+                                <img class="main_img_social" alt="Share the screenshot on WhatsApp"
+                                    title="Share the screenshot on WhatsApp"
+                                    src="https://cdn.pikwy.com/r/bs4/img/icon_wt.png">
+                            </a>
+                            <a id="ste" target="_blank"
+                                href="https://telegram.me/share/url?url=https://pikwy.com/web/69682e842c7fc207154dc7be"
+                                rel="nofollow noopener noreferrer" title="Share the screenshot on Telegram">
+                                <img class="main_img_social" alt="Share the screenshot on Telegram"
+                                    title="Share the screenshot on Telegram"
+                                    src="https://cdn.pikwy.com/r/bs4/img/icon_tg.png">
+                            </a>
+                            <a id="svi" target="_blank"
+                                href="viber://forward?text=https://pikwy.com/web/69682e842c7fc207154dc7be"
+                                rel="nofollow noopener noreferrer" title="Share the screenshot on Viber">
+                                <img class="main_img_social" alt="Share the screenshot on Viber"
+                                    title="Share the screenshot on Viber"
+                                    src="https://cdn.pikwy.com/r/bs4/img/icon_vb.png">
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center">
+                        <div class="col-md-9 d-flex justify-content-center" id="img-container">
+                            <a title="This is a link to your screenshot"
+                                href="https://api.pikwy.com/web/69682e842c7fc207154dc7be.jpg" id="img-link"
+                                style="margin-bottom: 40px;" target="_blank"><img style="width: 100%;"
+                                    src="https://api.pikwy.com/web/69682e842c7fc207154dc7be.jpg" id="screen"></a>
+                        </div>
+                    </div>
+                </div>
+                <footer>
+                    Pikwy – a service for creating screenshots of websites online.
+                </footer>
+            </div>
+        </div>
+
+    </main>
+
+
+
+    <script>
+        document.getElementById("resolution").addEventListener("change", e => {
+            const [w, h] = e.target.value.split("x");
+            width.value = w;
+            height.value = h;
+        });
+
+        function capture() {
+            const url = urlInput = document.getElementById("url").value;
+            if (!url.startsWith("http")) {
+                alert("Enter a valid URL");
+                return;
+            }
+
+            const w = width.value;
+            const h = height.value;
+            const f = format.value;
+            const fp = fullPage.checked;
+
+            preview.style.display = "block";
+            previewImg.src = `https://via.placeholder.com/${w}x${h}?text=Screenshot`;
+            previewText.textContent =
+                `URL: ${url} | ${w}x${h} | ${f.toUpperCase()} | Full page: ${fp ? "Yes" : "No"}`;
+        }
+    </script>
+
+</body>
+
+</html>

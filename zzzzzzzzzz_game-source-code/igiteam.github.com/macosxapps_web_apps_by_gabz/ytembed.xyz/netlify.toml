@@ -1,0 +1,3 @@
+[[edge_functions]]
+  path = "/*"               # Or change this to a more specific pattern
+  function = "dynamic-meta" # This matches the file name dynamic-meta.js
