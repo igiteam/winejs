@@ -2,7 +2,7 @@
 console.log("🔥 WINEJS Installer background loaded at:", new Date().toISOString());
 
 // Track injected tabs to avoid double injection
-const injectedTabs = new Set();
+const injectedTabs = new Map();
 
 // Listen for DOMContentLoaded on Digital Ocean pages
 browser.webNavigation.onDOMContentLoaded.addListener(
@@ -27,12 +27,39 @@ browser.webNavigation.onHistoryStateUpdated.addListener(
 function handleDOMContentLoaded(details) {
   const tabId = details.tabId;
   
-  // Skip if tabId is invalid or we've already injected
-  if (tabId === -1 || injectedTabs.has(tabId)) {
+  // Skip if tabId is invalid
+  if (tabId === -1) {
     return;
   }
   
+  // CRITICAL FIX: Check if this is a fresh page load vs SPA navigation
+  // If it's a full page reload (transition type is "reload" or "link"), 
+  // we should ALWAYS reinject
+  const isFullPageLoad = details.transitionType === 'reload' || 
+                         details.transitionType === 'link' ||
+                         (details.transitionQualifiers && 
+                          (details.transitionQualifiers.includes('server_redirect') ||
+                           details.transitionQualifiers.includes('client_redirect')));
+  
+  // Get last injection time for this tab
+  const lastInjection = injectedTabs.get(tabId);
+  const now = Date.now();
+  
+  // If it's a full page reload, always reinject regardless of previous injection
+  if (isFullPageLoad) {
+    console.log(`📄 Full page reload detected in tab ${tabId}, reinjecting...`);
+    // Remove from map so we inject again
+    injectedTabs.delete(tabId);
+  } else {
+    // For SPA navigation, only inject if we haven't injected in the last 5 seconds
+    if (lastInjection && (now - lastInjection < 5000)) {
+      console.log(`⏱️ Tab ${tabId} injected recently (${now - lastInjection}ms ago), skipping`);
+      return;
+    }
+  }
+  
   console.log(`📄 DOM Content Loaded in tab ${tabId}:`, details.url);
+  console.log(`📊 Transition type: ${details.transitionType}, Qualifiers: ${details.transitionQualifiers?.join(',') || 'none'}`);
   
   // Inject the content script
   browser.tabs.executeScript(tabId, {
@@ -40,7 +67,8 @@ function handleDOMContentLoaded(details) {
     runAt: 'document_idle'
   }).then(() => {
     console.log(`✅ Injected content.js into tab ${tabId}`);
-    injectedTabs.add(tabId);
+    // Store timestamp instead of just marking as injected
+    injectedTabs.set(tabId, Date.now());
     
     // Also inject CSS
     return browser.tabs.insertCSS(tabId, {
@@ -50,6 +78,8 @@ function handleDOMContentLoaded(details) {
     console.log(`✅ Injected styles.css into tab ${tabId}`);
   }).catch(error => {
     console.error(`❌ Failed to inject into tab ${tabId}:`, error);
+    // If injection failed, remove from map so we can try again
+    injectedTabs.delete(tabId);
   });
 }
 

@@ -14,7 +14,7 @@
     "activeTab",
     "storage",
     "*://*.digitalocean.com/*",
-    "*://*.sdappnet.cloud/*"
+    "*://*.gitgpt.chat/*"
   ],
   "background": {
     "scripts": ["background.js"]

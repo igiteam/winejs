@@ -1,0 +1,73 @@
+{
+  "name": "winejs-web-packager",
+  "displayName": "WineJS Web Packager",
+  "description": "Paste GitHub URL or Docker image → Package web apps for WineJS",
+  "repository": "https://github.com/winejs/web-packager",
+  "publisher": "winejs",
+  "version": "1.0.0",
+  "icon": "media/logo.png",
+  "engines": {
+    "vscode": "^1.81.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": ["onCommand:winejs.packageWebApp"],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "winejs.packageWebApp",
+        "title": "WineJS: Package Web App",
+        "category": "WineJS"
+      }
+    ],
+    "configuration": {
+      "title": "WineJS Web Packager",
+      "properties": {
+        "winejs.spaces.accessKey": {
+          "type": "string",
+          "description": "DigitalOcean Spaces Access Key"
+        },
+        "winejs.spaces.secretKey": {
+          "type": "string",
+          "description": "DigitalOcean Spaces Secret Key"
+        },
+        "winejs.spaces.bucket": {
+          "type": "string",
+          "default": "sdappnet-cloud",
+          "description": "DigitalOcean Spaces Bucket Name"
+        },
+        "winejs.spaces.folder": {
+          "type": "string",
+          "default": "rtx/wine/webapps",
+          "description": "Folder in bucket for web app packages"
+        },
+        "winejs.spaces.endpoint": {
+          "type": "string",
+          "default": "https://fra1.digitaloceanspaces.com",
+          "description": "DigitalOcean Spaces Endpoint URL"
+        },
+        "winejs.spaces.makePublic": {
+          "type": "boolean",
+          "default": true,
+          "description": "Make uploaded files publicly accessible"
+        },
+        "winejs.spaces.cdnEndpoint": {
+          "type": "string",
+          "description": "DigitalOcean CDN Endpoint URL (optional)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "20.x",
+    "@types/vscode": "^1.81.0",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.654.0"
+  }
+}

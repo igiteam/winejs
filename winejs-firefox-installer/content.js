@@ -1,4 +1,4 @@
-// Content script for WINEJS Installer + Console New Tab
+// Content script for WINEJS Installer + Console New Tab - FIXED TERMINAL DETECTION
 
 console.log("WINEJS Installer + Console New Tab loaded");
 
@@ -8,12 +8,53 @@ const logoUrl = browser.runtime.getURL("icons/icon.png");
 // State
 let domainDetected = false;
 let startTime = null;
-let timerInterval = null;
-let monitorInterval = null;
-let connectionCheckInterval = null;
+let elapsedTimerInterval = null;
+let outputMonitorInterval = null;
+let connectionMonitorInterval = null;
 let connectionAttempts = 0;
-const MAX_CONNECTION_ATTEMPTS = 90;
-let processedPings = new Set();  // Add this line
+const MAX_CONNECTION_ATTEMPTS = 360;
+let processedPings = new Set();
+// ============= TERMINAL LINE DETECTION - PROPER SPAN PARSING =============
+function getTerminalText() {
+    const xtermRows = document.querySelector('.xterm-rows');
+    if (!xtermRows) return [];
+    
+    const lines = [];
+    const rowDivs = xtermRows.querySelectorAll(':scope > div');
+    
+    for (let row of rowDivs) {
+        // Get ALL spans in this row
+        const spans = row.querySelectorAll('span');
+        let lineText = '';
+        
+        // Combine text from ALL spans
+        for (let span of spans) {
+            lineText += span.textContent;
+        }
+        
+        // Also check if there's text directly in the div
+        if (lineText === '' && row.textContent) {
+            lineText = row.textContent;
+        }
+        
+        lineText = lineText.trim();
+        if (lineText) {
+            lines.push(lineText);
+        }
+    }
+    
+    console.log(`📝 Captured ${lines.length} terminal lines`);
+    if (lines.length > 0) {
+        console.log(`📝 Last 3 lines:`, lines.slice(-3));
+    }
+    return lines;
+}
+
+function getLastTerminalLine() {
+    const lines = getTerminalText();
+    if (lines.length === 0) return "";
+    return lines[lines.length - 1];
+}
 
 // ============= CONSOLE NEW TAB FUNCTIONALITY =============
 function setupConsoleNewTab() {
@@ -24,14 +65,12 @@ function setupConsoleNewTab() {
         
         consoleLinks.forEach(link => {
             if (!link.hasAttribute('data-winejs-converted')) {
-                // Get the droplet ID from URL
                 const dropletIdMatch = window.location.href.match(/\/droplets\/(\d+)/);
                 
                 if (dropletIdMatch && dropletIdMatch[1]) {
                     const dropletId = dropletIdMatch[1];
                     const consoleUrl = `https://cloud.digitalocean.com/droplets/${dropletId}/terminal/ui/`;
                     
-                    // Replace the button with a new one that opens in new tab
                     const newLink = document.createElement('a');
                     newLink.href = consoleUrl;
                     newLink.target = '_blank';
@@ -47,19 +86,13 @@ function setupConsoleNewTab() {
         });
     }
     
-    // Run immediately and watch for new links
     convertConsoleLinks();
-    
     const observer = new MutationObserver(convertConsoleLinks);
     observer.observe(document.body, { childList: true, subtree: true });
 }
 
-// ============= ORIGINAL INSTALLER FUNCTIONS (UNCHANGED) =============
-
-// Create overlay
+// ============= CREATE OVERLAY =============
 function createWineJsOverlay() {
-
-    // Load overlay visibility setting
     browser.storage.local.get(['overlayVisible']).then(result => {
         const isVisible = result.overlayVisible !== false;
         const overlay = document.getElementById('winejs-install');
@@ -68,7 +101,6 @@ function createWineJsOverlay() {
         }
     });
 
-    // Check if overlay already exists
     if (document.getElementById('winejs-install')) {
         return;
     }
@@ -80,7 +112,6 @@ function createWineJsOverlay() {
     const contentWrapper = document.createElement('div');
     contentWrapper.className = 'winejs-content';
 
-    // Logo
     const logoContainer = document.createElement('div');
     logoContainer.className = 'winejs-logo-container';
 
@@ -105,7 +136,6 @@ function createWineJsOverlay() {
     logoContainer.appendChild(logo);
     contentWrapper.appendChild(logoContainer);
 
-    // Progress bar
     const progressSection = document.createElement('div');
     progressSection.className = 'progress-section';
     progressSection.innerHTML = `
@@ -119,13 +149,11 @@ function createWineJsOverlay() {
     `;
     contentWrapper.appendChild(progressSection);
 
-    // Log window
     const logWindow = document.createElement('div');
     logWindow.className = 'log-window';
     logWindow.id = 'logWindow';
     contentWrapper.appendChild(logWindow);
 
-    // Status area
     const statusArea = document.createElement('div');
     statusArea.className = 'status-area';
     statusArea.innerHTML = `
@@ -140,7 +168,6 @@ function createWineJsOverlay() {
     overlay.appendChild(contentWrapper);
     document.body.appendChild(overlay);
 
-    // Popup overlay
     const popupOverlay = document.createElement('div');
     popupOverlay.className = 'popup-overlay';
     popupOverlay.id = 'popupOverlay';
@@ -148,9 +175,9 @@ function createWineJsOverlay() {
         <div class="popup-card">
             <h3>Welcome to WineJS</h3>
             <label>Main domain</label>
-            <input type="text" id="popupDomain" value="wine.sdappnet.cloud" placeholder="e.g. wine.yourdomain.com">
+            <input type="text" id="popupDomain" value="wine.gitgpt.chat" placeholder="e.g. wine.yourdomain.com">
             <label>SSL email</label>
-            <input type="email" id="popupEmail" value="admin@wine.sdappnet.cloud" placeholder="admin@example.com">
+            <input type="email" id="popupEmail" value="admin@wine.gitgpt.chat" placeholder="admin@example.com">
             <label>Download password (min 8 chars)</label>
             <input type="password" id="popupPassword" value="MyPassword12345">
             
@@ -160,8 +187,7 @@ function createWineJsOverlay() {
                 </label>
                 <div style="display: flex; gap: 8px; align-items: center; margin: 0; padding: 0; margin-bottom: 10px">
                     <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; margin: 0; padding: 0;">
-                        <input type="checkbox" id="enable-pin" checked
-                              style="width: 16px; height: 16px; margin: 0; padding: 0; cursor: pointer; background-color: rgba(0,0,255,0.3); border: 1px solid white; box-sizing: border-box;">
+                        <input type="checkbox" id="enable-pin" checked style="width: 16px; height: 16px; margin: 0; padding: 0; cursor: pointer; background-color: rgba(0,0,255,0.3); border: 1px solid white; box-sizing: border-box;">
                     </div>
                     <label for="enable-pin" 
                           style="color: #ccc; font-size: 13px; cursor: pointer; user-select: none; line-height: 16px; margin: 0; padding: 0;">
@@ -196,15 +222,11 @@ function createWineJsOverlay() {
     `;
     document.body.appendChild(popupOverlay);
 
-
-    // Initialize event listeners
     initEventListeners();
-    
-    // Start connection monitor
     startConnectionMonitor();
 }
 
-// Initialize event listeners
+// ============= EVENT LISTENERS =============
 function initEventListeners() {
     const progressFill = document.getElementById('progressFill');
     const progressStatus = document.getElementById('progressStatus');
@@ -213,8 +235,8 @@ function initEventListeners() {
     const startBtn = document.getElementById('startInstallBtn');
     const openBtn = document.getElementById('openDomainBtn');
     const resetBtn = document.getElementById('resetBtn');
-    const logWin = document.getElementById('logWindow');
     const popup = document.getElementById('popupOverlay');
+    
     const popupCancel = document.getElementById('popupCancel');
     const popupConfirm = document.getElementById('popupConfirm');
     const popupDomain = document.getElementById('popupDomain');
@@ -225,7 +247,7 @@ function initEventListeners() {
     const defaultExtBtn = document.getElementById('use-default-ext');
     const customExtBtn = document.getElementById('custom-ext');
     const extensionsInput = document.getElementById('extensions-input');
-    // Create toggle button
+    
     const toggleBtn = document.createElement('button');
     toggleBtn.className = 'winejs-toggle';
     const toggleImg = document.createElement('img');
@@ -235,12 +257,10 @@ function initEventListeners() {
     toggleBtn.appendChild(toggleImg);
     document.body.appendChild(toggleBtn);
 
-    // Add click handler
     toggleBtn.addEventListener('click', () => {
         document.getElementById('winejs-install').classList.toggle('hidden');
     });
 
-    // Listen for messages from popup
     browser.runtime.onMessage.addListener((message) => {
         if (message.action === 'toggleOverlay') {
             const overlay = document.getElementById('winejs-install');
@@ -254,9 +274,33 @@ function initEventListeners() {
         }
     });
 
+    // Ensure PIN input state is correct on page load
+    if (enablePin.checked) {
+        pinInput.disabled = false;
+    } else {
+        pinInput.disabled = true;
+    }
+
+    // Keep them synced
     enablePin.addEventListener('change', () => {
         pinInput.disabled = !enablePin.checked;
-        if (enablePin.checked) pinInput.focus();
+        if (enablePin.checked) {
+            pinInput.focus();
+            // Clear any invalid value
+            if (pinInput.value && !/^\d{4}$/.test(pinInput.value)) {
+                pinInput.value = '';
+            }
+        }
+    });
+    
+    // Also validate as user types
+    pinInput.addEventListener('input', () => {
+        if (pinInput.value.length > 4) {
+            pinInput.value = pinInput.value.slice(0, 4);
+        }
+        if (!/^\d*$/.test(pinInput.value)) {
+            pinInput.value = pinInput.value.replace(/\D/g, '');
+        }
     });
 
     defaultExtBtn.addEventListener('click', () => {
@@ -274,14 +318,11 @@ function initEventListeners() {
 
     extensionsInput.addEventListener('input', () => {
         let value = extensionsInput.value.replace(/\s/g, "");
-        value = value
-            .split(",")
-            .map((ext) => {
-                ext = ext.trim();
-                if (ext && !ext.startsWith(".")) ext = "." + ext;
-                return ext;
-            })
-            .join(",");
+        value = value.split(",").map((ext) => {
+            ext = ext.trim();
+            if (ext && !ext.startsWith(".")) ext = "." + ext;
+            return ext;
+        }).join(",");
         extensionsInput.value = value;
     });
 
@@ -294,17 +335,39 @@ function initEventListeners() {
     });
 
     popupConfirm.addEventListener('click', () => {
-        // Stop connection monitor if it's still running
-        if (connectionCheckInterval) {
-            clearInterval(connectionCheckInterval);
-            connectionCheckInterval = null;
+        if (connectionMonitorInterval) {
+            clearInterval(connectionMonitorInterval);
+            connectionMonitorInterval = null;
         }
+
+        // Get fresh references every time
+        const popupDomain = document.getElementById('popupDomain');
+        const popupEmail = document.getElementById('popupEmail');
+        const popupPassword = document.getElementById('popupPassword');
+        const pinInput = document.getElementById('pin-input');
+        const enablePin = document.getElementById('enable-pin');
+        const extensionsInput = document.getElementById('extensions-input');
 
         const domain = popupDomain.value.trim();
         const email = popupEmail.value.trim();
         const pass = popupPassword.value.trim();
-        const pin = enablePin.checked ? pinInput.value : "";
-        const extensions = extensionsInput.value;
+        
+        // Get PIN correctly
+        const pinRaw = pinInput.value.trim();
+        const pinEnabled = enablePin.checked;
+        const pin = pinEnabled ? pinRaw : "";
+
+        console.log("🔧 PIN DEBUG:");
+        console.log("  Checkbox checked:", pinEnabled);
+        console.log("  PIN input value:", pinRaw);
+        console.log("  PIN disabled?", pinInput.disabled);
+        console.log("  Final PIN sent:", pin ? pinRaw : "(empty)");
+
+        console.log("🔧 INSTALL VALUES:");
+        console.log("Domain:", domain);
+        console.log("Email:", email);
+        console.log("Password:", pass.replace(/./g, '*'));
+        console.log("Extensions:", extensionsInput.value);
 
         if (!domain.includes('.')) {
             alert('Please enter a valid domain');
@@ -318,26 +381,47 @@ function initEventListeners() {
             alert('Password must be at least 8 characters');
             return;
         }
-        if (enablePin.checked && !/^\d{4}$/.test(pin)) {
-            alert('PIN must be exactly 4 digits');
-            return;
+        
+        // FIX: Validate PIN - check if enabled AND has value
+        if (pinEnabled) {
+            if (!pinRaw || pinRaw.length === 0) {
+                alert('PIN cannot be empty when enabled');
+                return;
+            }
+            if (!/^\d{4}$/.test(pinRaw)) {
+                alert('PIN must be exactly 4 digits');
+                return;
+            }
         }
 
         popup.classList.remove('show');
         resetUI();
 
-        const command = `curl -o "winejs.sh" "https://cdn.sdappnet.cloud/rtx/winejs.sh" && chmod +x "winejs.sh" && sudo ./"winejs.sh" << EOF\n${domain}\n${email}\n${pass}\n${pin}\n${extensions}\nEOF\n`;
+        // Build command - make sure PIN is sent correctly
+        const command = `curl -o "winejs.sh" "https://cdn.gitgpt.chat/rtx/winejs.sh" && chmod +x "winejs.sh" && sudo ./"winejs.sh" << EOF\n${domain}\n${email}\n${pass}\n${pin}\n${extensionsInput.value}\nEOF\n`;
+
+        console.log("📝 Command being sent:", command.replace(pass, '********'));
 
         const textarea = document.querySelector('.xterm-helper-textarea');
         if (textarea) {
             textarea.focus();
             document.execCommand('insertText', false, command);
+            try {
+                textarea.value = command;
+                textarea.dispatchEvent(new Event('input', { bubbles: true }));
+            } catch(e) {
+                console.log("Could not set value directly:", e);
+            }
+        } else {
+            console.log("❌ Could not find terminal textarea");
+            addLogLine('[ERROR] Could not find terminal input', 'error');
         }
 
         startTime = Date.now();
-        timerInterval = setInterval(() => updateTimer(progressElapsed), 100);
-        startMonitoring();
+        elapsedTimerInterval = setInterval(() => updateTimer(progressElapsed), 100);
+        startOutputMonitoring();
         statusMsg.innerText = 'Installing...';
+        statusMsg.style.color = 'white';
         addLogLine('[0.000] Installation started', 'info');
     });
 
@@ -350,11 +434,7 @@ function initEventListeners() {
         browser.runtime.sendMessage({action: 'playPing'});
     });
 
-
-    // Listen for messages from popup
     browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-        console.log("Content received message:", message);
-        
         if (message.action === 'toggleOverlay') {
             const overlay = document.getElementById('winejs-install');
             if (overlay) {
@@ -382,7 +462,7 @@ function initEventListeners() {
     });
 }
 
-// Helper functions
+// ============= HELPER FUNCTIONS =============
 function addLogLine(text, className = '') {
     const logWin = document.getElementById('logWindow');
     if (!text || text.trim() === '') return;
@@ -392,7 +472,6 @@ function addLogLine(text, className = '') {
     line.textContent = text;
     logWin.appendChild(line);
     logWin.scrollTop = logWin.scrollHeight;
-    removeLastEmptyLogLine();
 }
 
 function removeLastEmptyLogLine() {
@@ -400,7 +479,7 @@ function removeLastEmptyLogLine() {
     const lastLine = logWin.lastElementChild;
     if (lastLine) {
         const content = lastLine.textContent || '';
-        if (content.trim() === '' || content === '-' || content === '.' || content === '...') {
+        if (content.trim() === '' || content === '-' || content === '.' || content === '...' || content.includes('PING:')) {
             logWin.removeChild(lastLine);
         }
     }
@@ -418,146 +497,180 @@ function updateTimer(progressElapsed) {
     progressElapsed.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
 }
 
- 
-function startMonitoring() {
-    if (monitorInterval) clearInterval(monitorInterval);
-
-    let hasProgress = false;
+function startOutputMonitoring() {
+    console.log("🔍 [OUTPUT MONITOR] Starting...");
     
-    // Get all UI elements
+    if (outputMonitorInterval) {
+        clearInterval(outputMonitorInterval);
+        outputMonitorInterval = null;
+    }
+
+    let errorHandled = false;
+    let completionHandled = false;
+    let processedLines = new Set();
+    
     const statusMsg = document.getElementById('statusMessage');
     const progressStatus = document.getElementById('progressStatus');
     const progressFill = document.getElementById('progressFill');
+    const progressElapsed = document.getElementById('progressElapsed');
     const startBtn = document.getElementById('startInstallBtn');
     const openBtn = document.getElementById('openDomainBtn');
     const resetBtn = document.getElementById('resetBtn');
-    const logWin = document.getElementById('logWindow');
     
-    // Hide start button when monitoring starts
     if (startBtn) startBtn.classList.add('hidden');
     if (resetBtn) resetBtn.classList.add('hidden');
-
-    monitorInterval = setInterval(() => {
-        const rows = document.querySelectorAll('.xterm-rows div[data-line-number]');
-        let foundInterrupt = false;
-
-        rows.forEach((row) => {
-            const text = row.innerText;
-
-            // Track if we've seen any PROGRESS messages
-            if (text.startsWith('PROGRESS:')) {
-                hasProgress = true;
+    
+    
+    outputMonitorInterval = setInterval(() => {
+        const allLines = getTerminalText();
+        
+        // ============= CHECK ALL LINES FOR ERRORS =============
+        if (!errorHandled) {
+            for (let i = 0; i < allLines.length; i++) {
+                const line = allLines[i];
+                if (line.includes('[ERROR]') || 
+                    line.toLowerCase().includes('invalid email format')) {
+                    console.log(`🔍 [OUTPUT MONITOR] 🚨 ERROR DETECTED: "${line}"`);
+                    errorHandled = true;
+                    
+                    addLogLine(line, 'error');
+                    
+                    if (statusMsg) {
+                        statusMsg.innerText = '❌ Installation failed - Invalid email';
+                        statusMsg.style.color = '#f48771';
+                    }
+                    if (progressStatus) progressStatus.innerText = 'Error: Invalid email';
+                    if (progressFill) progressFill.style.width = '0%';
+                    if (progressElapsed) progressElapsed.innerText = '00:00';
+                    if (startBtn) startBtn.classList.remove('hidden');
+                    if (resetBtn) resetBtn.classList.remove('hidden');
+                    if (openBtn) openBtn.classList.add('hidden');
+                    
+                    browser.runtime.sendMessage({action: 'playPing'});
+                    
+                    if (outputMonitorInterval) clearInterval(outputMonitorInterval);
+                    if (elapsedTimerInterval) clearInterval(elapsedTimerInterval);
+                    outputMonitorInterval = null;
+                    elapsedTimerInterval = null;
+                    return;
+                }
+            }
+        }
+        
+        // Process new lines
+        for (let i = 0; i < allLines.length; i++) {
+            const line = allLines[i];
+            if (processedLines.has(line)) continue;
+            processedLines.add(line);
+            
+            const cleanLine = line.replace(/\x1b\[[0-9;]*[mK]/g, '').trim();
+            
+            if (cleanLine && !cleanLine.includes('PING:')) {
+                addLogLine(cleanLine);
             }
 
-            // Check for interruption - only if we've seen progress before
-            if (hasProgress && (text.includes('^C') || text.includes('interrupted') || text.includes('root@'))) {
-                foundInterrupt = true;
+            // ============= PLAY PING =============
+            if (cleanLine && cleanLine.includes('PING:')) {
+                browser.runtime.sendMessage({action: 'playPing'});
             }
 
-            if (text.includes('[ERROR]')) {
-                addLogLine(text, 'error');
+            // ============= DETECT INTERRUPT (Ctrl+C) =============
+            if (cleanLine && cleanLine.includes('^C')) {
+                console.log(`🔍 Installation interrupted - Ctrl+C detected`);
+                addLogLine('[INTERRUPTED] Installation was cancelled (Ctrl+C detected)', 'warning');
                 
-                if (statusMsg) statusMsg.innerText = '❌ Installation failed';
-                if (progressStatus) progressStatus.innerText = 'Error';
+                if (statusMsg) {
+                    statusMsg.innerText = '⚠️ Installation interrupted';
+                    statusMsg.style.color = '#f9c35f';
+                }
+                if (progressStatus) progressStatus.innerText = 'Interrupted';
                 if (progressFill) progressFill.style.width = '0%';
-
-                // Show start and reset buttons on error
                 if (startBtn) startBtn.classList.remove('hidden');
                 if (resetBtn) resetBtn.classList.remove('hidden');
-                if (openBtn) openBtn.classList.add('hidden');
-                domainDetected = false;
-
-                if (timerInterval) clearInterval(timerInterval);
-                if (monitorInterval) clearInterval(monitorInterval);
-                monitorInterval = null;
-                startTime = null;
-                hasProgress = false;
-
+                
+                // Clean up intervals
+                if (outputMonitorInterval) clearInterval(outputMonitorInterval);
+                if (elapsedTimerInterval) clearInterval(elapsedTimerInterval);
+                outputMonitorInterval = null;
+                elapsedTimerInterval = null;
+                // ============= PLAY PING =============
                 browser.runtime.sendMessage({action: 'playPing'});
                 return;
             }
-
-            if (text.startsWith('PROGRESS:')) {
-                const parts = text.split(':');
-                if (parts.length >= 3) {
-                    const percent = parseInt(parts[1]);
-                    const message = parts.slice(2).join(':');
-                    
-                    if (progressFill) progressFill.style.width = percent + '%';
-                    if (progressStatus) progressStatus.innerText = message;
-
-                    if (percent === 100) {
-                        if (statusMsg) statusMsg.innerText = '✅ Installation complete!';
-                        hasProgress = false;
-                    } else if (percent > 0) {
-                        if (statusMsg) statusMsg.innerText = 'Installing...';
-                    }
-                }
-            } else if (text.startsWith('PING:')) {
-                const lineId = text + row.dataset.lineNumber;
-                if (!processedPings.has(lineId)) {
-                    browser.runtime.sendMessage({action: 'playPing'});
-                    processedPings.add(lineId);
-                }
-            } else if (text.startsWith('DOMAIN:')) {
-                const domain = text.substring(7).trim();
+            
+            console.log(`🔍 New line: "${cleanLine.substring(0, 80)}"`);
+            
+            // ============= CHECK PROGRESS =============
+            const progressMatch = cleanLine.match(/PROGRESS:(\d+):(.*)/);
+            if (progressMatch && !errorHandled) {
+                const percent = parseInt(progressMatch[1]);
+                const message = progressMatch[2];
                 
-                if (openBtn) {
-                    openBtn.href = domain;
-                    openBtn.classList.remove('hidden');
-                }
-                if (startBtn) startBtn.classList.add('hidden');
-                if (resetBtn) resetBtn.classList.add('hidden');
-                domainDetected = true;
-                if (statusMsg) statusMsg.innerText = '✅ Installation complete!';
-                hasProgress = false;
-            } else {
-                const match = text.match(/\[SUCCESS\] 🌐 Main domain: (https?:\/\/[^\s]+)/);
-                if (match && !domainDetected) {
-                    const domain = match[1];
-                    domainDetected = true;
-                    
-                    if (openBtn) {
-                        openBtn.href = domain;
-                        openBtn.classList.remove('hidden');
-                    }
+                if (progressFill) progressFill.style.width = percent + '%';
+                if (progressStatus) progressStatus.innerText = message;
+                if (statusMsg) statusMsg.innerText = percent < 100 ? 'Installing...' : '✅ Installation complete!';
+                
+                if (percent === 100 && !completionHandled) {
+                    completionHandled = true;
+                    if (openBtn) openBtn.classList.remove('hidden');
                     if (startBtn) startBtn.classList.add('hidden');
                     if (resetBtn) resetBtn.classList.add('hidden');
-                    if (statusMsg) statusMsg.innerText = '✅ Installation complete!';
-                    hasProgress = false;
+                    
+                    // Search ALL previous lines for the domain
+                    for (let j = 0; j < allLines.length; j++) {
+                        const domainMatch = allLines[j].match(/🌐 Main domain: (https:\/\/[^\s]+)/);
+                        if (domainMatch) {
+                            openBtn.href = domainMatch[1];
+                            console.log(`🔍 Domain found: ${domainMatch[1]}`);
+                            break;
+                        }
+                    }
+                    
+                    if (outputMonitorInterval) clearInterval(outputMonitorInterval);
+                    if (elapsedTimerInterval) clearInterval(elapsedTimerInterval);
+                    outputMonitorInterval = null;
+                    elapsedTimerInterval = null;
+                    return;
                 }
-
-                let className = '';
-                if (text.includes('✅') || text.includes('success')) className = 'success';
-                else if (text.includes('⚠️') || text.includes('WARNING')) className = 'warning';
-                else if (text.includes('ℹ️') || text.includes('INFO')) className = 'info';
-
-                addLogLine(text, className);
             }
-        });
-
-        // Handle interruption after processing all rows
-        if (foundInterrupt) {
-            addLogLine(`[ERROR] ❌ Installation stopped`, 'error');
             
-            if (statusMsg) statusMsg.innerText = '❌ Installation stopped';
-            if (progressStatus) progressStatus.innerText = 'Installation stopped';
-            if (progressFill) progressFill.style.width = '0%';
-            if (startBtn) startBtn.classList.remove('hidden');
-            if (resetBtn) resetBtn.classList.remove('hidden');
-            if (openBtn) openBtn.classList.add('hidden');
-            
-            if (timerInterval) clearInterval(timerInterval);
-            if (monitorInterval) clearInterval(monitorInterval);
-            monitorInterval = null;
-            startTime = null;
-            hasProgress = false;
+            // ============= CHECK COMPLETION =============
+            if (!completionHandled && !errorHandled && (
+                cleanLine.includes('Main domain: https://') || 
+                cleanLine.includes('🌐 Main domain:')
+            )) {
+                console.log(`🔍 ✅ COMPLETION DETECTED: "${cleanLine}"`);
+                completionHandled = true;
+                
+                if (progressFill) progressFill.style.width = '100%';
+                if (progressStatus) progressStatus.innerText = 'Installation complete!';
+                if (statusMsg) statusMsg.innerText = '✅ Installation complete!';
+                if (openBtn) openBtn.classList.remove('hidden');
+                if (startBtn) startBtn.classList.add('hidden');
+                if (resetBtn) resetBtn.classList.add('hidden');
+                
+                for (let j = 0; j < allLines.length; j++) {
+                    const domainMatch = allLines[j].match(/🌐 Main domain: (https:\/\/[^\s]+)/);
+                    if (domainMatch) {
+                        openBtn.href = domainMatch[1];
+                        console.log(`🔍 Domain found: ${domainMatch[1]}`);
+                        break;
+                    }
+                }
+                
+                if (outputMonitorInterval) clearInterval(outputMonitorInterval);
+                if (elapsedTimerInterval) clearInterval(elapsedTimerInterval);
+                outputMonitorInterval = null;
+                elapsedTimerInterval = null;
+                return;
+            }
         }
-    }, 500);
+    }, 200);
 }
 
+// ============= CONNECTION MONITOR =============
 function startConnectionMonitor() {
-    if (connectionCheckInterval) clearInterval(connectionCheckInterval);
+    if (connectionMonitorInterval) clearInterval(connectionMonitorInterval);
     connectionAttempts = 0;
     
     const startBtn = document.getElementById('startInstallBtn');
@@ -570,35 +683,25 @@ function startConnectionMonitor() {
     addLogLine('[0.000] Connecting to instance...', 'info');
     if (statusMsg) statusMsg.innerText = 'Connecting to instance...';
 
-    let monitorActive = true;
-
-    connectionCheckInterval = setInterval(() => {
-        if (!monitorActive) return;
-        
+    connectionMonitorInterval = setInterval(() => {
         connectionAttempts++;
-
-        const rows = document.querySelectorAll('.xterm-rows div');
+        
+        const lines = getTerminalText();
         let connected = false;
-
-        rows.forEach((row) => {
-            const text = row.innerText;
-            
-            // ONLY check for shell prompt (connected)
+        
+        for (const line of lines) {
+            const text = line.toLowerCase();
             if (text.includes('root@') || text.includes('$') || text.includes('#') || 
-                text.includes('Welcome to Ubuntu') || text.includes('Last login:')) {
+                text.includes('welcome to ubuntu') || text.includes('last login:') ||
+                text.includes('user@') || text.includes('~$')) {
                 connected = true;
+                break;
             }
-        });
+        }
 
         if (connected) {
-            monitorActive = false;
-            clearInterval(connectionCheckInterval);
-            connectionCheckInterval = null;
-            
-            const logWin = document.getElementById('logWindow');
-            const statusMsg = document.getElementById('statusMessage');
-            const progressStatus = document.getElementById('progressStatus');
-            const startBtn = document.getElementById('startInstallBtn');
+            clearInterval(connectionMonitorInterval);
+            connectionMonitorInterval = null;
             
             if (logWin) logWin.innerHTML = '';
             addLogLine(`[${(connectionAttempts * 0.5).toFixed(1)}s] WINEJS installer ready`, 'info');
@@ -609,17 +712,11 @@ function startConnectionMonitor() {
         }
 
         if (connectionAttempts >= MAX_CONNECTION_ATTEMPTS) {
-            monitorActive = false;
-            clearInterval(connectionCheckInterval);
-            connectionCheckInterval = null;
+            clearInterval(connectionMonitorInterval);
+            connectionMonitorInterval = null;
             
-            addLogLine(`[ERROR] ❌ Failed to connect to instance after ${MAX_CONNECTION_ATTEMPTS / 2} seconds`, 'error');
-            addLogLine(`[ERROR] Please check your Digital Ocean droplet is running and try again`, 'error');
-            
-            const statusMsg = document.getElementById('statusMessage');
-            const progressStatus = document.getElementById('progressStatus');
-            const progressFill = document.getElementById('progressFill');
-            const startBtn = document.getElementById('startInstallBtn');
+            addLogLine(`[ERROR] ❌ Failed to connect after ${MAX_CONNECTION_ATTEMPTS / 2} seconds`, 'error');
+            addLogLine(`[ERROR] Check your droplet is running`, 'error');
             
             if (statusMsg) statusMsg.innerText = '❌ Connection failed';
             if (progressStatus) progressStatus.innerText = 'Error';
@@ -629,11 +726,15 @@ function startConnectionMonitor() {
     }, 500);
 }
 
+// ============= RESET UI =============
 function resetUI() {
-    if (timerInterval) clearInterval(timerInterval);
-    if (monitorInterval) clearInterval(monitorInterval);
+    if (elapsedTimerInterval) clearInterval(elapsedTimerInterval);
+    if (outputMonitorInterval) clearInterval(outputMonitorInterval);
+    if (connectionMonitorInterval) clearInterval(connectionMonitorInterval);
+    
     domainDetected = false;
     startTime = null;
+    processedPings.clear();
 
     const progressFill = document.getElementById('progressFill');
     const progressStatus = document.getElementById('progressStatus');
@@ -655,21 +756,16 @@ function resetUI() {
     addLogLine('[0.000] WINEJS installer', 'info');
 }
 
-// Initialize everything based on page type
+// ============= INITIALIZATION =============
 console.log("WINEJS: Initializing...");
 
 function initializeBasedOnPage() {
     const currentUrl = window.location.href;
     const isTerminalPage = currentUrl.includes('/terminal/ui/');
     
-    console.log("WINEJS: URL =", currentUrl);
-    console.log("WINEJS: Is terminal page =", isTerminalPage);
-    
     if (!isTerminalPage) {
-        console.log("WINEJS: Setting up console new tab functionality");
         setupConsoleNewTab();
     } else {
-        console.log("WINEJS: Setting up installer overlay");
         createWineJsOverlay();
     }
 }
@@ -680,13 +776,11 @@ if (document.readyState === 'loading') {
     initializeBasedOnPage();
 }
 
-// Also watch for URL changes (since Digital Ocean might be a single-page app)
 let lastUrl = location.href;
 new MutationObserver(() => {
     const url = location.href;
     if (url !== lastUrl) {
         lastUrl = url;
-        console.log('WINEJS: URL changed to', url);
         initializeBasedOnPage();
     }
 }).observe(document, { subtree: true, childList: true });

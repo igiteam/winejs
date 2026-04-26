@@ -1,0 +1,106 @@
+{
+  "name": "winejs-packager",
+  "displayName": "WineJS Packager",
+  "description": "Right-click any folder → Package Windows apps for WineJS",
+  "repository": "https://github.com/winejs/packager",
+  "publisher": "winejs",
+  "icon": "sh/logo.png",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.81.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:winejs.packageApp"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "winejs.packageApp",
+        "title": "WineJS: Package Windows App",
+        "category": "WineJS"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "winejs.packageApp",
+          "group": "winejs@1",
+          "when": "explorerResourceIsFolder"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "WineJS Packager",
+      "properties": {
+        "winejs.spaces.accessKey": {
+          "type": "string",
+          "description": "DigitalOcean Spaces Access Key"
+        },
+        "winejs.spaces.secretKey": {
+          "type": "string",
+          "description": "DigitalOcean Spaces Secret Key"
+        },
+        "winejs.spaces.endpoint": {
+          "type": "string",
+          "default": "https://fra1.digitaloceanspaces.com",
+          "description": "DigitalOcean Spaces Endpoint URL"
+        },
+        "winejs.spaces.cdnEndpoint": {
+          "type": "string",
+          "description": "DigitalOcean CDN Endpoint URL (optional - if provided, will use this for public URLs instead of Spaces URL)"
+        },
+        "winejs.spaces.bucket": {
+          "type": "string",
+          "default": "sdappnet-cloud",
+          "description": "DigitalOcean Spaces Bucket Name"
+        },
+        "winejs.spaces.region": {
+          "type": "string",
+          "default": "fra1",
+          "description": "DigitalOcean Spaces Region"
+        },
+        "winejs.spaces.folder": {
+          "type": "string",
+          "default": "rtx/wine",
+          "description": "Folder in bucket for app packages"
+        },
+        "winejs.spaces.makePublic": {
+          "type": "boolean",
+          "default": true,
+          "description": "Make uploaded files publicly accessible"
+        },
+        "winejs.spaces.apiToken": {
+          "type": "string",
+          "description": "DigitalOcean API Token (required for CDN purge)"
+        },
+        "winejs.spaces.cdnId": {
+          "type": "string",
+          "description": "DigitalOcean CDN Endpoint ID (required for CDN purge)"
+        },
+        "winejs.defaultCategory": {
+          "type": "string",
+          "default": "Other",
+          "enum": ["Game", "Graphics", "Audio", "Utility", "Office", "Development", "Other"],
+          "description": "Default app category"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "20.x",
+    "@types/vscode": "^1.81.0",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.654.0"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "name": "winejs-desktop-packager-macosx",
+  "displayName": "WineJS Desktop Packager",
+  "description": "Right-click any folder → Create macOS desktop app for Windows EXE using Wine (No terminal! Symlink fast!)",
+  "repository": "https://github.com/winejs/desktop-packager",
+  "publisher": "winejs",
+  "icon": "sh/logo.png",
+  "version": "3.0.0",
+  "engines": {
+    "vscode": "^1.81.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:winejs.createDesktopApp"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "winejs.createDesktopApp",
+        "title": "WineJS: Create macOS Desktop App (No Terminal)",
+        "category": "WineJS"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "winejs.createDesktopApp",
+          "group": "winejs@1",
+          "when": "explorerResourceIsFolder"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "WineJS Desktop Packager",
+      "properties": {
+        "winejs.winePath": {
+          "type": "string",
+          "default": "auto",
+          "description": "Path to Wine binary (or 'auto' to auto-detect)"
+        },
+        "winejs.defaultCategory": {
+          "type": "string",
+          "default": "Utility",
+          "enum": ["Game", "Graphics", "Audio", "Utility", "Office", "Development", "Other"],
+          "description": "Default app category for Finder"
+        },
+        "winejs.useSymlink": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use symlink instead of copying files (instant creation, saves disk space)"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "20.x",
+    "@types/vscode": "^1.81.0",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {}
+}

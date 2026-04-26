@@ -72,8 +72,8 @@ winejs-firefox-installer/
 
 🔧 Configuration
 Default Settings
-    Domain: wine.sdappnet.cloud
-    Email: admin@wine.sdappnet.cloud
+    Domain: wine.gitgpt.chat
+    Email: admin@wine.gitgpt.chat
     Password: MyPassword12345
     File Extensions: .ms3d,.obj,.3ds,.fbx,.dae,.blend,.jpg,.png,.mp3,.wav,.mp4
 
@@ -110,7 +110,7 @@ PIN Protection
     activeTab - Access current Digital Ocean tab
     storage - Save user preferences
     https://cloud.digitalocean.com/* - Digital Ocean terminal
-    https://cdn.sdappnet.cloud/* - Download WINEJS scripts
+    https://cdn.gitgpt.chat/* - Download WINEJS scripts
 
 🎨 UI Features
     Glossy logo with backdrop filter

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FileServer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e2f;
+            color: #333;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .toolbar {
+            background: #2d2d44;
+            padding: 1rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-bottom: 2px solid #764ba2;
+        }
+
+        .toolbar h1 {
+            font-size: 1.3rem;
+            margin-right: auto;
+        }
+
+        .server-badge {
+            background: #764ba2;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .login-panel {
+            background: white;
+            padding: 2rem;
+            max-width: 400px;
+            margin: 2rem auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-panel h2 {
+            margin-bottom: 1.5rem;
+            color: #2d2d44;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+
+        button {
+            background: #764ba2;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: #667eea;
+        }
+
+        .browser {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            margin: 0rem;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: none;
+        }
+
+        .path-bar {
+            background: #f5f5f5;
+            padding: 1rem;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .path-bar span {
+            color: #666;
+        }
+
+        .path-bar .current-path {
+            background: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            font-family: monospace;
+            flex: 1;
+        }
+
+        .file-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .file-item:hover {
+            background: #f0f0f0;
+        }
+
+        .file-item .icon {
+            width: 24px;
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .file-item .name {
+            flex: 1;
+        }
+
+        .file-item .size {
+            color: #666;
+            font-size: 0.9rem;
+            width: 100px;
+            text-align: right;
+        }
+
+        .file-item .date {
+            color: #666;
+            font-size: 0.9rem;
+            width: 150px;
+            text-align: right;
+        }
+
+        .directory {
+            color: #764ba2;
+            font-weight: 500;
+        }
+
+        .file {
+            color: #333;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .error {
+            color: #dc3545;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .status-bar {
+            background: #2d2d44;
+            color: white;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .status-bar .cert-warning {
+            background: #ffc107;
+            color: #333;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="toolbar">
+        <h1>🔌 glFTPd Web Browser</h1>
+        <div class="server-badge">ftp.scenelist.org:1337</div>
+        <div class="server-badge">glFTPd 2.16 +TLS</div>
+    </div>
+
+    <!-- Login Panel -->
+    <div id="loginPanel" class="login-panel">
+        <h2>Connect to Server</h2>
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="username" value="scenelist" placeholder="Username">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="password" placeholder="Password">
+        </div>
+        <div class="form-group">
+            <label>Protocol</label>
+            <select id="protocol">
+                <option value="ftp">FTP (Insecure)</option>
+                <option value="ftps" selected>FTPS (TLS/SSL)</option>
+            </select>
+        </div>
+        <div style="margin-bottom:1rem; font-size:0.9rem; color:#666;">
+            <label>
+                <input type="checkbox" id="ignoreCert" checked>
+                Ignore certificate errors (self-signed cert)
+            </label>
+        </div>
+        <button onclick="connect()">Connect to Server</button>
+        <div style="margin-top:1rem; font-size:0.8rem; color:#999; text-align:center;">
+            ⚠️ Certificate: 79:B1:FD:A4:D2:2D:0D:53:67:CE:76:86:47:46:97:B6:FB:40:C1:E0
+        </div>
+    </div>
+
+    <!-- File Browser -->
+    <div id="browser" class="browser">
+        <div class="path-bar">
+            <span>📁</span>
+            <span class="current-path" id="currentPath">/</span>
+            <button onclick="goUp()" style="width:auto; padding:0.3rem 1rem;">⬆️ Up</button>
+            <button onclick="refreshList()" style="width:auto; padding:0.3rem 1rem;">🔄 Refresh</button>
+        </div>
+        <div class="status-bar">
+            <span id="connectionStatus">Connected as: <span id="connectedUser"></span></span>
+            <span class="cert-warning" id="certWarning">Self-signed certificate</span>
+        </div>
+        <div id="fileList" class="file-list">
+            <div class="loading">Loading directory contents...</div>
+        </div>
+    </div>
+
+    <script>
+        let currentFTP = null;
+        let currentPath = '/';
+        let currentFiles = []; // Store current directory contents globally
+
+        // Root directory files (from your actual listing)
+        const rootFiles = [
+            { name: '0day', type: 'dir', size: '-', date: '2023-01-27' },
+            { name: 'allfiles.txt.gz', type: 'file', size: '27.4 MB', date: '2026-02-10' },
+            { name: 'amiga', type: 'dir', size: '-', date: '2020-02-29' },
+            { name: 'bbs-dumps', type: 'dir', size: '-', date: '2024-08-18' },
+            { name: 'cds', type: 'dir', size: '-', date: '2025-06-20' },
+            { name: 'changelog.txt', type: 'file', size: '870 B', date: '2026-02-10' },
+            { name: 'console', type: 'dir', size: '-', date: '2019-02-10' },
+            { name: 'iso', type: 'dir', size: '-', date: '2024-08-19' },
+            { name: 'lists.zip', type: 'file', size: '58.8 MB', date: '2026-02-10' },
+            { name: 'pc-apps', type: 'dir', size: '-', date: '2019-08-25' },
+            { name: 'pc-games', type: 'dir', size: '-', date: '2019-08-24' },
+            { name: 'tape-dumps', type: 'dir', size: '-', date: '2026-01-17' },
+            { name: 'warez-cd-collections', type: 'dir', size: '-', date: '2021-03-05' }
+        ];
+
+        function connect() {
+            const username = document.getElementById('username').value;
+            document.getElementById('loginPanel').style.display = 'none';
+            document.getElementById('browser').style.display = 'flex';
+            document.getElementById('connectedUser').textContent = username;
+
+            // Load root directory
+            currentPath = '/';
+            currentFiles = [...rootFiles];
+            displayFiles(currentFiles);
+            document.getElementById('currentPath').textContent = currentPath;
+        }
+
+        function displayFiles(files) {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+
+            if (currentPath !== '/') {
+                // Add parent directory link
+                const parentItem = document.createElement('div');
+                parentItem.className = 'file-item';
+                parentItem.onclick = () => goUp();
+                parentItem.innerHTML = `
+                    <span class="icon">📁</span>
+                    <span class="name directory">..</span>
+                    <span class="size">-</span>
+                    <span class="date">-</span>
+                `;
+                fileList.appendChild(parentItem);
+            }
+
+            files.forEach(file => {
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.onclick = () => {
+                    if (file.type === 'dir') {
+                        navigateTo(file.name);
+                    } else {
+                        downloadFile(file.name);
+                    }
+                };
+
+                item.innerHTML = `
+                    <span class="icon">${file.type === 'dir' ? '📁' : '📄'}</span>
+                    <span class="name ${file.type === 'dir' ? 'directory' : 'file'}">${file.name}</span>
+                    <span class="size">${file.size}</span>
+                    <span class="date">${file.date}</span>
+                `;
+
+                fileList.appendChild(item);
+            });
+        }
+
+        function navigateTo(dirname) {
+            // Simulate loading new directory
+            document.getElementById('fileList').innerHTML = '<div class="loading">Loading directory contents...</div>';
+
+            setTimeout(() => {
+                let newFiles = [];
+
+                // Simulate different directory contents
+                if (dirname === 'pc-games') {
+                    newFiles = [
+                        { name: 'Game.of.the.Year.2026', type: 'dir', size: '-', date: '2026-02-15' },
+                        { name: 'RPG.Collection.2025', type: 'dir', size: '-', date: '2026-02-10' },
+                        { name: 'FPS.Classics.Repack', type: 'dir', size: '-', date: '2026-02-05' },
+                        { name: 'Strategy.Games.Pack', type: 'dir', size: '-', date: '2026-01-28' }
+                    ];
+                } else if (dirname === '0day') {
+                    newFiles = [
+                        { name: 'Software.Release.2026.02.15', type: 'dir', size: '-', date: '2026-02-15' },
+                        { name: 'Movie.1080p.2026.02.14', type: 'dir', size: '-', date: '2026-02-14' },
+                        { name: 'Game.Repack.2026.02.13', type: 'dir', size: '-', date: '2026-02-13' },
+                        { name: 'Application.Pro.v2026', type: 'dir', size: '-', date: '2026-02-12' }
+                    ];
+                } else if (dirname === 'bbs-dumps') {
+                    newFiles = [
+                        { name: 'the_legend_of_the_red_dragon.ans', type: 'file', size: '45 KB', date: '1992-03-15' },
+                        { name: 'bbs_list_1995.txt', type: 'file', size: '128 KB', date: '1995-12-01' },
+                        { name: 'tradewars_2002.zip', type: 'file', size: '2.3 MB', date: '1994-07-20' }
+                    ];
+                } else {
+                    // Generic subdirectory
+                    newFiles = [
+                        { name: 'subdir1', type: 'dir', size: '-', date: '2026-01-01' },
+                        { name: 'subdir2', type: 'dir', size: '-', date: '2026-01-02' },
+                        { name: 'file1.txt', type: 'file', size: '1.2 KB', date: '2026-01-03' }
+                    ];
+                }
+
+                currentPath = currentPath === '/' ? `/${dirname}` : `${currentPath}/${dirname}`;
+                document.getElementById('currentPath').textContent = currentPath;
+                currentFiles = newFiles;
+                displayFiles(currentFiles);
+            }, 500);
+        }
+
+        function goUp() {
+            if (currentPath === '/') return;
+
+            // Go up one directory level
+            const parts = currentPath.split('/');
+            parts.pop();
+            currentPath = parts.join('/') || '/';
+            document.getElementById('currentPath').textContent = currentPath;
+
+            document.getElementById('fileList').innerHTML = '<div class="loading">Loading parent directory...</div>';
+
+            setTimeout(() => {
+                if (currentPath === '/') {
+                    currentFiles = [...rootFiles];
+                } else {
+                    // Simulate going up to some parent directory
+                    currentFiles = [
+                        { name: 'subdir1', type: 'dir', size: '-', date: '2026-01-01' },
+                        { name: 'subdir2', type: 'dir', size: '-', date: '2026-01-02' }
+                    ];
+                }
+                displayFiles(currentFiles);
+            }, 500);
+        }
+
+        function refreshList() {
+            document.getElementById('fileList').innerHTML = '<div class="loading">Refreshing...</div>';
+            setTimeout(() => {
+                displayFiles(currentFiles);
+            }, 500);
+        }
+
+        function downloadFile(filename) {
+            alert(`📥 Downloading: ${filename}\n\nIn a real implementation, this would download the file.\nDue to browser security, actual FTP downloads need a proxy server.\n\nFor real access, use lftp in terminal:\nlftp -p 1337 -u scenelist ftp.scenelist.org -e "set ssl:verify-certificate no;"`);
+        }
+    </script>
+</body>
+
+</html>

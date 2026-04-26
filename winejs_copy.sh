@@ -12,12 +12,9 @@
 # ============================================================
 
 #Originally hosted on:
-#https://igiteam.github.io/sh/?url=https://cdn.gitgpt.chat/rtx/winejs.sh&e=1
+#https://igiteam.github.io/sh/?url=https://cdn.sdappnet.cloud/rtx/winejs.sh&e=1
 #Download WineJS Installation extension for Firefox!
-#https://igiteam.github.io/sh/?url=https://cdn.gitgpt.chat/rtx/winejs-terminal_firefox.sh&e=1
-
-# Find all uninstall scripts in the apps directory
-# find /opt/winejs/apps -name "uninstall_*" -type f
+#https://igiteam.github.io/sh/?url=https://cdn.sdappnet.cloud/rtx/winejs-terminal_firefox.sh&e=1
 
 export DEBIAN_FRONTEND=noninteractive
 set -e
@@ -39,7 +36,7 @@ success() { echo -e "${MAGENTA}[SUCCESS]${NC} $1"; }
 header() { echo -e "${CYAN}$1${NC}"; }
 
 get_input() { local prompt="$1" default="$2" var_name="$3"; read -p "$prompt [$default]: " input; eval "$var_name=\${input:-\$default}"; }
-validate_email() { [[ "$1" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]] }
+validate_email() { [[ "$1" =~ ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ ]]; }
 validate_email_mx() { dig +short MX "${1#*@}" | grep -q .; }
 
 # Display banner
@@ -84,7 +81,7 @@ exec > >(tee "$ECHO_MONITOR_HOOK") 2>&1
                 echo "PROGRESS:3:IP detected: ${line#*Detected droplet IP: }" >&3
                 ;;
             *"DNS is correctly configured"*)
-                echo "PROGRESS:4:Your Domain is correctly pointing to your server IP" >&3
+                echo "PROGRESS:4:DNS verified" >&3
                 ;;
             *"Enter email for SSL"*)
                 echo "PROGRESS:5:Waiting for email" >&3
@@ -98,6 +95,7 @@ exec > >(tee "$ECHO_MONITOR_HOOK") 2>&1
             *"Allowed file extensions"*)
                 echo "PROGRESS:8:Configuring extensions" >&3
                 ;;
+                
             # SYSTEM PREP (8-15%)
             *"Updating system packages"*)
                 echo "PROGRESS:8:Starting system update" >&3
@@ -106,6 +104,7 @@ exec > >(tee "$ECHO_MONITOR_HOOK") 2>&1
             *"Installing required tools"*)
                 echo "PROGRESS:12:Installing dependencies" >&3
                 ;;
+                
             # DOCKER (15-22%)
             *"Installing Docker"*)
                 echo "PROGRESS:15:Setting up Docker" >&3
@@ -116,57 +115,45 @@ exec > >(tee "$ECHO_MONITOR_HOOK") 2>&1
             *"Installing docker-compose"*)
                 echo "PROGRESS:20:Adding compose" >&3
                 ;;
+                
             # WIIMOTE (22-28%)
             *"Adding Nintendo Wiimote support"*)
                 echo "PROGRESS:22:Wiimote setup" >&3
                 ;;
             *"Wiimote support configured"*)
                 echo "PROGRESS:26:Wiimote ready" >&3
-                ;;         
+                ;;
+                
             # NODE/PM2 (28-32%)
             *"Installing Node.js 18 and PM2"*)
                 echo "PROGRESS:28:Node.js setup" >&3
-                ;; 
+                ;;
+                
             # SHARED STORAGE (32-35%)
             *"Creating shared storage directory"*)
                 echo "PROGRESS:32:Setting up storage" >&3
                 ;;
             *"Shared storage created"*)
                 echo "PROGRESS:34:Storage ready" >&3
-                ;;  
+                ;;
+                
             # KASMVNC BASE IMAGE (35-45%)
             *"Building KasmVNC base image"*)
                 echo "PROGRESS:35:Building base image (2-3 minutes)" >&3
                 ;;
-            *"Step"*|*"] "*)
-                # Handle both Docker formats: "Step X/Y" and "[ X/Y]"
-                step_match=$(echo "$line" | grep -o 'Step [0-9]*/[0-9]*' | head -1)
-                if [ -z "$step_match" ]; then
-                    # Try the alternative format: [ 1/26]
-                    step_match=$(echo "$line" | grep -o '\[[ ]*[0-9]*/[0-9]*\]' | sed 's/[][]//g' | sed 's/ //g')
-                    if [ -n "$step_match" ]; then
-                        step_num=$(echo "$step_match" | cut -d'/' -f1)
-                        total_steps=$(echo "$step_match" | cut -d'/' -f2)
-                    fi
-                else
-                    # Parse Step X/Y format
-                    step_num=$(echo "$step_match" | cut -d' ' -f2 | cut -d'/' -f1)
-                    total_steps=$(echo "$step_match" | cut -d'/' -f2)
-                fi
-                 # Calculate progress percentage within the 35-45% range
-                if [ -n "$step_num" ] && [ -n "$total_steps" ] && [ "$total_steps" -gt 0 ] 2>/dev/null; then
-                    # Step 1 = 35%, Step total_steps = 45%
-                    prog=$((35 + (step_num * 10 / total_steps)))
-                    # Ensure progress doesn't exceed 45
-                    if [ $prog -gt 45 ]; then prog=45; fi
-                    # Ensure progress is at least 35
-                    if [ $prog -lt 35 ]; then prog=35; fi
-                    echo "PROGRESS:$prog:Docker build step $step_num/$total_steps" >&3
+            *"Step"*)
+                # Docker build steps - count them for progress
+                step_num=$(echo "$line" | grep -o 'Step [0-9]*' | grep -o '[0-9]*')
+                if [ -n "$step_num" ] && [ $step_num -le 30 ]; then
+                    # Map step number to progress (roughly 35-45%)
+                    prog=$((35 + (step_num * 10 / 30)))
+                    echo "PROGRESS:$prog:Building image step $step_num/30" >&3
                 fi
                 ;;
             *"Successfully built"*)
                 echo "PROGRESS:45:Base image complete" >&3
                 ;;
+                
             # MILKSHAPE DOWNLOAD (45-55%)
             *"Installing MilkShape 3D"*)
                 echo "PROGRESS:45:Downloading MilkShape" >&3
@@ -180,6 +167,7 @@ exec > >(tee "$ECHO_MONITOR_HOOK") 2>&1
             *"Creating launch script"*)
                 echo "PROGRESS:54:Configuring MilkShape" >&3
                 ;;
+                
             # KASMVNC INSTANCE (55-62%)
             *"Creating KasmVNC instance for MilkShape"*)
                 echo "PROGRESS:55:Setting up container" >&3
@@ -187,6 +175,7 @@ exec > >(tee "$ECHO_MONITOR_HOOK") 2>&1
             *"Container started"*)
                 echo "PROGRESS:60:Container running" >&3
                 ;;
+                
             # FILESERVER (62-68%)
             *"Setting up FileServer for DOWNLOADS"*)
                 echo "PROGRESS:62:Configuring download portal" >&3
@@ -194,6 +183,7 @@ exec > >(tee "$ECHO_MONITOR_HOOK") 2>&1
             *"FileServer running on port"*)
                 echo "PROGRESS:66:Download portal ready" >&3
                 ;;
+                
             # DUMBDROP (68-73%)
             *"Setting up DumbDrop for UPLOADS"*)
                 echo "PROGRESS:68:Configuring upload portal" >&3
@@ -201,6 +191,7 @@ exec > >(tee "$ECHO_MONITOR_HOOK") 2>&1
             *"DumbDrop running on port"*)
                 echo "PROGRESS:72:Upload portal ready" >&3
                 ;;
+                
             # SSL (73-78%)
             *"Setting up SSL certificates"*)
                 echo "PROGRESS:73:Requesting SSL certificate" >&3
@@ -208,6 +199,7 @@ exec > >(tee "$ECHO_MONITOR_HOOK") 2>&1
             *"Certificate saved"*)
                 echo "PROGRESS:76:SSL ready" >&3
                 ;;
+                
             # NGINX (78-83%)
             *"Creating nginx configuration"*)
                 echo "PROGRESS:78:Configuring web server" >&3
@@ -215,6 +207,7 @@ exec > >(tee "$ECHO_MONITOR_HOOK") 2>&1
             *"nginx configuration file test is successful"*)
                 echo "PROGRESS:82:Nginx configured" >&3
                 ;;
+                
             # HOME PAGE (83-87%)
             *"Creating Windows 10-style home page"*)
                 echo "PROGRESS:83:Building dashboard" >&3
@@ -222,6 +215,7 @@ exec > >(tee "$ECHO_MONITOR_HOOK") 2>&1
             *"Windows 10-style home page created"*)
                 echo "PROGRESS:86:Dashboard ready" >&3
                 ;;
+                
             # FINAL STEPS (87-95%)
             *"Creating monitoring script"*)
                 echo "PROGRESS:87:Setting up monitoring" >&3
@@ -232,16 +226,18 @@ exec > >(tee "$ECHO_MONITOR_HOOK") 2>&1
             *"Background script scheduled"*)
                 echo "PROGRESS:93:Finalizing" >&3
                 ;;
+                
             # COMPLETE (100%)
             *"WINEJS SETUP COMPLETE"*)
-                echo "PING:complete" >&3
                 echo "PROGRESS:100:Installation complete!" >&3
+                echo "PING:complete" >&3
                 ;;
             *"Main domain: https://"*)
                 # Extract domain from the line
                 domain=$(echo "$line" | grep -o 'https://[^ ]*')
                 echo "DOMAIN:$domain" >&3
                 ;;
+                
             # Password captures
             *"Upload: https://"*" (password:"*)
                 echo "UPLOAD_INFO:$line" >&3
@@ -252,32 +248,13 @@ exec > >(tee "$ECHO_MONITOR_HOOK") 2>&1
             *"MilkShape: https://"*" (VNC pass:"*)
                 echo "MILKSHAPE_INFO:$line" >&3
                 ;;
+                
             # Gamepad/Wiimote success messages
             *"Gamepad/Webcam support will be built"*)
                 echo "PROGRESS:24:Gamepad/webcam configured" >&3
                 ;;
-            # ERROR HANDLING
-            *"No such file or directory"*)
-                echo "PROGRESS:0:❌ ERROR: ${line}" >&3
-                echo "PING:error" >&3
-                ;;
-            *"cannot create"*)
-                echo "PROGRESS:0:❌ ERROR: ${line}" >&3
-                echo "PING:error" >&3
-                ;;
-            *"failed to create"*)
-                echo "PROGRESS:0:❌ ERROR: ${line}" >&3
-                echo "PING:error" >&3
-                ;;
-            *"command not found"*)
-                echo "PROGRESS:0:❌ ERROR: ${line}" >&3
-                echo "PING:error" >&3
-                ;;
-            *"permission denied"*)
-                echo "PROGRESS:0:❌ ERROR: ${line}" >&3
-                echo "PING:error" >&3
-                ;;
         esac
+        
         # Also catch any percentage numbers in the wild (like docker build)
         if [[ "$line" =~ ([0-9]+)% ]]; then
             echo "PROGRESS:${BASH_REMATCH[1]}:${line:0:40}" >&3
@@ -293,6 +270,7 @@ cleanup_ECHO_MONITOR_HOOK() {
 }
 trap cleanup_ECHO_MONITOR_HOOK EXIT
 
+
 # Check if running as root
 if [ "$EUID" -ne 0 ]; then 
     warn "Not running as root. Some commands may need sudo."
@@ -306,7 +284,6 @@ header "════════════════════════
 header "                    CONFIGURATION"
 header "═══════════════════════════════════════════════════════════════"
 echo ""
-
 # Function to validate domain format (RFC-compliant)
 validate_domain() {
     local domain="$1"
@@ -346,7 +323,7 @@ validate_domain() {
     
     # Check if it's just a single word without TLD
     if [[ ! "$domain" =~ \. ]]; then
-        warn "Domain must contain at least one dot (e.g., wine.gitgpt.chat or gitgpt.chat)"
+        warn "Domain must contain at least one dot (e.g., wine0.sdappnet.cloud or sdappnet.cloud)"
         return 1
     fi
     
@@ -400,15 +377,16 @@ validate_domain() {
 }
 
 while true; do
-    get_input "Enter your MAIN domain (e.g., wine.gitgpt.chat)" "wine.gitgpt.chat" DOMAIN_NAME
+    get_input "Enter your MAIN domain (e.g., wine.sdappnet.cloud)" "wine.sdappnet.cloud" DOMAIN_NAME
     
     # Validate domain format
     if validate_domain "$DOMAIN_NAME"; then
         break
     else
-        warn "Invalid domain format. Please enter a full domain (e.g., wine.gitgpt.chat)"
+        warn "Invalid domain format. Please enter a full domain (e.g., wine.sdappnet.cloud)"
     fi
 done
+
 
 # DON'T MODIFY THE DOMAIN - use exactly what the user entered
 info "Using domain: $DOMAIN_NAME"
@@ -535,7 +513,6 @@ while true; do
     get_input "Enter email for SSL certificate (Let's Encrypt)" "admin@$DOMAIN_NAME" SSL_EMAIL
     if validate_email "$SSL_EMAIL"; then
         if validate_email_mx "$SSL_EMAIL"; then
-            success "✓ Email validated successfully! ✓"
             break
         else
             error "SSL certificates require a working email for expiry notifications. Domain has no MX records (cannot receive email). Use a personal email like yourname@gmail.com"
@@ -600,31 +577,29 @@ while true; do
     fi
 done
 
-# ============= DUMBDROP PIN CONFIGURATION =============
+# Ask user about DumbDrop PIN
 echo ""
 info "DumbDrop Upload Portal Configuration"
 echo "-------------------------------------"
 echo "You can protect the upload portal with a PIN, or leave it open."
 echo ""
-
-while true; do
-    read -s -p "Enter 4-digit PIN (press Enter for no PIN): " DUMBDROP_PIN
-    echo ""
-    
-    # Allow empty PIN
-    if [ -z "$DUMBDROP_PIN" ]; then
-        log "No PIN set - upload portal will be open"
-        break
-    fi
-    
-    # Validate 4-digit if provided
-    if [[ "$DUMBDROP_PIN" =~ ^[0-9]{4}$ ]]; then
-        log "PIN set for upload portal"
-        break
-    else
-        warn "PIN must be exactly 4 digits or empty. Try again."
-    fi
-done
+read -p "Do you want to set a 4-digit PIN for uploads? (Y/n): " -n 1 -r SET_PIN
+echo ""
+if [[ -z "$SET_PIN" || "$SET_PIN" =~ ^[Yy]$ ]]; then
+    while true; do
+        read -s -p "Enter 4-digit PIN: " DUMBDROP_PIN
+        echo ""
+        if [[ "$DUMBDROP_PIN" =~ ^[0-9]{4}$ ]]; then
+            break
+        else
+            warn "PIN must be exactly 4 digits. Try again."
+        fi
+    done
+    log "PIN set for upload portal"
+else
+    DUMBDROP_PIN=""
+    log "No PIN set - upload portal will be open"
+fi
 
 # Default allowed extensions - NO EXECUTABLES!
 # Game models, textures, audio, video - everything a modder needs!
@@ -1018,8 +993,8 @@ mkdir -p /opt/winejs/apps/milkshape
 cd /opt/winejs/apps/milkshape
 
 # Download MilkShape and icon
-curl -L "https://cdn.gitgpt.chat/rtx/wine/MilkShape3D1.8.5.zip" -o milkshape.zip
-curl -L "https://cdn.gitgpt.chat/rtx/wine/images/milkshape3dicon.jpg" -o icon.jpg
+curl -L "https://cdn.sdappnet.cloud/rtx/wine/MilkShape3D1.8.5.zip" -o milkshape.zip
+curl -L "https://cdn.sdappnet.cloud/rtx/wine/images/milkshape3dicon.jpg" -o icon.jpg
 
 # Unzip with force overwrite and quiet mode, auto-answer yes to all prompts
 unzip -o -q milkshape.zip || true
@@ -1381,8 +1356,8 @@ cat > package.json << 'EOF'
 }
 EOF
 
-
-cat > /opt/winejs/translator/index.js << EOF
+# Write the file directly with cat
+cat > /opt/winejs/translator/index.js << 'EOF'
 const express = require("express");
 const httpProxy = require("http-proxy");
 const fs = require("fs").promises;
@@ -1394,9 +1369,6 @@ const util = require("util");
 const execPromise = util.promisify(exec);
 const https = require("https");
 const http = require("http");
-
-// Domain from installation
-const DOMAIN_NAME = "${DOMAIN_NAME}";
 
 const app = express();
 const server = http.createServer(app);
@@ -1418,12 +1390,7 @@ app.use("/icons", express.static(path.join(__dirname, "public/icons")));
 
 // Proxy KasmVNC static assets
 app.use("/dist/:path(.*)", async (req, res) => {
-  // Get the app name from the referer header
-  const referer = req.headers.referer || '';
-  const appMatch = referer.match(/\/([^\/]+)/);
-  const appName = appMatch ? appMatch[1] : 'milkshape';
-  const port = appRegistry[appName] ? appRegistry[appName].port : 6901;
-  const target = \`https://127.0.0.1:\${port}/dist/\${req.params.path}\`;
+  const target = `https://127.0.0.1:6901/dist/${req.params.path}`;
   try {
     const response = await axios.get(target, {
       responseType: "stream",
@@ -1436,18 +1403,13 @@ app.use("/dist/:path(.*)", async (req, res) => {
     res.set("Cache-Control", "public, max-age=3600");
     response.data.pipe(res);
   } catch (err) {
-    console.error(\`Failed to proxy \${target}:\`, err.message);
+    console.error(`Failed to proxy ${target}:`, err.message);
     res.status(404).send("Not found");
   }
 });
 
 app.use("/vendor/:path(.*)", async (req, res) => {
- // Get the app name from the referer header
-  const referer = req.headers.referer || '';
-  const appMatch = referer.match(/\/([^\/]+)/);
-  const appName = appMatch ? appMatch[1] : 'milkshape';
-  const port = appRegistry[appName] ? appRegistry[appName].port : 6901;
-  const target = \`https://127.0.0.1:\${port}/vendor/\${req.params.path}\`;
+  const target = `https://127.0.0.1:6901/vendor/${req.params.path}`;
   try {
     const response = await axios.get(target, {
       responseType: "stream",
@@ -1464,12 +1426,7 @@ app.use("/vendor/:path(.*)", async (req, res) => {
 });
 
 app.use("/app/:path(.*)", async (req, res) => {
-  // Get the app name from the referer header
-  const referer = req.headers.referer || '';
-  const appMatch = referer.match(/\/([^\/]+)/);
-  const appName = appMatch ? appMatch[1] : 'milkshape';
-  const port = appRegistry[appName] ? appRegistry[appName].port : 6901;
-  const target = \`https://127.0.0.1:\${port}/app/\${req.params.path}\`;
+  const target = `https://127.0.0.1:6901/app/${req.params.path}`;
   try {
     const response = await axios.get(target, {
       responseType: "stream",
@@ -1494,6 +1451,11 @@ app.get("/package.json", (req, res) => {
   });
 });
 
+// Serve VNC client at root
+app.get("/", (req, res) => {
+  const target = `https://127.0.0.1:6901/vnc.html?autoconnect=true&resize=remote&reconnect=true&control_panel_collapsed=true`;
+  proxy.web(req, res, { target, changeOrigin: true });
+});
 
 const APPS_DIR = "/opt/winejs/apps";
 const INSTANCES_DIR = "/opt/winejs/kasmvnc-instances";
@@ -1526,14 +1488,14 @@ async function loadApps() {
             lastUsed: null,
           };
 
-          console.log(\`✅ Loaded app: \${app} on port \${appRegistry[app].port}\`);
-          console.log(\`   Icon path: \${config.icon || "default"}\`);
+          console.log(`✅ Loaded app: ${app} on port ${appRegistry[app].port}`);
+          console.log(`   Icon path: ${config.icon || "default"}`);
         } catch (err) {
-          console.log(\`⚠️  No valid config for \${app}:\`, err.message);
+          console.log(`⚠️  No valid config for ${app}:`, err.message);
         }
       }
     }
-    console.log(\`✅ Total apps loaded: \${Object.keys(appRegistry).length}\`);
+    console.log(`✅ Total apps loaded: ${Object.keys(appRegistry).length}`);
     await redis.set("appRegistry", JSON.stringify(appRegistry));
   } catch (err) {
     console.error("Error loading apps:", err);
@@ -1542,7 +1504,7 @@ async function loadApps() {
 
 async function isInstanceRunning(appName, port) {
   try {
-    const response = await axios.get(\`https://127.0.0.1:\${port}/\`, {
+    const response = await axios.get(`https://127.0.0.1:${port}/`, {
       timeout: 5000,
       httpsAgent: new https.Agent({ rejectUnauthorized: false }),
     });
@@ -1550,29 +1512,29 @@ async function isInstanceRunning(appName, port) {
   } catch (err) {
     if (err.response) {
       console.log(
-        \`Health check got status \${err.response.status} - server is running\`
+        `Health check got status ${err.response.status} - server is running`
       );
       return true;
     }
-    console.log(\`Health check failed for port \${port}:\`, err.message);
+    console.log(`Health check failed for port ${port}:`, err.message);
     return false;
   }
 }
 
 async function startInstance(appName, port) {
-  console.log(\`🚀 Starting \${appName} on port \${port}...\`);
+  console.log(`🚀 Starting ${appName} on port ${port}...`);
   try {
-    await execPromise(\`cd \${INSTANCES_DIR}/\${appName} && docker-compose up -d\`);
+    await execPromise(`cd ${INSTANCES_DIR}/${appName} && docker-compose up -d`);
     await new Promise((resolve) => setTimeout(resolve, 5000));
     if (appRegistry[appName]) {
       appRegistry[appName].running = true;
       appRegistry[appName].lastUsed = new Date().toISOString();
       await redis.set("appRegistry", JSON.stringify(appRegistry));
     }
-    console.log(\`✅ \${appName} started successfully\`);
+    console.log(`✅ ${appName} started successfully`);
     return true;
   } catch (err) {
-    console.error(\`❌ Failed to start \${appName}:\`, err.message);
+    console.error(`❌ Failed to start ${appName}:`, err.message);
     return false;
   }
 }
@@ -1610,7 +1572,7 @@ app.get('/:appName/favicon.ico', async (req, res) => {
     const app = appRegistry[appName];
     
     // Try app-specific icon first
-    let iconPath = path.join(__dirname, 'public/icons', \`\${appName}.jpg\`);
+    let iconPath = path.join(__dirname, 'public/icons', `${appName}.jpg`);
     
     if (!fs.existsSync(iconPath)) {
         // Try from config
@@ -1632,303 +1594,225 @@ app.get('/favicon.ico', (req, res) => {
 
 // Helper function to generate HTML head with proper meta tags
 function generateHead(req, appName, app) {
-  const title = app ? \`\${app.name} - WineJS\` : 'WINEJS - Windows Apps in Browser';
+  const title = app ? `${app.name} - WineJS` : 'WINEJS - Windows Apps in Browser';
   const iconUrl = app && app.icon ? app.icon : '/icons/wine-placeholder.png';
-  const fullIconUrl = \`https://\${req.headers.host}\${iconUrl}\`;
-  const previewUrl = \`https://img.gitgpt.chat/?url=https://\${req.headers.host}/\${appName}&w=1920&h=1080\`;
+  const fullIconUrl = `https://${req.headers.host}${iconUrl}`;
+  const previewUrl = `https://img.sdappnet.cloud/?url=https://${req.headers.host}/${appName}&w=1920&h=1080`;
   
-  return \`
-    <link rel="icon" href="\${iconUrl}" type="image/png">
-    <link rel="apple-touch-icon" href="\${iconUrl}" sizes="180x180">
-    <link rel="icon" type="image/png" href="\${iconUrl}" sizes="192x192">
-    <link rel="icon" type="image/png" href="\${iconUrl}" sizes="512x512">
-    <meta itemprop="name" content="\${title}">
-    <meta itemprop="image" content="\${previewUrl}">
-    <meta property="og:title" content="\${title}">
-    <meta property="og:image" content="\${previewUrl}">
-    <meta property="og:url" content="https://\${req.headers.host}/\${appName}">
+  return `
+    <link rel="icon" href="${iconUrl}" type="image/png">
+    <link rel="apple-touch-icon" href="${iconUrl}" sizes="180x180">
+    <link rel="icon" type="image/png" href="${iconUrl}" sizes="192x192">
+    <link rel="icon" type="image/png" href="${iconUrl}" sizes="512x512">
+    <meta itemprop="name" content="${title}">
+    <meta itemprop="image" content="${previewUrl}">
+    <meta property="og:title" content="${title}">
+    <meta property="og:image" content="${previewUrl}">
+    <meta property="og:url" content="https://${req.headers.host}/${appName}">
     <meta property="og:type" content="website">
-    <meta name="twitter:title" content="\${title}">
-    <meta name="twitter:image" content="\${previewUrl}">
+    <meta name="twitter:title" content="${title}">
+    <meta name="twitter:image" content="${previewUrl}">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="apple-touch-icon" href="\${iconUrl}" sizes="180x180">
-    <title>\${title}</title>
-  \`;
+    <link rel="apple-touch-icon" href="${iconUrl}" sizes="180x180">
+    <title>${title}</title>
+  `;
 }
 
 // Main translator - routes /appname to KasmVNC with meta injection
 app.get("/:appName*", async (req, res, next) => {
-    const appName = req.params.appName;
-    const fullPath = req.params[0] || ''; // Get the rest of the path after appName
-    const fullUrl = req.url;
+  const appName = req.params.appName;
+  const fullPath = req.params[0] || ''; // Get the rest of the path after appName
+  const fullUrl = req.url;
 
-    // Request arrives
-    //     │
-    //     ├─► Is it a system path? → Proxy to upload/download/etc
-    //     │
-    //     ├─► Is it consoles? → Generate special embed page
-    //     │
-    //     ├─► Is it a registered app? 
-    //     │       ├─► Root path → Serve VNC client with custom head
-    //     │       └─► Subpath → Proxy to app container
-    //     │
-    //     └─► 404 with available apps list
+  // Request arrives
+  //     │
+  //     ├─► Is it a system path? → Proxy to upload/download/etc
+  //     │
+  //     ├─► Is it consoles? → Generate special embed page
+  //     │
+  //     ├─► Is it a registered app? 
+  //     │       ├─► Root path → Serve VNC client with custom head
+  //     │       └─► Subpath → Proxy to app container
+  //     │
+  //     └─► 404 with available apps list
 
-    // Special case: don't handle WebSocket paths
-    if (fullUrl.includes("/websockify")) {
-        return next();
+  // Special case: don't handle WebSocket paths
+  if (fullUrl.includes("/websockify")) {
+    return next();
+  }
+
+  // Skip special paths
+  const skipPaths = [
+    "upload", "download", "health", "apps", 
+    "api", "icons", "package.json", "favicon.ico"
+  ];
+  
+  if (skipPaths.includes(appName)) {
+    return next();
+  }
+
+  // ============= CONSOLE HANDLERS CONFIGURATION =============
+  const consoleHandlers = {
+    xemu: {
+      pathPattern: (path) => path.startsWith("/titles/"),
+      extractTitle: (path) => {
+        // Check if there's a fragment with the game title
+        if (path.includes('#')) {
+          // Extract the title from the fragment (after #)
+          const fragmentMatch = path.match(/#(.+)$/);
+          if (fragmentMatch && fragmentMatch[1]) {
+            // Decode URI component and clean up
+            return decodeURIComponent(fragmentMatch[1]).replace(/-/g, ' ');
+          }
+        }
+        // Fallback to just the ID part (46530002) if no fragment
+        const match = path.match(/\/titles\/([^#]+)/);
+        return match ? match[1] : path.replace('/titles/', '');
+      },
+      searchSuffix: "xbox xemu",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/xbox-logo-original.png",
+      displayName: "XEMU"
+    },
+    ps2: {
+      pathPattern: (path) => true, // Any path works
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "ps2 pcsx2",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/pcsx2.png",
+      displayName: "PS2"
+    },
+    wii: {
+      pathPattern: (path) => true,
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "wii dolphin",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/dolphin_wii_icon.png", 
+      displayName: "Wii"
+    },
+    gamecube: {
+      pathPattern: (path) => true,
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "gamecube dolphin",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/gamecube-icon.png",
+      displayName: "GameCube"
+    },
+    dreamcast: {
+      pathPattern: (path) => true,
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "dreamcast flycast",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/dreamcast-icon.png",
+      displayName: "Dreamcast"
+    },
+    psp: {
+      pathPattern: (path) => true,
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "psp ppsspp",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/psp-icon.png",
+      displayName: "PSP"
+    },
+    n64: {
+      pathPattern: (path) => true,
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "n64 mupen64",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/n64-icon.png",
+      displayName: "N64"
+    },
+    snes: {
+      pathPattern: (path) => true,
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "snes snes9x",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/snes-icon.png",
+      displayName: "SNES"
+    },
+    genesis: {
+      pathPattern: (path) => true,
+      extractTitle: (path) => path.replace(/^\//, ''),
+      searchSuffix: "genesis blastem",
+      icon: "https://cdn.sdappnet.cloud/rtx/images/genesis-icon.png",
+      displayName: "Genesis"
     }
+  };
 
-    // Skip special paths
-    const skipPaths = [
-        "upload", "download", "health", "apps", 
-        "api", "icons", "package.json", "favicon.ico"
-    ];
+  // Check if this is a console handler request
+  if (consoleHandlers[appName]) {
+    const handler = consoleHandlers[appName];
     
-    if (skipPaths.includes(appName)) {
-        return next();
+    // Check if path matches pattern (for xemu's special /titles/ path)
+    if (handler.pathPattern(fullPath)) {
+      // Get the full URL including fragment
+      const fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+      
+      // Extract title using the handler but pass the full URL
+      const title = handler.extractTitle(fullUrl); // Pass full URL instead of fullPath
+      
+      const searchTerm = title.replace(/-/g, ' ') + " " + handler.searchSuffix;
+      const urlFriendlySearch = searchTerm.replace(/\s+/g, '-');
+      const iframeSrc = `https://meyt.netlify.app/search/${encodeURIComponent(urlFriendlySearch)}`;
+      
+      return res.send(generateConsolePage(
+        handler.displayName,
+        title,
+        iframeSrc,
+        handler.icon
+      ));
     }
+  }
 
-    // ============= CONSOLE HANDLERS CONFIGURATION =============
-    const consoleHandlers = {
-        xemu: {
-            pathPattern: (path) => true, // Any path works
-            extractTitle: (path) => path.replace(/^\//, ''),
-            searchSuffix: "xbox xemu",
-            icon: "https://cdn.gitgpt.chat/rtx/images/xbox-logo-original.png",
-            displayName: "XEMU"
-        },
-        ps2: {
-            pathPattern: (path) => true, // Any path works
-            extractTitle: (path) => path.replace(/^\//, ''),
-            searchSuffix: "ps2 pcsx2",
-            icon: "https://cdn.gitgpt.chat/rtx/images/pcsx2.png",
-            displayName: "PS2"
-        },
-        wii: {
-            pathPattern: (path) => true,
-            extractTitle: (path) => path.replace(/^\//, ''),
-            searchSuffix: "wii dolphin",
-            icon: "https://cdn.gitgpt.chat/rtx/images/dolphin_wii_icon.png", 
-            displayName: "Wii"
-        },
-        gamecube: {
-            pathPattern: (path) => true,
-            extractTitle: (path) => path.replace(/^\//, ''),
-            searchSuffix: "gamecube dolphin",
-            icon: "https://cdn.gitgpt.chat/rtx/images/gamecube-icon.png",
-            displayName: "GameCube"
-        },
-        dreamcast: {
-            pathPattern: (path) => true,
-            extractTitle: (path) => path.replace(/^\//, ''),
-            searchSuffix: "dreamcast",
-            icon: "https://cdn.gitgpt.chat/rtx/images/dreamcast-icon.png",
-            displayName: "Dreamcast"
-        },
-        ps1: {
-            pathPattern: (path) => true,
-            extractTitle: (path) => path.replace(/^\//, ''),
-            searchSuffix: "ps1",
-            icon: "https://cdn.gitgpt.chat/rtx/images/Playstation-Logo.png",
-            displayName: "PS1"
-        },
-        gba: {
-            pathPattern: (path) => true,
-            extractTitle: (path) => path.replace(/^\//, ''),
-            searchSuffix: "gba",
-            icon: "https://cdn.gitgpt.chat/rtx/images/gba-icon.png",
-            displayName: "GBA"
-        },
-        psp: {
-            pathPattern: (path) => true,
-            extractTitle: (path) => path.replace(/^\//, ''),
-            searchSuffix: "psp ppsspp",
-            icon: "https://cdn.gitgpt.chat/rtx/images/psp-icon.png",
-            displayName: "PSP"
-        },
-        n64: {
-            pathPattern: (path) => true,
-            extractTitle: (path) => path.replace(/^\//, ''),
-            searchSuffix: "n64 mupen64",
-            icon: "https://cdn.gitgpt.chat/rtx/images/n64-icon.png",
-            displayName: "N64"
-        },
-        snes: {
-            pathPattern: (path) => true,
-            extractTitle: (path) => path.replace(/^\//, ''),
-            searchSuffix: "snes snes9x",
-            icon: "https://cdn.gitgpt.chat/rtx/images/snes-icon.png",
-            displayName: "SNES"
-        },
-        genesis: {
-            pathPattern: (path) => true,
-            extractTitle: (path) => path.replace(/^\//, ''),
-            searchSuffix: "sega genesis",
-            icon: "https://cdn.gitgpt.chat/rtx/images/genesis-icon.png",
-            displayName: "Genesis"
-        },
-        sega: {
-            pathPattern: (path) => true,
-            extractTitle: (path) => path.replace(/^\//, ''),
-            searchSuffix: "sega genesis",
-            icon: "https://cdn.gitgpt.chat/rtx/images/genesis-icon.png",
-            displayName: "Sega Genesis"
-        }
-    };
+  // ============= REGISTERED APP HANDLING =============
+  const app = appRegistry[appName];
 
-    // Check if this is a console handler request
-    if (consoleHandlers[appName]) {
-        const handler = consoleHandlers[appName];
-        
-        // Check if path matches pattern
-        if (handler.pathPattern(fullPath)) {
-            // Extract the game name from the URL path
-            let gameName = "";
-            
-            // Get the path after the app name
-            const pathAfterApp = req.path.replace("/" + appName, '').replace(/^\//, '');
+  if (!app) {
+    // App not found in registry and not a special handler
+    return res.status(404).send(generate404Page(appName, appRegistry));
+  }
 
-            if (pathAfterApp) {
-                gameName = pathAfterApp;
-            } else {
-                // Fallback: try to get from the full URL
-                const urlParts = req.originalUrl.split('/');
-                gameName = urlParts[urlParts.length - 1] || "";
-            }
-            
-            // FIX: Remove the undefined 'title' variable and use gameName directly
-            let cleanTitle = gameName
-                .replace(/-/g, ' ')
-                .trim();
-
-
-            const searchTerm = cleanTitle.replace(/-/g, ' ') + " " + handler.searchSuffix;
-            const urlFriendlySearch = searchTerm.replace(/\s+/g, '-');
-            const iframeSrc = \`https://meyt.netlify.app/search/\${encodeURIComponent(urlFriendlySearch)}\`;
-
-            console.log(\`🎮 Console handler: \${appName} -> Game: "\${cleanTitle}" -> Search URL: \${iframeSrc}\`);
-
-            return res.send(generateConsolePage(
-                handler.displayName,
-                cleanTitle,
-                iframeSrc,
-                handler.icon
-            ));
-        }
+  // Check if instance is running, start if needed
+  const running = await isInstanceRunning(appName, app.port);
+  if (!running) {
+    const started = await startInstance(appName, app.port);
+    if (!started) {
+      return res.status(500).send("Failed to start app instance");
     }
+  }
 
-    // ============= REGISTERED APP HANDLING =============
-    const app = appRegistry[appName];
-    console.log(\`🔥 DEBUG: appName="\${appName}", app=\${app ? 'found' : 'not found'}, port=\${app ? app.port : 'N/A'}\`);
-    
-    if (!app) {
-        // App not found in registry and not a special handler
-        return res.status(404).send(generate404Page(appName, appRegistry));
-    }
+  app.lastUsed = new Date().toISOString();
 
-    // Check if instance is running, start if needed
-    const running = await isInstanceRunning(appName, app.port);
-    if (!running) {
-        const started = await startInstance(appName, app.port);
-        if (!started) {
-        return res.status(500).send("Failed to start app instance");
+  // If this is a request for the root of the app, serve VNC client
+  if (fullPath === '' || fullPath === '/') {
+    try {
+      const response = await axios.get(`https://127.0.0.1:${app.port}/vnc.html`, {
+        httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+        responseType: "text",
+      });
+
+      let html = response.data;
+
+      // Generate custom head with app-specific metadata
+      const newHead = generateHead(req, appName, app);
+
+      // Replace the entire head section
+      const headEndIndex = html.indexOf('</head>');
+      if (headEndIndex !== -1) {
+        const headStartIndex = html.indexOf('<head');
+        if (headStartIndex !== -1) {
+          html = html.substring(0, headStartIndex) + newHead + html.substring(headEndIndex);
+        } else {
+          html = newHead + html;
         }
+      } else {
+        html = newHead + html;
+      }
+
+      return res.send(html);
+    } catch (err) {
+      console.error("Failed to fetch vnc.html, falling back to proxy:", err.message);
+      // Fallback to proxy if fetch fails
+      req.url = "/vnc.html";
+      return proxy.web(req, res, { target: `https://127.0.0.1:${app.port}`, changeOrigin: true });
     }
+  }
 
-    app.lastUsed = new Date().toISOString();
-
-    // If this is a request for the root of the app, serve VNC client
-    if (fullPath === '' || fullPath === '/') {
-        try {
-            const response = await axios.get(\`https://127.0.0.1:\${app.port}/vnc.html\`, {
-                httpsAgent: new https.Agent({ rejectUnauthorized: false }),
-                responseType: "text",
-            });
-
-            let html = response.data;
-
-            // Generate custom head with app-specific metadata
-            const newHead = generateHead(req, appName, app);
-
-            // Find the existing head section and replace its contents
-            const headStart = html.indexOf('<head');
-            const headEnd = html.indexOf('</head>');
-            
-            if (headStart !== -1 && headEnd !== -1) {
-                // Find the end of the opening head tag
-                const headOpenEnd = html.indexOf('>', headStart) + 1;
-                // Replace everything between <head> and </head> with our new head content
-                html = html.substring(0, headOpenEnd) + newHead + html.substring(headEnd);
-            } else {
-                // If no head tag found, insert at beginning
-                html = newHead + html;
-            }
-
-            // Add WebSocket override script at the end of body
-            const websocketOverride = \`
-    <script>
-    (function() {
-        console.log("WebSocket override loading");
-        const OriginalWebSocket = window.WebSocket;
-        window.WebSocket = function(url, protocols) {
-            const appName = window.location.pathname.split('/')[1];
-            console.log("Original WebSocket URL:", url);
-            let modifiedUrl = url;
-            
-            if (url && typeof url === 'string' && url.indexOf('/websockify') !== -1 && appName) {
-                try {
-                    const urlObj = new URL(url, window.location.href);
-                    let token = urlObj.searchParams.get('token');
-                    
-                    if (!token) {
-                        // No token at all - create one
-                        token = appName + ':kasm_user:password';
-                        urlObj.searchParams.set('token', token);
-                        modifiedUrl = urlObj.toString();
-                        console.log("Added token to WebSocket URL:", modifiedUrl);
-                    } else if (token.indexOf(appName + ':') !== 0) {
-                        // Token exists but doesn't have app name
-                        token = appName + ':' + token;
-                        urlObj.searchParams.set('token', token);
-                        modifiedUrl = urlObj.toString();
-                        console.log("Modified WebSocket URL:", modifiedUrl);
-                    } else {
-                        console.log("Token already correct:", token);
-                    }
-                } catch(e) {
-                    console.error("Error modifying WebSocket URL:", e);
-                }
-            }
-            
-            const ws = new OriginalWebSocket(modifiedUrl, protocols);
-            return ws;
-        };
-        
-        for (let key in OriginalWebSocket) {
-            if (OriginalWebSocket.hasOwnProperty(key)) {
-                window.WebSocket[key] = OriginalWebSocket[key];
-            }
-        }
-        console.log("WebSocket override installed");
-    })();
-    </script>
-    \`;
-
-            html = html + websocketOverride;
-
-            return res.send(html);
-        } catch (err) {
-            console.error("Failed to fetch vnc.html, falling back to proxy:", err.message);
-            // Fallback to proxy if fetch fails
-            req.url = "/vnc.html";
-            return proxy.web(req, res, { target: \`https://127.0.0.1:\${app.port}\`, changeOrigin: true });
-        }
-    }
-
-    // For any other paths (static assets, etc), proxy directly to the app
-    const target = \`https://127.0.0.1:\${app.port}\${fullPath}\`;
-    proxy.web(req, res, { target, changeOrigin: true });
+  // For any other paths (static assets, etc), proxy directly to the app
+  const target = `https://127.0.0.1:${app.port}${fullPath}`;
+  proxy.web(req, res, { target, changeOrigin: true });
 });
 
 // SINGLE console page generator with HTTPS icon support
@@ -1937,7 +1821,7 @@ function generateConsolePage(consoleName, title, iframeSrc, iconUrl) {
   
   // Use the provided icon URL directly (supports HTTPS)
   // Add "💽 Not installed" to the console name
-  const displayConsoleName = \`\${consoleName} 💽 Not installed\`;
+  const displayConsoleName = `${consoleName} 💽 Not installed`;
   
   // Use the provided icon URL directly (supports HTTPS)
   const winTitleBarHTML = getTitleBarHTML(iconUrl, displayConsoleName);
@@ -1945,46 +1829,46 @@ function generateConsolePage(consoleName, title, iframeSrc, iconUrl) {
   // Clean title for display
   const displayTitle = title.replace(/-/g, ' ');
 
-  return \`
+  return `
     <!DOCTYPE html>
     <html>
     <head>
-      <title>\${consoleName}: \${displayTitle}</title>
-      <link rel="icon" href="\${iconUrl}" type="image/png">
-      <link rel="apple-touch-icon" href="\${iconUrl}">
-      <meta property="og:title" content="\${consoleName}: \${displayTitle}">
-      <meta property="og:image" content="\${iconUrl}">
+      <title>${consoleName}: ${displayTitle}</title>
+      <link rel="icon" href="${iconUrl}" type="image/png">
+      <link rel="apple-touch-icon" href="${iconUrl}">
+      <meta property="og:title" content="${consoleName}: ${displayTitle}">
+      <meta property="og:image" content="${iconUrl}">
       <meta property="og:type" content="website">
       <meta name="twitter:card" content="summary_large_image">
-      <meta name="twitter:title" content="\${consoleName}: \${displayTitle}">
-      <meta name="twitter:image" content="\${iconUrl}">
-      <style>\${winTitleBarCSS}</style>
+      <meta name="twitter:title" content="${consoleName}: ${displayTitle}">
+      <meta name="twitter:image" content="${iconUrl}">
+      <style>${winTitleBarCSS}</style>
     </head>
     <body>
-      \${winTitleBarHTML}
+      ${winTitleBarHTML}
       <div class="content">
-        <iframe src="\${iframeSrc}" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; gamepad; microphone; camera"></iframe>
+        <iframe src="${iframeSrc}" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; gamepad; microphone; camera"></iframe>
       </div>
     </body>
     </html>
-  \`;
+  `;
 }
 
 function generate404Page(appName, appRegistry) {
   const winTitleBarCSS = getTitleBarCSS();
   const winTitleBarHTML = getTitleBarHTML(
-    'https://cdn.gitgpt.chat/rtx/images/winejs-logo.png',
+    'https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png',
     'WINEJS'
   );
 
-  return \`
+  return `
     <!DOCTYPE html>
     <html>
       <head>
         <title>App Not Found</title>
-        <link rel="icon" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" type="image/png">
+        <link rel="icon" href="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" type="image/png">
         <style>
-          \${winTitleBarCSS}
+          ${winTitleBarCSS}
           
           /* Additional styles for 404 content */
           .error-content {
@@ -2044,26 +1928,26 @@ function generate404Page(appName, appRegistry) {
         </style>
       </head>
       <body>
-        \${winTitleBarHTML}
+        ${winTitleBarHTML}
         
         <div class="error-content">
           <h1>❌ App Not Found</h1>
-          <p>The app "<strong>\${appName}</strong>" is not installed.</p>
+          <p>The app "<strong>${appName}</strong>" is not installed.</p>
           
           <div class="app-list">
             <p style="margin-bottom: 10px;">📦 Available apps:</p>
-            <span>\${Object.keys(appRegistry).join(" • ")}</span>
+            <span>${Object.keys(appRegistry).join(" • ")}</span>
           </div>
           
           <a href="/">← Go Home</a>
         </div>
       </body>
     </html>
-  \`;
+  `;
 }
 
 function getTitleBarCSS() {
-  return \`
+  return `
     * {
       margin: 0;
       padding: 0;
@@ -2160,15 +2044,15 @@ function getTitleBarCSS() {
       border: none;
       display: block;
     }
-  \`;
+  `;
 }
 
 function getTitleBarHTML(iconUrl, title) {
-  return \`
+  return `
     <div class="win-titlebar">
       <div class="win-logo">
-        <img src="\${iconUrl}" alt="\${title}" onerror="this.src='https://cdn.gitgpt.chat/rtx/images/winejs-logo.png'">
-        <span>\${title}</span>
+        <img src="${iconUrl}" alt="${title}" onerror="this.src='https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png'">
+        <span>${title}</span>
       </div>
       <div class="win-controls">
         <div class="win-btn">─</div>
@@ -2176,103 +2060,74 @@ function getTitleBarHTML(iconUrl, title) {
         <div class="win-btn close">×</div>
       </div>
     </div>
-  \`;
+  `;
 }
 
 // WebSocket support for VNC - Attached to server, not app!
 server.on("upgrade", (req, socket, head) => {
   console.log("🔥🔥🔥 WebSocket upgrade request received! 🔥🔥🔥");
   console.log("URL:", req.url);
-  console.log("📋 appRegistry keys at WebSocket time:", Object.keys(appRegistry));
-  console.log("📋 appRegistry content:", JSON.stringify(appRegistry));
 
+  // Extract the app name from the path
+  const pathParts = req.url.split("/").filter((p) => p.length > 0);
   let appName = null;
   let targetPath = req.url;
 
-  // FIRST: Try to get app name from referer header
-  const referer = req.headers.referer || '';
-  if (referer) {
-    const match = referer.match(/\\/([^\\/]+)(?:\\/|$)/);
-    if (match && match[1] && appRegistry[match[1]]) {
-      appName = match[1];
-      console.log(
-        \`Found app from referer: \${appName}\`
-      );
-    }
-  }
-
-  // SECOND: Extract the app name from the path
-  // Split URL into path and query string
-  const urlWithoutQuery = req.url.split('?')[0];
-  const pathParts = urlWithoutQuery.split("/").filter((p) => p.length > 0);
-  console.log("📂 Clean pathParts:", pathParts);
-  console.log("📂 pathParts:", pathParts);
-  console.log("📂 pathParts[0]:", pathParts[0]);
-  console.log("📂 pathParts[0] === 'websockify'?", pathParts[0] === "websockify");
-
   // Handle different path patterns
-  if (!appName && pathParts.length > 0) {
+  if (pathParts.length > 0) {
     // Check if first part is an app name (including special handlers)
     if (appRegistry[pathParts[0]]) {
       appName = pathParts[0];
       // Remove app name from path for target
       targetPath = "/" + pathParts.slice(1).join("/");
       console.log(
-        \`Found app name in path: \${appName}, target path: \${targetPath}\`
+        `Found app name in path: ${appName}, target path: ${targetPath}`
       );
     }
     // Check if it's a direct websockify path
     else if (pathParts[0] === "websockify") {
-      console.log("🔧 ENTERED WEBSOCKIFY HANDLER");  // ADD THIS
       // Try to determine app from the query string or default
-      const urlObj = new URL(req.url, \`http://\${req.headers.host}\`);
-      let token = urlObj.searchParams.get('token');
-      console.log("Token from WebSocket:", token);  // <-- ADD THIS
-
-        // Decode the token (handle URL encoding)
-        if (token) {
-            token = decodeURIComponent(token);
-            console.log("Decoded token:", token);
-            if (token.includes(':')) {
-                const tokenApp = token.split(':')[0];
-                console.log("Extracted app name:", tokenApp);
-                console.log("Current appRegistry keys:", Object.keys(appRegistry));
-                console.log("Checking if app exists:", appRegistry[tokenApp] ? "YES" : "NO");
-                if (appRegistry[tokenApp]) {
-                    appName = tokenApp;
-                }
-            }
+      const urlObj = new URL(req.url, `http://${req.headers.host}`);
+      const token = urlObj.searchParams.get('token');
+      if (token && token.includes(':')) {
+        const tokenApp = token.split(':')[0];
+        if (appRegistry[tokenApp]) {
+          appName = tokenApp;
         }
+      }
+      
+      if (!appName) {
+        appName = "milkshape"; // Default
+      }
       
       targetPath = req.url;
-      console.log(\`Websockify path, using app: \${appName}\`);
+      console.log(`Websockify path, using app: ${appName}`);
     }
   }
 
-  // THIRD: If no app name found, check if it's in the token
+  // If no app name found, check if it's in the token
   if (!appName && req.url.includes('token=')) {
     const tokenMatch = req.url.match(/token=([^&]+)/);
     if (tokenMatch && tokenMatch[1]) {
       const tokenApp = tokenMatch[1].split(':')[0];
       if (appRegistry[tokenApp]) {
         appName = tokenApp;
-        console.log(\`Found app from token: \${appName}\`);
+        console.log(`Found app from token: ${appName}`);
       }
     }
   }
 
-  // If still no app found, return error (don't default to milkshape)
+  // Final fallback
   if (!appName) {
-    console.log("❌ No app found for WebSocket connection");
-    socket.write("HTTP/1.1 400 Bad Request\r\n\r\nNo app specified");
-    socket.destroy();
-    return;
+    appName = "milkshape";
+    targetPath = req.url;
+    console.log("No app found in path, defaulting to milkshape");
   }
 
   // For special handlers (xemu, ps2, wii, etc), we can't proxy WebSockets
-  const consoleHandlersList = ['xemu', 'ps2', 'wii', 'gamecube', 'dreamcast', 'ps1', 'psp', 'n64', 'snes', 'genesis', 'sega'];
+  const consoleHandlersList = ['xemu', 'ps2', 'wii', 'gamecube', 'dreamcast', 'psp', 'n64', 'snes', 'genesis'];
   if (consoleHandlersList.includes(appName)) {
-    console.log(\`❌ WebSocket not supported for special handler: \${appName}\`);
+    console.log(`❌ WebSocket not supported for special handler: ${appName}`);
     socket.write("HTTP/1.1 400 Bad Request\r\n\r\nWebSocket not supported for this endpoint");
     socket.destroy();
     return;
@@ -2280,14 +2135,14 @@ server.on("upgrade", (req, socket, head) => {
 
   const app = appRegistry[appName];
   if (!app) {
-    console.log(\`❌ No app found for WebSocket: \${appName}\`);
+    console.log(`❌ No app found for WebSocket: ${appName}`);
     socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
     socket.destroy();
     return;
   }
 
   console.log(
-    \`🎯 Proxying WebSocket for \${appName} to port \${app.port} with path \${targetPath}\`
+    `🎯 Proxying WebSocket for ${appName} to port ${app.port} with path ${targetPath}`
   );
 
   // Ensure the target path starts with /
@@ -2296,13 +2151,13 @@ server.on("upgrade", (req, socket, head) => {
   }
 
   proxy.ws(req, socket, head, {
-    target: \`wss://127.0.0.1:\${app.port}\`,
+    target: `wss://127.0.0.1:${app.port}`,
     path: targetPath,
     secure: false,
     ws: true,
     headers: {
-      Host: \`127.0.0.1:\${app.port}\`,
-      Origin: \`https://\${req.headers.host}\`,
+      Host: `127.0.0.1:${app.port}`,
+      Origin: `https://${req.headers.host}`,
       Upgrade: "websocket",
       Connection: "Upgrade",
     },
@@ -2339,21 +2194,12 @@ proxy.on("close", (res, socket, head) => {
   console.log("WebSocket connection closed");
 });
 
-
-// Serve VNC client at root
-app.get("/", (req, res) => {
-// Default to milkshape for root
-  const port = 6901;
-  const target = \`https://127.0.0.1:\${port}/vnc.html?autoconnect=true&resize=remote&reconnect=true&control_panel_collapsed=true\`;
-  proxy.web(req, res, { target, changeOrigin: true });
-});
-
 // Catch-all for other requests - THIS MUST BE LAST
 app.use("/:any", (req, res, next) => {
   if (appRegistry[req.params.any]) {
     return next();
   }
-  const target = \`https://127.0.0.1:6901\${req.url}\`;
+  const target = `https://127.0.0.1:6901${req.url}`;
   proxy.web(req, res, { target, changeOrigin: true });
 });
 
@@ -2363,14 +2209,15 @@ async function start() {
 
   // Use the server instance to listen, not app
   server.listen(PORT, "0.0.0.0", () => {
-    console.log(\`✅ WINEJS Translator running on port \${PORT}\`);
-    console.log(\`   Apps loaded: \${Object.keys(appRegistry).length}\`);
-    console.log(\`   Upload at: /upload (proxied to DumbDrop)\`);
-    console.log(\`   Download at: /download (proxied to FileServer)\`);
+    console.log(`✅ WINEJS Translator running on port ${PORT}`);
+    console.log(`   Apps loaded: ${Object.keys(appRegistry).length}`);
+    console.log(`   Upload at: /upload (proxied to DumbDrop)`);
+    console.log(`   Download at: /download (proxied to FileServer)`);
   });
 }
 
 start().catch(console.error);
+
 //WEBSOCKET FIXES
 // 1. Attached WebSocket handler to HTTP server, NOT Express app
 // // BEFORE (WRONG):
@@ -2487,714 +2334,6 @@ fi
 
 FILESERVER_SIGNING_KEY=$(openssl rand -base64 32)
 
-# Create custom index.html with Windows 10 style
-mkdir -p /opt/winejs/fileserver/www
-cat > /opt/winejs/fileserver/www/index.html << 'EOF'
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FileServer</title>
-    <link rel="icon" href="https://cdn.gitgpt.chat/rtx/images/fileserver-icon.png" type="image/png">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', 'Lucida Grande', 'Arial', sans-serif;
-        }
-
-        body {
-            background: #1a1a1a;
-            background-image: radial-gradient(circle at 30% 40%, #2d2d2d 0%, #1a1a1a 80%);
-            min-height: 100vh;
-            color: #e0e0e0;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Windows 10-style title bar */
-        .win-titlebar {
-            background: #2d2d2d;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            padding: 0 0px;
-            border-bottom: 1px solid #404040;
-            user-select: none;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-            flex-shrink: 0;
-        }
-
-        .win-logo {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 0 20px;
-        }
-
-        .win-logo img {
-            height: 28px;
-            width: auto;
-        }
-
-        .win-logo span {
-            font-size: 16px;
-            font-weight: 500;
-            color: #fff;
-            letter-spacing: 0.5px;
-        }
-
-        .win-controls {
-            display: flex;
-            margin-left: auto;
-            gap: 2px;
-        }
-
-        .win-btn {
-            width: 46px;
-            height: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #e0e0e0;
-            font-size: 20px;
-            cursor: pointer;
-            transition: background 0.1s;
-        }
-
-        .win-btn:hover {
-            background: #404040;
-        }
-
-        .win-btn.close:hover {
-            background: #c42b1c;
-            color: white;
-        }
-
-        /* Windows 10-style navigation */
-        .win-nav {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 12px;
-            background: #252525;
-            border-bottom: 1px solid #333;
-            flex-wrap: nowrap;
-        }
-
-        .nav-links {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            flex-shrink: 0;
-        }
-
-        .win-nav-item {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            padding: 6px 8px;
-            border-radius: 4px;
-            color: #ccc;
-            font-size: 13px;
-            transition: all 0.2s;
-            text-decoration: none;
-            white-space: nowrap;
-        }
-
-        .win-nav-item:hover {
-            background: #404040;
-            color: #fff;
-        }
-
-        .win-nav-item.active {
-            background: #0078d4;
-            color: white;
-        }
-
-        .win-nav-divider {
-            display: inline-block;
-            width: 1px;
-            height: 20px;
-            background: #404040;
-            margin: 0 4px;
-        }
-
-        /* Search bar */
-        .win-search {
-            background: #3a3a3a;
-            border: 1px solid #4a4a4a;
-            border-radius: 4px;
-            padding: 2px 8px;
-            display: flex;
-            align-items: center;
-            flex: 1 1 auto;
-            min-width: 120px;
-        }
-
-        .win-search input {
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 13px;
-            padding: 4px 4px;
-            width: 100%;
-            outline: none;
-        }
-
-        .win-search input::placeholder {
-            color: #888;
-            font-size: 12px;
-        }
-
-        .win-search span {
-            color: #888;
-            font-size: 14px;
-            margin-right: 2px;
-        }
-
-        /* Main container */
-        .win-container {
-            flex: 1;
-            padding: 20px;
-            max-width: 100%;
-            width: 100%;
-        }
-
-        /* Login Panel */
-        .login-panel {
-            background: #2d2d2d;
-            border: 1px solid #404040;
-            border-radius: 6px;
-            padding: 2rem;
-            max-width: 400px;
-            margin: 2rem auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .login-panel h2 {
-            margin-bottom: 1.5rem;
-            color: #fff;
-            font-size: 1.5rem;
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .login-panel h2:before {
-            content: "🔒";
-            font-size: 1.8rem;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #ccc;
-            font-size: 0.9rem;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            background: #3a3a3a;
-            border: 2px solid #4a4a4a;
-            border-radius: 4px;
-            font-size: 1rem;
-            color: #fff;
-            transition: all 0.2s;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #0078d4;
-            background: #404040;
-        }
-
-        .form-group input::placeholder {
-            color: #888;
-        }
-
-        button {
-            background: #0078d4;
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 4px;
-            font-size: 1rem;
-            cursor: pointer;
-            width: 100%;
-            font-weight: 600;
-            transition: all 0.2s;
-            margin-top: 1rem;
-        }
-
-        button:hover {
-            background: #106ebe;
-        }
-
-        /* File Browser */
-        .browser {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #2d2d2d;
-            border: 1px solid #404040;
-            border-radius: 6px;
-            overflow: hidden;
-            display: none;
-        }
-
-        .path-bar {
-            background: #252525;
-            padding: 1rem;
-            border-bottom: 1px solid #404040;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .path-bar span {
-            color: #888;
-        }
-
-        .path-bar .current-path {
-            background: #3a3a3a;
-            padding: 0.3rem 0.8rem;
-            border-radius: 4px;
-            border: 1px solid #4a4a4a;
-            font-family: monospace;
-            flex: 1;
-            color: #00ff9d;
-        }
-
-        .path-bar button {
-            width: auto;
-            padding: 0.3rem 1rem;
-            margin: 0;
-            background: #3a3a3a;
-            border: 1px solid #4a4a4a;
-        }
-
-        .path-bar button:hover {
-            background: #404040;
-        }
-
-        /* Status bar */
-        .status-bar {
-            background: #252525;
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-            display: flex;
-            gap: 1rem;
-            border-bottom: 1px solid #404040;
-            color: #ccc;
-        }
-
-        .status-bar .cert-warning {
-            background: #ffc107;
-            color: #333;
-            padding: 0.2rem 0.5rem;
-            border-radius: 3px;
-            font-size: 0.8rem;
-        }
-
-        /* File list */
-        .file-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0.5rem;
-            background: #2d2d2d;
-        }
-
-        .file-item {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 0.5rem;
-            border-bottom: 1px solid #404040;
-            cursor: pointer;
-            transition: background 0.2s;
-            border-radius: 4px;
-        }
-
-        .file-item:hover {
-            background: #3a3a3a;
-        }
-
-        .file-item .icon {
-            width: 32px;
-            margin-right: 0.5rem;
-            font-size: 1.4rem;
-            text-align: center;
-        }
-
-        .file-item .name {
-            flex: 1;
-            font-size: 0.95rem;
-        }
-
-        .file-item .size {
-            color: #888;
-            font-size: 0.9rem;
-            width: 100px;
-            text-align: right;
-        }
-
-        .file-item .date {
-            color: #888;
-            font-size: 0.9rem;
-            width: 150px;
-            text-align: right;
-        }
-
-        .directory {
-            color: #0078d4;
-            font-weight: 500;
-        }
-
-        .file {
-            color: #e0e0e0;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: #888;
-        }
-
-        .error {
-            color: #f14c4c;
-            padding: 1rem;
-            text-align: center;
-        }
-
-        /* Certificate fingerprint */
-        .cert-fingerprint {
-            margin-top: 1rem;
-            font-size: 0.8rem;
-            color: #888;
-            text-align: center;
-            padding: 0.5rem;
-            background: #252525;
-            border-radius: 4px;
-            border: 1px solid #404040;
-            font-family: monospace;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .file-item .date {
-                display: none;
-            }
-            
-            .file-item .size {
-                width: 70px;
-            }
-            
-            .win-nav-item .nav-text {
-                display: none;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .file-item .size {
-                display: none;
-            }
-            
-            .win-search {
-                min-width: 90px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-    <!-- Windows 10-style title bar -->
-    <div class="win-titlebar">
-        <div class="win-logo">
-            <img src="https://cdn.gitgpt.chat/rtx/images/fileserver-logo.png" alt="">
-            <span>FileServer</span>
-        </div>
-        <div class="win-controls">
-            <div class="win-btn">─</div>
-            <div class="win-btn">□</div>
-            <div class="win-btn close">×</div>
-        </div>
-    </div>
-
-    <!-- Windows 10-style navigation -->
-    <div class="win-nav">
-        <div class="nav-links">
-            <a href="/" class="win-nav-item">
-                <span>🏠</span>
-                <span class="nav-text">Home</span>
-            </a>
-            <a href="/upload" target="_blank" rel="noopener" class="win-nav-item">
-                <span>📤</span>
-                <span class="nav-text">Upload</span>
-            </a>
-            <a href="/download" class="win-nav-item active">
-                <span>📥</span>
-                <span class="nav-text">Downloads</span>
-            </a>
-            <div class="win-nav-divider"></div>
-        </div>
-        <div class="win-search">
-            <span>🔍</span>
-            <input type="text" id="searchInput" placeholder="Filter files...">
-        </div>
-    </div>
-
-    <!-- Main container -->
-    <div class="win-container">
-        <!-- Login Panel -->
-        <div id="loginPanel" class="login-panel">
-            <h2>Secure Download Portal</h2>
-            <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="password" placeholder="Enter password">
-            </div>
-            <button onclick="connect()">Connect to Server</button>
-        </div>
-
-        <!-- File Browser -->
-        <div id="browser" class="browser">
-            <div class="path-bar">
-                <span>📁</span>
-                <span class="current-path" id="currentPath">/</span>
-                <button onclick="goUp()">⬆️ Up</button>
-                <button onclick="refreshList()">🔄 Refresh</button>
-            </div>
-            <div class="status-bar">
-                <span id="connectionStatus">Connected as: <span id="connectedUser"></span></span>
-                <span class="cert-warning" id="certWarning">Self-signed certificate</span>
-            </div>
-            <div id="fileList" class="file-list">
-                <div class="loading">Loading directory contents...</div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let currentPath = '/';
-        let currentFiles = [];
-
-        // Search functionality
-        document.getElementById('searchInput')?.addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const items = document.querySelectorAll('.file-item');
-            
-            items.forEach(item => {
-                const name = item.querySelector('.name')?.textContent.toLowerCase() || '';
-                if (name.includes(searchTerm) || searchTerm === '') {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-
-        async function connect() {
-            const password = document.getElementById('password').value;
-            
-            if (!password) {
-                alert('Please enter your password');
-                return;
-            }
-            
-            // Use the correct FileServer login endpoint
-            const loginResponse = await fetch('download/api/auth/login', {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ password: password }),
-                credentials: 'include'
-            });
-            
-            if (loginResponse.ok) {
-                const loginData = await loginResponse.json();
-                // Store the antiforgery token
-                if (loginData.antiforgeryToken) {
-                    localStorage.setItem('antiforgeryToken', loginData.antiforgeryToken);
-                }
-                
-                document.getElementById('loginPanel').style.display = 'none';
-                document.getElementById('browser').style.display = 'flex';
-                
-                // Load files after successful login
-                await loadRealFiles();
-            } else {
-                const error = await loginResponse.text();
-                alert(`Login failed: ${error || 'Invalid password'}`);
-            }
-        }
-
-        // Load real files from FileServer API
-        async function loadRealFiles() {
-            const fileList = document.getElementById('fileList');
-            fileList.innerHTML = '<div class="loading">Loading files from server...</div>';
-            
-            try {
-                const antiforgeryToken = localStorage.getItem('antiforgeryToken');
-                const headers = {
-                    'Content-Type': 'application/json'
-                };
-                if (antiforgeryToken) {
-                    headers['FileServer-AntiforgeryToken'] = antiforgeryToken;
-                }
-                
-                // Use the correct files list endpoint
-                const response = await fetch('/api/files/list', {
-                    method: 'GET',
-                    headers: headers,
-                    credentials: 'include'
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-                const files = await response.json();
-                
-                currentFiles = files.map(file => ({
-                    name: file.name,
-                    type: file.isDirectory ? 'dir' : 'file',
-                    size: file.size,
-                    date: file.modified ? new Date(file.modified).toLocaleDateString() : '-'
-                }));
-                
-                displayFiles(currentFiles);
-                document.getElementById('currentPath').textContent = currentPath;
-                
-            } catch (err) {
-                console.error('Failed to load files:', err);
-                fileList.innerHTML = `<div class="error">❌ Failed to load files. ${err.message}</div>`;
-            }
-        }
-
-        function displayFiles(files) {
-            const fileList = document.getElementById('fileList');
-            fileList.innerHTML = '';
-
-            if (currentPath !== '/') {
-                const parentItem = document.createElement('div');
-                parentItem.className = 'file-item';
-                parentItem.onclick = () => goUp();
-                parentItem.innerHTML = `
-                    <span class="icon">📁</span>
-                    <span class="name directory">..</span>
-                    <span class="size">-</span>
-                    <span class="date">-</span>
-                `;
-                fileList.appendChild(parentItem);
-            }
-
-            files.forEach(file => {
-                const item = document.createElement('div');
-                item.className = 'file-item';
-                item.onclick = () => {
-                    if (file.type === 'dir') {
-                        navigateTo(file.name);
-                    } else {
-                        downloadFile(file.name);
-                    }
-                };
-
-                item.innerHTML = `
-                    <span class="icon">${file.type === 'dir' ? '📁' : '📄'}</span>
-                    <span class="name ${file.type === 'dir' ? 'directory' : 'file'}">${file.name}</span>
-                    <span class="size">${file.size}</span>
-                    <span class="date">${file.date}</span>
-                `;
-
-                fileList.appendChild(item);
-            });
-        }
-
-        function navigateTo(dirname) {
-            document.getElementById('fileList').innerHTML = '<div class="loading">Loading directory contents...</div>';
-            
-            // Update current path
-            currentPath = currentPath === '/' ? `/${dirname}` : `${currentPath}/${dirname}`;
-            document.getElementById('currentPath').textContent = currentPath;
-            
-            // Fetch files from this path
-            fetchRealFilesAtPath(currentPath);
-        }
-
-        async function fetchRealFilesAtPath(path) {
-            try {
-                const encodedPath = encodeURIComponent(path);
-                const response = await fetch(`/download/api/files?path=${encodedPath}`, {
-                    credentials: 'include'
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-                
-                const files = await response.json();
-                currentFiles = files.map(file => ({
-                    name: file.name,
-                    type: file.isDirectory ? 'dir' : 'file',
-                    size: file.size,
-                    date: file.modified ? new Date(file.modified).toLocaleDateString() : '-'
-                }));
-                displayFiles(currentFiles);
-            } catch (err) {
-                console.error('Failed to load directory:', err);
-                document.getElementById('fileList').innerHTML = '<div class="error">Failed to load directory</div>';
-            }
-        }
-
-        function goUp() {
-            if (currentPath === '/') return;
-
-            const parts = currentPath.split('/');
-            parts.pop();
-            currentPath = parts.join('/') || '/';
-            document.getElementById('currentPath').textContent = currentPath;
-            
-            // Reload files at parent path
-            fetchRealFilesAtPath(currentPath);
-        }
-
-        function refreshList() {
-            fetchRealFilesAtPath(currentPath);
-        }
-
-        function downloadFile(filename) {
-            const antiforgeryToken = localStorage.getItem('antiforgeryToken');
-            let url = `/api/files/download/${encodeURIComponent(filename)}`;
-            if (antiforgeryToken) {
-                url += `?antiforgeryToken=${antiforgeryToken}`;
-            }
-            window.open(url, '_blank');
-        }
-
-        // Handle Enter key in password field
-        document.getElementById('password')?.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                connect();
-            }
-        });
-    </script>
-</body>
-
-</html>
-EOF
-
-# Create docker-compose.yml that mounts the custom HTML
 cat > docker-compose.yml << EOF
 version: '3.8'
 
@@ -3210,8 +2349,6 @@ services:
       - /var/www/uploads:/app/uploads
       - ./settings:/app/settings:ro
       - ./certs:/certs:ro
-      # Mount custom index.html
-      - ./www:/app/www:ro
     environment:
       - FileServer__Settings__ListenAddress=0.0.0.0
       - FileServer__Settings__ListenPort=8080
@@ -3222,8 +2359,6 @@ services:
       - FileServer__Settings__TokensTtlSeconds=86400
       - FileServer__Settings__CertFilePath=/certs/cert.crt
       - FileServer__Settings__CertKeyPath=/certs/cert.key
-      # Point to custom HTML
-      - FileServer__Settings__IndexPath=/app/www/index.html
     networks:
       - winejs-net
 
@@ -3245,135 +2380,16 @@ cat > settings/appsettings.json << EOF
     "SigningKey": "${FILESERVER_SIGNING_KEY}",
     "TokensTtlSeconds": 86400,
     "CertFilePath": "/certs/cert.crt",
-    "CertKeyPath": "/certs/cert.key",
-    "IndexPath": "/app/www/index.html"
+    "CertKeyPath": "/certs/cert.key"
   }
 }
 EOF
 
-# Create API directory and Dockerfile (FIX: create directory first)
-log "Creating FileServer API..."
-mkdir -p /opt/winejs/fileserver/api
-
-# Create Dockerfile for API
-cat > /opt/winejs/fileserver/api/Dockerfile << 'EOF'
-FROM node:18-alpine
-
-WORKDIR /app
-
-COPY package*.json ./
-RUN npm install
-
-COPY server.js .
-
-EXPOSE 3001
-
-CMD ["node", "server.js"]
-EOF
-
-# Create server.js for the API
-cat > /opt/winejs/fileserver/api/server.js << 'EOF'
-const express = require('express');
-const app = express();
-const port = 3001;
-
-app.use(express.json());
-
-// Simple health check endpoint
-app.get('/health', (req, res) => {
-    res.json({ status: 'ok' });
-});
-
-// List files endpoint
-app.get('/files', (req, res) => {
-    const fs = require('fs');
-    const path = require('path');
-    const uploadDir = '/var/www/uploads';
-    
-    fs.readdir(uploadDir, (err, files) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        
-        const fileList = files.map(file => {
-            const stats = fs.statSync(path.join(uploadDir, file));
-            return {
-                name: file,
-                size: stats.size,
-                modified: stats.mtime,
-                isDirectory: stats.isDirectory()
-            };
-        });
-        
-        res.json(fileList);
-    });
-});
-
-app.listen(port, () => {
-    console.log(`FileServer API listening on port ${port}`);
-});
-EOF
-
-# Create package.json for API
-cat > /opt/winejs/fileserver/api/package.json << 'EOF'
-{
-  "name": "fileserver-api",
-  "version": "1.0.0",
-  "description": "API for FileServer",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js"
-  },
-  "dependencies": {
-    "express": "^4.18.2"
-  }
-}
-EOF
-
-# Create nginx config to proxy API
-cat > /opt/winejs/fileserver/nginx.conf << EOF
-server {
-    listen 80;
-    server_name localhost;
-    root /usr/share/nginx/html;
-    index index.html;
-
-    # Serve static files
-    location / {
-        try_files \$uri \$uri/ /index.html;
-    }
-
-    # Proxy API requests
-    location /api/ {
-        proxy_pass http://fileserver-api:3001/;
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-    }
-}
-EOF
-
-# Install API dependencies and build
-cd /opt/winejs/fileserver/api
-npm install
-
-# Start services
-cd /opt/winejs/fileserver
 docker-compose up -d
+log "✅ FileServer running on port 3200 (maps to /download)"
 
-log "✅ FileServer running with REAL data from /var/www/uploads"
-log "   - Web interface: http://127.0.0.1:3200"
-log "   - API backend: http://127.0.0.1:3201"
-
-# Now the directory structure is:
-# /opt/winejs/fileserver/
-# ├── certs/              # SSL certificates
-# ├── www/                # Custom HTML files
-# ├── settings/           # App settings
-# ├── api/                # API files (now created!)
-# │   ├── Dockerfile
-# │   ├── server.js
-# │   └── package.json
-# └── docker-compose.yml
+docker-compose up -d
+log "✅ FileServer running on port 3200 (maps to /download)"
 
 # ============= CREATE PM2 ECOSYSTEM =============
 log "Creating PM2 ecosystem..."
@@ -3442,101 +2458,15 @@ server {
     
     client_max_body_size 500M;
     
-    # ============= SPECIFIC LOCATIONS FIRST =============
-    
-    # Upload portal (DumbDrop)
-    location /upload/ {
-        rewrite ^/upload(/.*)$ \$1 break;
-        proxy_pass http://127.0.0.1:3100/;
+    # Catch any redirects to root from upload portal and send back to /upload
+    location = / {
+        # Check if the request came from upload portal
+        if (\$http_referer ~* "/upload/") {
+            return 302 /upload/;
+        }
+        proxy_pass http://127.0.0.1:3000;
         proxy_set_header Host \$host;
         proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header X-Forwarded-Prefix /upload;
-        
-        client_max_body_size 500M;
-        proxy_connect_timeout 300s;
-        proxy_send_timeout 300s;
-        proxy_read_timeout 300s;
-        
-        proxy_redirect http://127.0.0.1:3100/ /upload/;
-        proxy_redirect / /upload/;
-    }
-    
-    # FileServer API
-    location /download/api/ {
-        add_header X-Debug "API block matched" always;
-        add_header X-Proxy-URL "https://127.0.0.1:3200/api/auth/login" always;
-        proxy_pass https://127.0.0.1:3200/;
-        proxy_ssl_verify off;
-        
-        # Add ALL headers that the direct request uses
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto \$scheme;
-        proxy_set_header Accept-Encoding "";
-        proxy_set_header User-Agent \$http_user_agent;
-        proxy_set_header Accept \$http_accept;
-        proxy_set_header Content-Type \$content_type;
-        proxy_set_header Content-Length \$content_length;
-        
-        # Remove any extra headers that might cause issues
-        proxy_pass_header Set-Cookie;
-        proxy_pass_header X-Accel-Expires;
-        proxy_pass_header X-Accel-Redirect;
-        proxy_pass_header X-Accel-Limit-Rate;
-        proxy_pass_header X-Accel-Buffering;
-    }
-
-    # Auth check endpoint
-    location = /download/api/auth {
-        internal;
-        proxy_pass http://127.0.0.1:3200/api/auth;
-        proxy_pass_request_body off;
-        proxy_set_header Content-Length "";
-        proxy_set_header X-Original-URI \$request_uri;
-    }
-
-    # ============= DOWNLOAD PORTAL - SERVE CUSTOM HTML DIRECTLY =============
-    # This MUST come before the root location
-    
-    # Download portal UI - serve custom HTML directly from nginx   
-    location = /download {
-        return 301 /download/;
-    }
-
-    location /download/ {
-        alias /opt/winejs/fileserver/www/;
-        try_files \$uri \$uri/ /download/index.html;
-        
-        add_header X-Frame-Options "DENY" always;
-        add_header X-Content-Type-Options "nosniff" always;
-        
-        # Prevent caching of the HTML
-        add_header Cache-Control "no-cache, no-store, must-revalidate";
-
-        # Important for cookies
-        proxy_cookie_path / /download;
-        
-        # WebSocket support if needed
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        
-        # SSL settings
-        proxy_ssl_verify off;
-    }
-    
-    # Actual file downloads
-    location /download/files/ {
-        alias /var/www/uploads/;
-        autoindex off;  # Turn off autoindex, let FileServer handle auth
-        # Pass auth for file access
-        auth_request /download/api/auth;
-        
-        add_header Content-Disposition 'attachment; filename="\$1"';
-        add_header Access-Control-Allow-Origin *;
     }
 
     # API endpoints for DumbDrop
@@ -3547,10 +2477,50 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         proxy_set_header X-Forwarded-Prefix /upload;
+        # Preserve the original request URI
         proxy_set_header X-Original-URI \$request_uri;
     }
+    
+    # Upload portal (DumbDrop)
+    location /upload/ {
+        rewrite ^/upload(/.*)$ \$1 break;
+        proxy_pass http://127.0.0.1:3100/;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        
+        # THIS IS CRITICAL - ensures API paths work
+        proxy_set_header X-Forwarded-Prefix /upload;
 
-    # Root location - handles apps (MUST BE LAST)
+        # Large file uploads
+        client_max_body_size 500M;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+        proxy_read_timeout 300s;
+        
+        # Handle redirects properly
+        proxy_redirect http://127.0.0.1:3100/ /upload/;
+        proxy_redirect / /upload/;
+    }
+    
+    # Download portal (FileServer)
+    location /download/ {
+        proxy_pass https://127.0.0.1:3200/;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+
+        # Ignore SSL certificate errors (since it's self-signed)
+        proxy_ssl_verify off;
+
+        # Security headers
+        add_header X-Frame-Options "DENY" always;
+        add_header X-Content-Type-Options "nosniff" always;
+    }
+    
+    # Apps (translator handles the rest)
     location / {
         proxy_pass http://127.0.0.1:3000;
         proxy_set_header Host \$host;
@@ -3558,10 +2528,12 @@ server {
         proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto \$scheme;
         
+        # WebSocket support for VNC
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
         
+        # Long timeouts for VNC sessions
         proxy_read_timeout 86400s;
         proxy_send_timeout 86400s;
     }
@@ -3576,7 +2548,7 @@ log "Creating Windows 10-style home page..."
 
 mkdir -p /opt/winejs/translator/public
 
-cat > /opt/winejs/translator/public/index.html << EOF
+cat > /opt/winejs/translator/public/index.html << 'EOF'
 <!DOCTYPE html>
 <html lang="en">
 
@@ -3584,23 +2556,23 @@ cat > /opt/winejs/translator/public/index.html << EOF
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WINEJS - Windows Apps in Browser</title>
-    <link rel="icon" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" type="image/png">
-    <link rel="apple-touch-icon" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" sizes="180x180">
-    <link rel="icon" type="image/png" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" sizes="192x192">
-    <link rel="icon" type="image/png" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" sizes="512x512">
+    <link rel="icon" href="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" sizes="180x180">
+    <link rel="icon" type="image/png" href="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" sizes="512x512">
     <meta itemprop="name" content="WINEJS - Windows Apps in Browser">
     <meta itemprop="image"
-        content="https://img.gitgpt.chat/?url=${DOMAIN_NAME}&w=1920&h=1080">
+        content="https://img.sdappnet.cloud/?url=${DOMAIN_NAME}&w=1920&h=1080">
     <meta property="og:title" content="WINEJS - Windows Apps in Browser">
     <meta property="og:image"
-        content="https://img.gitgpt.chat/?url=${DOMAIN_NAME}&w=1920&h=1080">
+        content="https://img.sdappnet.cloud/?url=${DOMAIN_NAME}&w=1920&h=1080">
     <meta property="og:url" content="">
     <meta property="og:type" content="website">
     <meta name="twitter:title" content="WINEJS - Windows Apps in Browser">
     <meta name="twitter:image"
-        content="https://img.gitgpt.chat/?url=${DOMAIN_NAME}&w=1920&h=1080">
+        content="https://img.sdappnet.cloud/?url=${DOMAIN_NAME}&w=1920&h=1080">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="apple-touch-icon" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" sizes="180x180">
+    <link rel="apple-touch-icon" href="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" sizes="180x180">
     <style>
         * {
             margin: 0;
@@ -4223,7 +3195,7 @@ cat > /opt/winejs/translator/public/index.html << EOF
     <!-- Windows 10-style title bar -->
     <div class="win-titlebar">
         <div class="win-logo">
-            <img src="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" alt="WINEJS">
+            <img src="https://cdn.sdappnet.cloud/rtx/images/winejs-logo.png" alt="WINEJS">
             <span>WINEJS</span>
         </div>
         <div class="win-controls">
@@ -4312,7 +3284,7 @@ cat > /opt/winejs/translator/public/index.html << EOF
                 <div class="win-info-icon">🎮</div>
                 <div class="win-info-text">
                     <strong>GPU Acceleration</strong>
-                    Server-side rendering
+                    Client-side rendering
                 </div>
             </div>
         </div>
@@ -4322,101 +3294,65 @@ cat > /opt/winejs/translator/public/index.html << EOF
                 <img src="https://dl.winehq.org/share/images/winehq_logo_glass.png" style="height: 30px" alt="WineHQ Logo" />
                 <img src="https://dl.winehq.org/share/images/winehq_logo_text.png" style="height: 25px;" alt="WineHQ Text" />
             </a>
-            <!-- WineJS SH -->
-            <a href="https://igiteam.github.io/sh/" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/bash.png" style="height: 45px;" alt="WineJS SH" />
-            </a>
             <!-- macOS Title -->
-            <a href="https://cdn.gitgpt.chat/rtx/macosx-apps.html" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/mac-os-x.png" style="height: 45px;" alt="macOS Apps" />
+            <a href="https://cdn.sdappnet.cloud/rtx/macosx-apps.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/mac-os-x.png" style="height: 45px;" alt="macOS Apps" />
             </a>
             <!-- Wine Winery -->
             <a href="https://github.com/igiteam/wine_wineskin_source" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/wine_winery.png" style="height: 45px;" alt="Wine Winery" />
+                <img src="https://cdn.sdappnet.cloud/rtx/images/wine_winery.png" style="height: 45px;" alt="Wine Winery" />
             </a>
             <!-- Wine Wineskin -->
             <a href="https://igiteam.github.io/wine_engines/" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/wine_wineskin.png" style="height: 45px;" alt="Wine Wineskin" />
+                <img src="https://cdn.sdappnet.cloud/rtx/images/wine_wineskin.png" style="height: 45px;" alt="Wine Wineskin" />
             </a>
             <!-- Wine Wineskin x64 -->
             <a href="https://igiteam.github.io/wine_engines/" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/wineskin_x64.png" style="height: 45px;" alt="Wine Wineskin x64" />
-            </a>
-            <!-- macOSX Wine -->
-            <a href="https://cdn.gitgpt.chat/rtx/macosx_wine.html" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/winejs_white_transparent.png" style="height: 45px;" alt="macOSX Apps" />
+                <img src="https://cdn.sdappnet.cloud/rtx/images/wineskin_x64.png" style="height: 45px;" alt="Wine Wineskin x64" />
             </a>
             <!-- macOS Apps on Windows -->
-            <a href="https://cdn.gitgpt.chat/rtx/macosx-apps_windows.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/windowsnt.png" style="height: 45px;" alt="macOS Apps on Windows" />
+            <a href="https://cdn.sdappnet.cloud/rtx/macosx-apps_windows.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/windowsnt.png" style="height: 45px;" alt="macOS Apps on Windows" />
             </a>
             <!-- XEMU / Xbox -->
-            <a href="https://cdn.gitgpt.chat/rtx/xbox_games_xemu.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/xbox-logo-original.png" style="height: 45px;" alt="Xbox XEMU Games" />
+            <a href="https://cdn.sdappnet.cloud/rtx/xbox_games_xemu.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/xbox-logo-original.png" style="height: 45px;" alt="Xbox XEMU Games" />
             </a>
             <!-- PS2 / PCSX2 -->
-            <a href="https://cdn.gitgpt.chat/rtx/ps2_games_pcsx2.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/pcsx2.png" style="height: 45px;" alt="PS2 PCSX2 Games" />
+            <a href="https://cdn.sdappnet.cloud/rtx/ps2_games_pcsx2.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/pcsx2.png" style="height: 45px;" alt="PS2 PCSX2 Games" />
             </a>
             <!-- Wii / Dolphin -->
-            <a href="https://cdn.gitgpt.chat/rtx/wii_games_dolphin.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/dolphin_wii_icon.png" style="height: 45px;" alt="Wii Dolphin Emulator" />
+            <a href="https://cdn.sdappnet.cloud/rtx/wii_games_dolphin.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/dolphin_wii_icon.png" style="height: 45px;" alt="Wii Dolphin Emulator" />
             </a>
             <!-- GameCube / Dolphin -->
-            <a href="https://cdn.gitgpt.chat/rtx/gamecube_games_dolphin.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/gamecube-icon.png" style="height: 45px;" alt="GameCube Dolphin Emulator" />
+            <a href="https://cdn.sdappnet.cloud/rtx/gamecube_games_dolphin.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/gamecube-icon.png" style="height: 45px;" alt="GameCube Dolphin Emulator" />
             </a>
             <!-- N64 / N64JS -->
-            <a href="https://cdn.gitgpt.chat/rtx/n64_games_js.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/n64-icon.png" style="height: 45px;" alt="N64 Emulator" />
+            <a href="https://cdn.sdappnet.cloud/rtx/n64_games_dolphin.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/n64-icon.png" style="height: 45px;" alt="N64 Emulator" />
             </a>
             <!-- Dreamcast / Demul -->
-            <a href="https://cdn.gitgpt.chat/rtx/dreamcast_games_demul.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/dreamcast-icon.png" style="height: 45px;" alt="Dreamcast Demul Emulator" />
-            </a>
-            <!-- PS1 / JS -->
-            <a href="https://cdn.gitgpt.chat/rtx/ps1_games_js.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/Playstation-Logo.png" style="height: 45px;" alt="PS1 Games Emulator" />
+            <a href="https://cdn.sdappnet.cloud/rtx/dreamcast_games_demul.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/dreamcast-icon.png" style="height: 45px;" alt="Dreamcast Demul Emulator" />
             </a>
             <!-- PSP / PPSSPP -->
-            <a href="https://cdn.gitgpt.chat/rtx/psp_games_ppsspp.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/psp-icon.png" style="height: 45px;" alt="PSP PPSSPP Emulator" />
+            <a href="https://cdn.sdappnet.cloud/rtx/psp_games_ppsspp.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/psp-icon.png" style="height: 45px;" alt="PSP PPSSPP Emulator" />
             </a>
             <!-- GBA / JS -->
-            <a href="https://cdn.gitgpt.chat/rtx/gba_games_js.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/gba-icon.png" style="height: 45px;" alt="GBA mGBA Emulator" />
+            <a href="https://cdn.sdappnet.cloud/rtx/gba_games_js.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/gba-icon.png" style="height: 45px;" alt="GBA mGBA Emulator" />
             </a>
             <!-- SNES / Snes9x -->
-            <a href="https://cdn.gitgpt.chat/rtx/snes_games_snes9x.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/snes-icon.png" style="height: 45px;" alt="SNES Snes9x Emulator" />
+            <a href="https://cdn.sdappnet.cloud/rtx/snes_games_snes9x.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/snes-icon.png" style="height: 45px;" alt="SNES Snes9x Emulator" />
             </a>
             <!-- Genesis / BlastEm -->
-            <a href="https://cdn.gitgpt.chat/rtx/genesis_games_blastem.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/genesis-icon.png" style="height: 45px;" alt="Genesis BlastEm Emulator" />
-            </a>
-            <!--  Lithtech Engine Games  -->
-            <a href="https://lithtechenginegames.netlify.app/" target="_blank" rel="noopener noreferrer">
-                <img src="https://lithtechenginegames.netlify.app/Jupiter_Ex.PNG" style="height: 45px;" alt="Lithtech Engine" />
-            </a>
-            <!--  IdTech Engine Games  -->
-            <a href="https://idtechenginegames.netlify.app/" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/idtechenginelogo.png" style="height: 45px;" alt=" IdTech Engine" />
-            </a>
-            <!--  Chrome Engine Games  -->
-            <a href="https://chromeenginegames.netlify.app/" target="_blank" rel="noopener noreferrer">
-                <img src="https://chromeenginegames.netlify.app/chrome-engine-logo.jpg" style="height: 45px;" alt="Chrome Engine" />
-            </a>
-            <!--  RenderWare Engine Games  -->
-            <a href="https://renderwareenginegames.netlify.app/" target="_blank" rel="noopener noreferrer">
-                <img src="https://renderwareenginegames.netlify.app/renderwareicon.png" style="height: 45px;" alt="RenderWare Engine" />
-            </a>
-            <!--  Gamebryo Engine Games   -->
-            <a href="https://gamebryoenginegames.netlify.app/" target="_blank" rel="noopener noreferrer">
-                <img src="https://gamebryoenginegames.netlify.app/gamebryo-logo.png" style="height: 45px;" alt="Gamebryo Engine" />
-            </a>
-            <!--  Unreal Engine 1-4 Games   -->
-            <a href="https://unrealenginegames.netlify.app/" target="_blank" rel="noopener noreferrer">
-                <img src="https://unrealenginegames.netlify.app/ue3.png" style="height: 45px;" alt="Unreal Engine 1-4" />
+            <a href="https://cdn.sdappnet.cloud/rtx/genesis_games_blastem.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.sdappnet.cloud/rtx/images/genesis-icon.png" style="height: 45px;" alt="Genesis BlastEm Emulator" />
             </a>
         </div>
     </div>
@@ -4451,7 +3387,7 @@ cat > /opt/winejs/translator/public/index.html << EOF
             function updateAppCount() {
                 const visibleTiles = document.querySelectorAll('.win-tile:not(.hidden-tile)');
                 const totalTiles = allTiles.length;
-                appCountSpan.textContent = \`(\${visibleTiles.length} of \${totalTiles} installed)\`;
+                appCountSpan.textContent = `(${visibleTiles.length} of ${totalTiles} installed)`;
             }
 
             // Search functionality
@@ -4463,7 +3399,7 @@ cat > /opt/winejs/translator/public/index.html << EOF
                         const appName = tile.getAttribute('data-app-name') || '';
                         const appCategory = tile.getAttribute('data-app-category') || '';
                         const appTitle = tile.querySelector('.win-tile-title')?.textContent || '';
-                        const searchableText = \`\${appName} \${appCategory} \${appTitle}\`.toLowerCase();
+                        const searchableText = `${appName} ${appCategory} ${appTitle}`.toLowerCase();
                         if (searchTerm === '' || searchableText.includes(searchTerm)) {
                             tile.classList.remove('hidden-tile');
                         } else {
@@ -4517,27 +3453,27 @@ cat > /opt/winejs/translator/public/index.html << EOF
 
                     let html = '';
                     for (const [key, app] of Object.entries(apps)) {
-                        const iconPath = app.icon ? app.icon : 'https://cdn.gitgpt.chat/rtx/images/wine-placeholder.png';
+                        const iconPath = app.icon ? app.icon : 'https://cdn.sdappnet.cloud/rtx/images/wine-placeholder.png';
                         const isSelected = key === 'milkshape' ? 'selected' : '';
                         
-                        html += \`
-                            <a href="/\${key}" target="_blank" rel="noopener" 
-                               class="win-tile \${isSelected}" 
-                               data-app-name="\${app.name}" 
-                               data-app-category="\${app.category || 'Other'}">
+                        html += `
+                            <a href="/${key}" target="_blank" rel="noopener" 
+                               class="win-tile ${isSelected}" 
+                               data-app-name="${app.name}" 
+                               data-app-category="${app.category || 'Other'}">
                                 <div class="win-tile-image">
-                                    <img src="\${iconPath}" alt="\${app.name}">
+                                    <img src="${iconPath}" alt="${app.name}">
                                     <div class="win-tile-badge">Wine</div>
                                 </div>
                                 <div class="win-tile-info">
-                                    <div class="win-tile-title">\${app.name}</div>
+                                    <div class="win-tile-title">${app.name}</div>
                                     <div class="win-tile-desc">
-                                        <span>\${app.category || 'App'}</span>
-                                        <span>\${app.version || 'v1.0'}</span>
+                                        <span>${app.category || 'App'}</span>
+                                        <span>${app.version || 'v1.0'}</span>
                                     </div>
                                 </div>
                             </a>
-                        \`;
+                        `;
                     }
                     
                     appsContainer.innerHTML = html;
@@ -4732,134 +3668,136 @@ if docker ps | grep -q winejs-milkshape; then
     # ============= PATCH KASMVNC TO DISABLE CONTROL BAR ANIMATION =============
     log "🔧 Patching KasmVNC to stop control bar animation..."
 
-    # Create the CSS file using printf (no here-document issues)
-    docker exec -u 0 winejs-milkshape bash -c 'printf "%s\n" \
-    "/* Disable all control bar animations */" \
-    "#noVNC_control_bar," \
-    "#noVNC_control_bar_handle," \
-    "#noVNC_control_bar_anchor," \
-    ".noVNC_control_bar_animated {" \
-    "    transition: none !important;" \
-    "    animation: none !important;" \
-    "}" \
-    "" \
-    "#noVNC_control_bar {" \
-    "    transform: translateX(-280px) !important;" \
-    "    opacity: 0 !important;" \
-    "}" \
-    "" \
-    "#noVNC_control_bar_handle {" \
-    "    transform: translateY(0px) !important;" \
-    "    left: 0 !important;" \
-    "}" \
-    "" \
-    "#noVNC_control_bar.noVNC_open {" \
-    "    transform: translateX(-280px) !important;" \
-    "    opacity: 0 !important;" \
-    "}" \
-    "" \
-    ".noVNC_idle #noVNC_control_bar {" \
-    "    transform: translateX(-280px) !important;" \
-    "}" > /usr/share/kasmvnc/www/no-animation.css'
+    # Run commands as root with -u 0
+    docker exec -u 0 winejs-milkshape bash -c 'cat > /usr/share/kasmvnc/www/no-animation.css << "EOF"
+    /* Disable all control bar animations */
+    #noVNC_control_bar,
+    #noVNC_control_bar_handle,
+    #noVNC_control_bar_anchor,
+    .noVNC_control_bar_animated {
+        transition: none !important;
+        animation: none !important;
+    }
 
-    # Inject CSS link
+    #noVNC_control_bar {
+        transform: translateX(-280px) !important;
+        opacity: 0 !important;
+    }
+
+    #noVNC_control_bar_handle {
+        transform: translateY(0px) !important;
+        left: 0 !important;
+    }
+
+    #noVNC_control_bar.noVNC_open {
+        transform: translateX(-280px) !important;
+        opacity: 0 !important;
+    }
+
+    .noVNC_idle #noVNC_control_bar {
+        transform: translateX(-280px) !important;
+    }
+    EOF'
+
     docker exec -u 0 winejs-milkshape bash -c 'sed -i "/<\/head>/i <link rel=\"stylesheet\" type=\"text\/css\" href=\"no-animation.css\">" /usr/share/kasmvnc/www/index.html'
 
-    # Create the JavaScript file using printf
-    docker exec -u 0 winejs-milkshape bash -c 'printf "%s\n" \
-    "(function() {" \
-    "    function forceMinimized() {" \
-    "        const bar = document.getElementById(\"noVNC_control_bar\");" \
-    "        if (bar) {" \
-    "            bar.className = bar.className.replace(\"noVNC_open\", \"\") + \" noVNC_closed\";" \
-    "        }" \
-    "        const handle = document.getElementById(\"noVNC_control_bar_handle\");" \
-    "        if (handle) {" \
-    "            handle.style.transform = \"translateY(0px)\";" \
-    "        }" \
-    "    }" \
-    "    document.addEventListener(\"DOMContentLoaded\", forceMinimized);" \
-    "    setTimeout(forceMinimized, 100);" \
-    "    setTimeout(forceMinimized, 500);" \
-    "})();" > /usr/share/kasmvnc/www/start-minimized.js'
+    docker exec -u 0 winejs-milkshape bash -c 'cat > /usr/share/kasmvnc/www/start-minimized.js << "EOF"
+    (function() {
+        function forceMinimized() {
+            const bar = document.getElementById("noVNC_control_bar");
+            if (bar) {
+                bar.className = bar.className.replace("noVNC_open", "") + " noVNC_closed";
+            }
+            const handle = document.getElementById("noVNC_control_bar_handle");
+            if (handle) {
+                handle.style.transform = "translateY(0px)";
+            }
+        }
+        document.addEventListener("DOMContentLoaded", forceMinimized);
+        setTimeout(forceMinimized, 100);
+        setTimeout(forceMinimized, 500);
+    })();
+    EOF'
 
-    # Inject JavaScript
     docker exec -u 0 winejs-milkshape bash -c 'sed -i "/<\/body>/i <script src=\"start-minimized.js\"></script>" /usr/share/kasmvnc/www/index.html'
 
-    # Set permissions
     docker exec -u 0 winejs-milkshape bash -c 'chown 1000:1000 /usr/share/kasmvnc/www/no-animation.css /usr/share/kasmvnc/www/start-minimized.js 2>/dev/null || chmod 644 /usr/share/kasmvnc/www/no-animation.css /usr/share/kasmvnc/www/start-minimized.js'
 
     log "✅ KasmVNC patched successfully - control bar will start minimized with no animation"
 
     # ============= SET DESKTOP BACKGROUND (with 30s delay) =============
     log "🎨 Will set desktop snapshot to mirror $DOMAIN_NAME in 30 seconds..."
-
-    # First, ensure kasm-user has sudo permissions
+    
+    # First, ensure kasm-user has sudo permissions (already in Dockerfile but just to be sure)
     docker exec winejs-milkshape bash -c 'echo "kasm-user ALL=(ALL) NOPASSWD: ALL" | sudo tee -a /etc/sudoers > /dev/null 2>&1 || true'
+    
+    # Create a script inside the container that will run after 30 seconds
+    docker exec winejs-milkshape bash -c 'cat > /tmp/set-bg-delayed.sh << "EOF"
+#!/bin/bash
+sleep 30
 
-    # Create the background script locally using printf
-    printf "%s\n" \
-    "#!/bin/bash" \
-    "sleep 30" \
-    "" \
-    "echo \"🎨 Setting background at \$(date)...\"" \
-    "" \
-    "# Download the snapshot" \
-    "curl -s \"https://img.gitgpt.chat/?url=$DOMAIN_NAME&w=1920&h=1080\" -o /tmp/snapshot.png" \
-    "" \
-    "if [ -f /tmp/snapshot.png ]; then" \
-    "    echo \"✅ Snapshot downloaded successfully\"" \
-    "    " \
-    "    # Set desktop background" \
-    "    if command -v xfconf-query &>/dev/null; then" \
-    "        xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/workspace0/last-image -s /tmp/snapshot.png 2>/dev/null" \
-    "        echo \"✅ Desktop background set\"" \
-    "    fi" \
-    "    " \
-    "    # Set LightDM login screen background" \
-    "    if [ -f /etc/lightdm/lightdm-gtk-greeter.conf ]; then" \
-    "        sudo cp /etc/lightdm/lightdm-gtk-greeter.conf /etc/lightdm/lightdm-gtk-greeter.conf.backup 2>/dev/null" \
-    "        if grep -q \"^background=\" /etc/lightdm/lightdm-gtk-greeter.conf; then" \
-    "            sudo sed -i \"s|^background=.*|background=/tmp/snapshot.png|\" /etc/lightdm/lightdm-gtk-greeter.conf" \
-    "        else" \
-    "            echo \"background=/tmp/snapshot.png\" | sudo tee -a /etc/lightdm/lightdm-gtk-greeter.conf > /dev/null" \
-    "        fi" \
-    "        echo \"✅ LightDM login screen background set\"" \
-    "    fi" \
-    "    " \
-    "    # Set GDM login screen background" \
-    "    if [ -f /etc/gdm3/greeter.dconf-defaults ]; then" \
-    "        sudo cp /etc/gdm3/greeter.dconf-defaults /etc/gdm3/greeter.dconf-defaults.backup 2>/dev/null" \
-    "        if grep -q \"^background=\" /etc/gdm3/greeter.dconf-defaults; then" \
-    "            sudo sed -i \"s|^background=.*|background=/tmp/snapshot.png|\" /etc/gdm3/greeter.dconf-defaults" \
-    "        else" \
-    "            echo \"background=/tmp/snapshot.png\" | sudo tee -a /etc/gdm3/greeter.dconf-defaults > /dev/null" \
-    "        fi" \
-    "        echo \"✅ GDM login screen background set\"" \
-    "    fi" \
-    "    " \
-    "    # Set system wallpaper" \
-    "    if [ -d /usr/share/backgrounds ]; then" \
-    "        sudo cp /tmp/snapshot.png /usr/share/backgrounds/winejs-default-bg.png 2>/dev/null" \
-    "        echo \"✅ Copied to system backgrounds\"" \
-    "    fi" \
-    "    " \
-    "    echo \"✅ All backgrounds set successfully at \$(date)\"" \
-    "else" \
-    "    echo \"❌ Failed to download snapshot\"" \
-    "fi" \
-    "" \
-    "# Clean up" \
-    "rm -f /tmp/set-bg-delayed.sh" > /tmp/set-bg-delayed.sh
+echo "🎨 Setting background at $(date)..."
 
-    # Copy the script into the container and run it
-    docker cp /tmp/set-bg-delayed.sh winejs-milkshape:/tmp/set-bg-delayed.sh
+# Download the snapshot
+curl -s "https://img.sdappnet.cloud/?url='$DOMAIN_NAME'&w=1920&h=1080" -o /tmp/snapshot.png
+
+if [ -f /tmp/snapshot.png ]; then
+    echo "✅ Snapshot downloaded successfully"
+    
+    # Set desktop background (no sudo needed for this)
+    if command -v xfconf-query &>/dev/null; then
+        xfconf-query -c xfce4-desktop -p /backdrop/screen0/monitor0/workspace0/last-image -s /tmp/snapshot.png 2>/dev/null
+        echo "✅ Desktop background set"
+    fi
+    
+    # Set login screen background (needs sudo)
+    if [ -f /etc/lightdm/lightdm-gtk-greeter.conf ]; then
+        # Backup original
+        sudo cp /etc/lightdm/lightdm-gtk-greeter.conf /etc/lightdm/lightdm-gtk-greeter.conf.backup 2>/dev/null
+        
+        # Update background
+        if grep -q "^background=" /etc/lightdm/lightdm-gtk-greeter.conf; then
+            sudo sed -i "s|^background=.*|background=/tmp/snapshot.png|" /etc/lightdm/lightdm-gtk-greeter.conf
+        else
+            echo "background=/tmp/snapshot.png" | sudo tee -a /etc/lightdm/lightdm-gtk-greeter.conf > /dev/null
+        fi
+        echo "✅ LightDM login screen background set"
+    fi
+    
+    # Set login screen background (GDM3)
+    if [ -f /etc/gdm3/greeter.dconf-defaults ]; then
+        # Backup original
+        sudo cp /etc/gdm3/greeter.dconf-defaults /etc/gdm3/greeter.dconf-defaults.backup 2>/dev/null
+        
+        # Update background
+        if grep -q "^background=" /etc/gdm3/greeter.dconf-defaults; then
+            sudo sed -i "s|^background=.*|background=/tmp/snapshot.png|" /etc/gdm3/greeter.dconf-defaults
+        else
+            echo "background=/tmp/snapshot.png" | sudo tee -a /etc/gdm3/greeter.dconf-defaults > /dev/null
+        fi
+        echo "✅ GDM login screen background set"
+    fi
+    
+    # Also try to set as system wallpaper for all users
+    if [ -d /usr/share/backgrounds ]; then
+        sudo cp /tmp/snapshot.png /usr/share/backgrounds/winejs-default-bg.png 2>/dev/null
+        echo "✅ Copied to system backgrounds"
+    fi
+    
+    echo "✅ All backgrounds set successfully at $(date)"
+else
+    echo "❌ Failed to download snapshot"
+fi
+
+# Clean up old script
+rm -f /tmp/set-bg-delayed.sh
+EOF'
+    
+    # Make it executable and run in background
     docker exec -d winejs-milkshape bash -c "chmod +x /tmp/set-bg-delayed.sh && /tmp/set-bg-delayed.sh"
-    rm -f /tmp/set-bg-delayed.sh
-
+    
     log "✅ Background script scheduled - will apply in 30 seconds"
     log "   Desktop and login screen will both show snapshot of $DOMAIN_NAME"
-
 else
     warn "⚠️ MilkShape container failed to start, checking logs..."
     docker logs winejs-milkshape --tail 20
@@ -4896,7 +3834,7 @@ chmod +x /usr/local/bin/winejs-status
 # ============= CREATE SUMMARY =============
 cat > /root/WINEJS_COMPLETE.txt << EOF
 ╔════════════════════════════════════════════════════════════════╗
-║                    WINEJS SETUP COMPLETE!                      ║
+║                    WINEJS SETUP COMPLETE!                    ║
 ╚════════════════════════════════════════════════════════════════╝
 
 🌐 MAIN DOMAIN: https://$DOMAIN_NAME
@@ -4946,6 +3884,8 @@ echo -e "${MAGENTA}╔═══════════════════�
 echo -e "${MAGENTA}║                    WINEJS SETUP COMPLETE!                      ║${NC}"
 echo -e "${MAGENTA}╚════════════════════════════════════════════════════════════════╝${NC}"
 echo ""
+success "🌐 Main domain: https://$DOMAIN_NAME"
+echo ""
 success "📤 Upload: https://$DOMAIN_NAME/upload (password: $DUMBDROP_PIN)" 
 success "📥 Download: https://$DOMAIN_NAME/download (password: $FILESERVER_PASS)"
 success "🎮 MilkShape: https://$DOMAIN_NAME/milkshape (VNC pass: $MILKSHAPE_VNC_PASS)"
@@ -4965,12 +3905,10 @@ info "   winejs-add-app    - Add new Windows app"
 echo ""
 info "📋 Full details saved to: /root/WINEJS_COMPLETE.txt"
 echo ""
-info "🌍 DNS A record $DOMAIN_NAME pointing to: $DROPLET_IP"
+info "🌍 Update your DNS A record for $DOMAIN_NAME to: $DROPLET_IP"
 echo ""
 success "✨ WINEJS is ready! Go upload some models and run MilkShape!"
-echo ""
-success "🌐 Main domain: https://$DOMAIN_NAME"
-echo ""
+
 # ✅ What's Complete:
 # Component	Status	Notes
 # Configuration	✅ Complete	Domain, passwords, PIN, extensions all user-defined
@@ -5169,3 +4107,5 @@ echo ""
 #     Controller just works in the 3D viewport!
 #     Plug in Wiimote → Press 1+2 to sync
 #     Use Wiimote to rotate models with IR pointing!
+
+# It's literally plug-and-play magic! The user has no idea their button presses are traveling from their living room, through a browser, to a cloud server, into a Docker container, through Wine, and finally into a Windows app - all in milliseconds! 🚀
