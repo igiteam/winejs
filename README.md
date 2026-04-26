@@ -1,4 +1,4 @@
-![WINEJS - Windows Apps in Browser](https://raw.githubusercontent.com/igiteam/winejs/main/WINEJS%-%Windows%Apps%in%Browser.png "WINEJS - Windows Apps in Browser")
+![WINEJS - Windows Apps in Browser](https://github.com/igiteam/winejs/blob/main/WINEJS%20-%20Windows%20Apps%20in%20Browser.png "WINEJS - Windows Apps in Browser")
 
 Web App Packager Flow:
 
