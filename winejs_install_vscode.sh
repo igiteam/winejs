@@ -25,6 +25,7 @@
 #     ✓ Installs WineJS integration extension
 #     ✓ Restarts translator and starts containers
 
+VSCODE_SERVER_LOGO_URL="https://cdn.gitgpt.chat/rtx/images/vscodeserver.png"
 
 set -e
 
@@ -426,8 +427,8 @@ EOF
 chmod +x "$SHARED_VOLUMES/mount-helper.sh"
 
 # ============= DOWNLOAD ICON =============
-log "Downloading VSCode icon..."
-curl -L "https://cdn.gitgpt.chat/rtx/images/vscodeserver.png" -o "$ICON_DIR/${APP_NAME}.png" 2>/dev/null || \
+log "Downloading VSCodeServer icon..."
+curl -L "$VSCODE_SERVER_LOGO_URL" -o "$ICON_DIR/${APP_NAME}.png" 2>/dev/null || \
 warn "Failed to download icon, using default"
 
 # ============= CREATE LAUNCH SCRIPT WITH AUTO-HEAL =============
@@ -1150,3 +1151,6 @@ info "📝 To uninstall: sudo bash $(dirname "$APP_DIR")/uninstall_vscode.sh"
 echo ""
 success "✨ VSCode Server is ready! Visit https://$DOMAIN_NAME/vscode/"
 echo ""
+
+echo "Find all uninstall scripts in the apps directory"
+echo "find /opt/winejs/apps -name \"uninstall_*\" -type f"

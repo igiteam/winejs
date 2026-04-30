@@ -965,6 +965,42 @@ else
     warn "⚠️ Container may not have started. Check: docker logs winejs-${APP_NAME}"
 fi
 
+# ============= INJECT GIT LFS BUTTON =============
+log "Injecting Git LFS button..."
+
+# Create custom footer with JavaScript injection
+docker exec winejs-forgejo mkdir -p /data/gitea/templates/custom
+
+cat > /tmp/gitlfs-inject.js << 'EOF'
+<script>
+(function() {
+    // Wait for page to load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', insertButton);
+    } else {
+        insertButton();
+    }
+    
+    function insertButton() {
+        // Find the rss-icon link
+        var rssLink = document.querySelector('.rss-icon');
+        if (rssLink && !document.querySelector('.gitlfs-injected')) {
+            var lfsLink = document.createElement('a');
+            lfsLink.className = 'rss-icon gt-ml-3 gitlfs-injected';
+            lfsLink.href = 'https://cdn.gitgpt.chat/rtx/forgejogitlfs.html';
+            lfsLink.target = '_blank';
+            lfsLink.innerHTML = '<img src="https://cdn.gitgpt.chat/rtx/images/gitlfs.png" style="width: 20px"/>';
+            rssLink.parentNode.insertBefore(lfsLink, rssLink.nextSibling);
+        }
+    }
+})();
+</script>
+EOF
+
+docker cp /tmp/gitlfs-inject.js winejs-forgejo:/data/gitea/templates/custom/footer.tmpl
+
+log "✅ Git LFS button injection added via custom footer"
+
 # ============= SETUP ADMIN USER =============
 log "Setting up admin user..."
 bash "$APP_DIR/setup-admin.sh" &
@@ -1160,3 +1196,6 @@ info "📝 To uninstall: sudo bash $(dirname "$APP_DIR")/uninstall_forgejo.sh"
 echo ""
 success "✨ Forgejo Server is ready! Visit https://$DOMAIN_NAME/forgejo/"
 echo ""
+
+echo "Find all uninstall scripts in the apps directory"
+echo "find /opt/winejs/apps -name \"uninstall_*\" -type f"

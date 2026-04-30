@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryEngine1 - FarCry 1.4</title>
+    <meta name="description" content="MacOSX port of FarCry1 Tutorial">
+    <meta name="keywords" content="farcry1, modding, tutorial, wine, coding, port, windows, macosx, bigsur, cryengine1">
+
+    <meta itemprop="name" content="CryEngine1 - FarCry 1.4">
+    <meta itemprop="description" content="MacOSX port of FarCry1 Tutorial">
+    <meta itemprop="image" content="https://cdn.gitgpt.chat/rtx/images/installshield2.png">
+    <meta property="og:title" content="CryEngine1 - FarCry 1.4">
+    <meta property="og:description" content="MacOSX port of FarCry1 Tutorial">
+    <meta property="og:image" content="https://cdn.gitgpt.chat/rtx/images/installshield2.png">
+    <meta property="og:url" content="https://cdn.gitgpt.chat/rtx/incredibuild-community-onboarding-guide.html">
+    <meta property="og:type" content="website">
+    <meta name="twitter:title" content="CryEngine1 - FarCry 1.4">
+    <meta name="twitter:description" content="MacOSX port of FarCry1 Tutorial">
+    <meta name="twitter:image" content="https://cdn.gitgpt.chat/rtx/images/installshield2.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="https://cdn.gitgpt.chat/rtx/images/cryengine1editor.jpeg">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 10px auto;
+            padding: 0px 10px;
+            line-height: 1.6;
+            padding-bottom: 80px;
+            max-width: 800px;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .video-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        h1,
+        h2 {
+            color: #2c3e50;
+        }
+
+        input,
+        button,
+        textarea {
+            margin-top: 10px;
+            padding: 8px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .script-box {
+            height: 150px;
+            font-family: monospace;
+        }
+
+        .section {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        pre {
+            background: #eee;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        /* Bottom Step Guide */
+        .step-guide {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #f0f0f0;
+            color: #000;
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px 0;
+            border-top: 1px solid #ccc;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+        }
+
+        .step-guide a {
+            display: inline-block;
+            text-align: center;
+            padding: 10px 15px;
+            margin: 0 5px;
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+            min-width: 80px;
+        }
+
+        .step-guide a:hover,
+        .step-guide a.active {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .step-guide a span {
+            display: block;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .step-guide a.active span {
+            color: #fff;
+        }
+
+        input,
+        textarea {
+            display: block;
+            width: calc(100% - 20px) !important;
+        }
+
+        .script-switcher {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            justify-content: center;
+        }
+
+        .switch-option {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: 2px solid transparent;
+            background: #f3f3f3;
+        }
+
+        .switch-option img {
+            height: 50px;
+        }
+
+        .switch-option.active {
+            border-color: #0078d7;
+            background: #e6f0ff;
+        }
+
+        .script-section {
+            display: none;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .script-section.active {
+            display: flex;
+        }
+
+        .script-box {
+            width: 100%;
+            height: 120px;
+            resize: none;
+        }
+
+        button {
+            margin-top: 0.5rem;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            margin: 1rem 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        a {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>CryEngine1 - FarCry 1.4</h1>
+    <img src="https://cdn.gitgpt.chat/rtx/images/winelogo.png" style="width: 100px;" />
+    <div style="display: flex; align-items: center; gap: 20px; margin: 20px 0;">
+        <img src="https://i.ytimg.com/vi/v3g2fVcjCqI/maxresdefault.jpg" style="width: 300px;" />
+
+        <div style="display: flex; align-items: center; gap: 20px; margin: 20px 0;">
+            <div>
+                <div>Icon</div>
+                <img src="https://cdn.gitgpt.chat/rtx/images/cryengine1editor.jpeg" style="width: 50px;" />
+            </div>
+            <div>
+                <div>Icon</div>
+                <img src="https://cdn.gitgpt.chat/rtx/images/farcry.jpeg" style="width: 50px;" />
+            </div>
+        </div>
+    </div>
+    <a href="https://archive.org/details/farcry-1_202401" target="_blank"
+        rel="norefferrer">https://archive.org/details/farcry-1_202401</a>
+    <h2>Windows-to-macOS
+        Application Porting Guide</h2>
+
+    <div class=" section" id="step1">
+        <h2>Step 1 — Wineskin Winery Setup & .iso or setup.exe</h2>
+        <p>We use Homebrew to install Wineskin and acquire Windows software from archives:</p>
+        <p>Open your Terminal and copy-paste this to install Homebrew if you don't have</p>
+        <pre>
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+</pre>
+        <p>Now install Wineskin and acquire Windows software from archives:</p>
+        <pre>
+# Clean environment setup
+brew update
+brew upgrade
+brew uninstall --force --zap wineskin
+brew install --cask --no-quarantine The-Wineskin-Project/wineskin/wineskin
+brew install winetricks
+</pre>
+        <div>You can extract .ico from .exe for step 5
+            <a href="https://tools-4all.com/extract-icon" target="_blank"
+                rel="norefferrer">https://tools-4all.com/extract-icon</a>
+        </div>
+        <div class="video-container">
+            <iframe src="https://www.youtube.com/embed/v3g2fVcjCqI" title="Environment Setup" allowfullscreen></iframe>
+        </div>
+
+        <h3>Software Sources:</h3>
+        <ul>
+            <li><strong>Archive.org</strong> - Legal abandonware and historical software</li>
+            <li><strong>Original Installers</strong> - From original media when possible</li>
+            <li><strong>Legal Considerations</strong> - Only preserve out-of-commerce software</li>
+        </ul>
+
+        <p>After installation, launch Wineskin Winery and update to the latest wrapper version.</p>
+    </div>
+
+
+    <div class="section" id="step2">
+        <h2>Step 2 — Wine Engine Management & Selection</h2>
+        <div>
+            <img src="https://cdn.gitgpt.chat/rtx/images/wineskin-winery.png" style="width: 100%" />
+            <p>You will also need to download this specific engine version to run 32bit FarCry1 on Big Sur. I tested on
+                my
+                MacBook Pro 2014 mid.</p>
+            <pre>WS11WineCX20.0.4.tar.7z</pre>
+            <a href="https://github.com/vitor251093/porting-kit-engines/releases/download/wineskin/WS11WineCX20.0.4.tar.7z"
+                target="_blank"
+                rel="norefferrer">https://github.com/vitor251093/porting-kit-engines/releases/download/wineskin/WS11WineCX20.0.4.tar.7z</a>
+            <p>You need to manually drop in the folder. Open Finder -> Go -></p>
+            <pre>~/Library/Application Support/Wineskin</pre>
+            <img src="https://cdn.gitgpt.chat/rtx/images/wineskin.png" style="width: 100%;" />
+            <br>
+            <p>You also might wanna try out other engines</p>
+            <a href="https://cdn.gitgpt.chat/rtx/wineenginelist.html"
+                target="_blank">https://cdn.gitgpt.chat/rtx/wineenginelist.html</a>
+        </div>
+    </div>
+
+    <div class="section" id="step3">
+        <h2>Step 3 — Wine Wrapper Creation</h2>
+        <p>Navigate to your Applications folder to locate and start Wineskin Winery</p>
+
+        <img src="https://cdn.gitgpt.chat/rtx/images/WineSkin Winery in Applications.png" style="width: 100%;" />
+        <p>Wineskin Winery has two components:
+        <ul>
+            <li>-Wine Engine(WS11WineCX20.0.4.tar.7z)
+            </li>
+            <li>-Wine Wrapper(Wineskin-3.0.6_2)
+            </li>
+        </ul>
+        </p>
+        <pre>If you don't see the engine, you need to click on 'Refresh' icon.</pre>
+        <p>Once you confirmed the correct version numbers, click on 'Create New Blank Wrapper' </p>
+        <img src="https://cdn.gitgpt.chat/rtx/images/WineSkin Winery Create  New Blank Wrapper.png"
+            style="width: 60%;" />
+        <img src="https://cdn.gitgpt.chat/rtx/images/WineSkin Winery Create Wrapper.png" style="width: 30%;" />
+
+    </div>
+
+    <div class="section" id="step4">
+        <h2>Step 4 — Load FarCry1.iso and start install.exe </h2>
+        <p>Navigate to your Wineskin Applications folder to open content</p>
+        <pre>~/Applications/Wineskin</pre>
+        <p>Show package content</p>
+        <img src="https://cdn.gitgpt.chat/rtx/images/wineskin package content.png" style="width: 50%;" />
+        <img src="https://cdn.gitgpt.chat/rtx/images/wineskin start wineskin.png" style="width: 50%;" />
+        <p>Click on 'Install Software'</p>
+
+        <img src="https://cdn.gitgpt.chat/rtx/images/install-software.png" style="width: 50%;" />
+        <p>Click on 'Choose Setup Executable'</p>
+        <img src="https://cdn.gitgpt.chat/rtx/images/wineskin installer.png" style="width: 50%;" />
+        <p>Load your downloaded iso and select 'setup32.exe' as we are using 32bit version</p>
+        <img src="https://cdn.gitgpt.chat/rtx/images/setup32.exe in FarCry1iso.png" style="width: 50%;" />
+        <p>Install into your Wineskin directory. Usually C:\Program Files\FarCry1</p>
+        <p>Make sure you install directx9 too during the setup</p>
+        <img src="https://cdn.gitgpt.chat/rtx/images/installshield.png" style="width: 50%;" />
+        <img src="https://cdn.gitgpt.chat/rtx/images/installshield2.png" style="width: 50%;" />
+    </div>
+    <div class="section" id="step5">
+        <h2>Step 5 — Create Exe for Editor and Game</h2>
+        <p>Create separate exe app for Editor and FarCry1</p>
+        <p>Open Wineskin again -> Go to Advanced/Tools</p>
+        <img src="https://cdn.gitgpt.chat/rtx/images/install-software.png" style="width: 50%;" />
+        <p>In Tools click on 'Custom EXE Creator'</p>
+        <img src="https://cdn.gitgpt.chat/rtx/images/wineskin advanced custom exe creator.png" style="width: 50%;" />
+        <p>Navigate drive_c\Program Files\FarCry1\bin32</p>
+        <p>You can also find it in Finder -> Go</p>
+        <pre>~/Applications/Wineskin/FarCry1.app/Contents/SharedSupport/prefix/drive_c/Program Files/FarCry1/bin32</pre>
+        <img src="https://cdn.gitgpt.chat/rtx/images/wineskin advanced custom exe creator create exe.png"
+            style="width: 80%;" />
+
+    </div>
+    <div class="section" id="step6">
+        <h2>Step 6 — Editor and game </h2>
+        <p>Now you can start Editor.exe or FarCry.exe</p>
+        <p>If you want to run Editor and FarCry in the same time, you need to create a separate Wineskin</p>
+        <p>One for the Editor and one for FarCry</p>
+        <img src="https://cdn.gitgpt.chat/rtx/images/farcryeditor.png" style="width: 70%;" />
+        <img src="https://cdn.gitgpt.chat/rtx/images/farcry1loadingmacos.png" style="width: 70%;" />
+        <img src="https://cdn.gitgpt.chat/rtx/images/farcry1macos.png" style="width: 70%;" />
+
+    </div>
+    <div>
+        <img src="https://cdn.gitgpt.chat/rtx/images/big-sur.jpg" style="width: 100%;" />
+        <img src="https://cdn.gitgpt.chat/rtx/images/wineskin-winery.png" style="width: 100%;" />
+        <img src="https://cdn.gitgpt.chat/rtx/images/internet-archive.png" style="width: 100%;" />
+
+    </div>
+    <!-- Step Guide -->
+    <div class="step-guide">
+        <a href="#step1" class="active">Step 1<span>Wineskin Winery</span></a>
+        <a href="#step2">Step 2<span>Wine Engine</span></a>
+        <a href="#step3">Step 3<span>Wrapper</span></a>
+        <a href="#step4">Step 4<span>Install</span></a>
+        <a href="#step5">Step 5<span>Create Exe</span></a>
+        <a href="#step6">Step 6<span>Editor/Game</span></a>
+
+    </div>
+
+    <script>
+        // Highlight active step in bottom bar
+        const stepLinks = document.querySelectorAll('.step-guide a');
+
+        function updateActiveStep() {
+            let current = '';
+            document.querySelectorAll('.section').forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                if (window.pageYOffset >= sectionTop - 120 &&
+                    window.pageYOffset < sectionTop + sectionHeight - 120) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            stepLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+
+            if (!current && stepLinks.length > 0) {
+                stepLinks[0].classList.add('active');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateActiveStep);
+        window.addEventListener('scroll', updateActiveStep);
+    </script>
+</body>
+
+</html>

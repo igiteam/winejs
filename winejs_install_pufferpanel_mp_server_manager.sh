@@ -8,6 +8,8 @@
 # Features: Game Server Management, CS:GO, Minecraft, SteamCMD, Docker
 # ============================================
 
+PUFFERPANEL_LOGO_URL="https://cdn.gitgpt.chat/rtx/images/pufferpanel-icon.png"
+
 set -e
 
 # Colors
@@ -251,9 +253,7 @@ CONF_EOF
 
 # ============= DOWNLOAD ICON =============
 log "📥 Downloading PufferPanel icon..."
-curl -L "https://raw.githubusercontent.com/PufferPanel/PufferPanel/main/public/assets/images/logo.svg" -o "$ICON_DIR/${APP_NAME}.svg" 2>/dev/null
-curl -L "https://cdn.gitgpt.chat/rtx/images/pufferpanel-icon.png" -o "$ICON_DIR/${APP_NAME}.png" 2>/dev/null || \
-cp "$ICON_DIR/${APP_NAME}.svg" "$ICON_DIR/${APP_NAME}.png" 2>/dev/null || \
+curl -L "$PUFFERPANEL_LOGO_URL" -o "$ICON_DIR/${APP_NAME}.png" 2>/dev/null || \
 warn "Failed to download icon"
 
 # ============= CREATE GAME TEMPLATES =============
@@ -521,3 +521,6 @@ info "📝 To uninstall: sudo bash $(dirname "$APP_DIR")/uninstall_pufferpanel.s
 echo ""
 success "✨ PufferPanel is ready! Visit https://$DOMAIN_NAME/pufferpanel/"
 echo ""
+
+echo "Find all uninstall scripts in the apps directory"
+echo "find /opt/winejs/apps -name \"uninstall_*\" -type f"

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Server Management Toolkit</title>
+
+    <link rel="icon" href="https://wine.gitgpt.chat/icons/pufferpanel.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://wine.gitgpt.chat/icons/pufferpanel.png" sizes="180x180">
+    <link rel="icon" type="image/png" href="https://wine.gitgpt.chat/icons/pufferpanel.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="https://wine.gitgpt.chat/icons/pufferpanel.png" sizes="512x512">
+    <meta itemprop="name" content="Game Server Management Toolkit">
+    <meta property="og:title" content="Game Server Management Toolkit">
+    <meta property="og:url" content="">
+    <meta property="og:type" content="website">
+    <meta name="twitter:title" content="Game Server Management Toolkit">
+    <meta name="twitter:card" content="summary_large_image">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+            padding-bottom: 80px;
+        }
+
+        h1,
+        h2 {
+            color: #2c3e50;
+        }
+
+        input,
+        button,
+        textarea {
+            margin-top: 10px;
+            padding: 8px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .script-box {
+            height: 150px;
+            font-family: monospace;
+        }
+
+        .section {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        pre {
+            background: #eee;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        /* Bottom Step Guide */
+        .step-guide {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #f0f0f0;
+            color: #000;
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 10px 0;
+            border-top: 1px solid #ccc;
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 9999;
+        }
+
+        .step-guide a {
+            display: inline-block;
+            text-align: center;
+            padding: 10px 15px;
+            margin: 0 5px;
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+            min-width: 80px;
+        }
+
+        .step-guide a:hover,
+        .step-guide a.active {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .step-guide a span {
+            display: block;
+            font-size: 12px;
+            color: #555;
+        }
+
+        .step-guide a.active span {
+            color: #fff;
+        }
+
+        input,
+        textarea {
+            display: block;
+            width: calc(100% - 20px) !important;
+        }
+
+        .tool-header {
+            color: white;
+            padding: 10px 15px;
+            margin: -15px -15px 15px -15px;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .workflow-box {
+            background: #e8f4f8;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        code {
+            background: #eee;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1><img src="https://wine.gitgpt.chat/icons/pufferpanel.png" style="width: 30px; margin-right: 6px;" /> Game Server
+        Management Toolkit</h1>
+    <p>The ultimate three-tool stack for modern game server infrastructure</p>
+
+    <div class="section" id="step2">
+        <div class="tool-header">
+            <h2>Step 1 — PufferPanel: Server Deployment & Management</h2>
+        </div>
+
+        <p><strong>Web-based game server management panel for both small networks and game server providers.</strong>
+        </p>
+        <div
+            style="position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; margin-bottom: 15px;">
+            <iframe src="https://www.youtube.com/embed/OWw4HkGMK6Q"
+                style="position: absolute; top:0; left: 0; width: 100%; height: 100%;" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+            </iframe>
+        </div>
+        <h3>What It Provides:</h3>
+        <ul>
+            <li>One-click game server deployment</li>
+            <li>Web-based file management and configuration</li>
+            <li>User management and permission systems</li>
+            <li>Real-time resource monitoring (CPU, RAM, disk)</li>
+            <li>Start/stop/restart servers via web interface</li>
+        </ul>
+
+        <h3>Deployment Example:</h3>
+        <pre>
+    # Deploy servers for your 11-game catalog
+    pufferpanel create-server --game "Game1" --name "EU-01" --port 27015
+    pufferpanel create-server --game "Game2" --name "US-01" --port 27016
+    pufferpanel create-server --game "Game3" --name "ASIA-01" --port 27017
+            </pre>
+
+        <div class="workflow-box">
+            <strong>⚡ Speed Advantage:</strong> Spin up new game servers in seconds instead of hours.
+            Perfect for scaling during game launches and managing your 6.5-year development roadmap.
+        </div>
+    </div>
+
+    <div class="section" id="step1">
+        <div class="tool-header">
+            <h2>Step 2 — OpenSpy: Master Server & Matchmaking</h2>
+        </div>
+
+        <p><strong>OpenSpy is a universal modification for PC games to replace defunct GameSpy services with open-source
+                alternatives.</strong></p>
+
+        <h3>What It Solves:</h3>
+        <ul>
+            <li>Centralized server registry and discovery for all your games</li>
+            <li>Replaces dead master servers that kill multiplayer functionality</li>
+            <li>Enables cross-game server browsing and matchmaking</li>
+            <li>Future-proofs your games against corporate server shutdowns</li>
+        </ul>
+
+        <h3>For Your 11-Game Pipeline:</h3>
+        <pre>
+// Game client integration
+OpenSpy.RegisterMasterServer("games.yourcompany.com");
+OpenSpy.GetServerList("Game1");
+OpenSpy.ReportServerStatus(players, maxPlayers, map);
+        </pre>
+
+        <div class="workflow-box">
+            <strong>🎯 Real Application:</strong> When players open your game's server browser,
+            it queries your OpenSpy instance to show all active servers across your entire game catalog.
+        </div>
+    </div>
+
+    <div class="section" id="step3">
+        <div class="tool-header">
+            <h2>Step 3 — RCON-CLI: Remote Server Administration</h2>
+        </div>
+
+        <p><strong>CLI for executing queries on remote game servers using the RCON protocol.</strong></p>
+
+        <h3>What It Enables:</h3>
+        <ul>
+            <li>Terminal commands for all game servers</li>
+            <li>Automation and scripting capabilities</li>
+            <li>Quick admin tasks without web interface</li>
+            <li>Emergency management and troubleshooting</li>
+            <li>Integration with cron jobs and Discord bots</li>
+        </ul>
+
+        <h3>Configuration & Usage:</h3>
+        <pre>
+# rcon.yaml - Unified management for all games
+game1:
+  address: "localhost:27015"
+  password: "pufferpanel-rcon-password"
+
+game2:
+  address: "localhost:27016" 
+  password: "pufferpanel-rcon-password"
+
+# Quick server administration
+./rcon -e game1 "say Maintenance in 10 minutes"
+./rcon -e game2 "changelevel map_02"
+./rcon -e game1 "kick Player123"
+        </pre>
+
+        <h3>Automation Script Example:</h3>
+        <pre>
+#!/bin/bash
+# daily-maintenance.sh
+
+# Announce maintenance
+./rcon -e game1 "say Daily maintenance starting..."
+./rcon -e game2 "say Daily maintenance starting..."
+
+# Save game states
+./rcon -e game1 "save-all"
+./rcon -e game2 "save-all"
+
+# Restart servers
+pufferpanel restart-server game1
+pufferpanel restart-server game2
+
+# Announce completion
+./rcon -e game1 "say Maintenance complete!"
+        </pre>
+
+        <div class="workflow-box">
+            <strong>🖥️ Power User Advantage:</strong> While PufferPanel gives you the web interface,
+            RCON-CLI gives you terminal power for advanced operations and automation across your entire server fleet.
+        </div>
+    </div>
+
+    <!-- Step Guide -->
+    <div class="step-guide">
+        <a href="#step1" class="active">Step 1<span>PufferPanel</span></a>
+        <a href="#step2">Step 2<span>OpenSpy</span></a>
+        <a href="#step3">Step 3<span>RCON-CLI</span></a>
+    </div>
+
+    <script>
+        // Highlight active step in bottom bar
+        const stepLinks = document.querySelectorAll('.step-guide a');
+
+        function updateActiveStep() {
+            let current = '';
+            document.querySelectorAll('.section').forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                if (window.pageYOffset >= sectionTop - 120 &&
+                    window.pageYOffset < sectionTop + sectionHeight - 120) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            stepLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+
+            // If no section is active, make first step active
+            if (!current && stepLinks.length > 0) {
+                stepLinks[0].classList.add('active');
+            }
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', updateActiveStep);
+        window.addEventListener('scroll', updateActiveStep);
+    </script>
+</body>
+
+</html>

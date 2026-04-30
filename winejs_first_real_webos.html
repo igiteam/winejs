@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>WineJS · The first real WebOS</title>
+
+    <meta name="description"
+        content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
+    <link rel="icon" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" sizes="180x180">
+    <link rel="icon" type="image/png" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" sizes="512x512">
+    <meta itemprop="name" content="WineJS · The first real WebOS">
+    <meta itemprop="description"
+        content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
+    <meta itemprop="image" content="https://cdn.gitgpt.chat/rtx/images/winejs_install_completed.png">
+    <meta property="og:title" content="WineJS · The first real WebOS">
+    <meta property="og:description"
+        content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
+    <meta property="og:image" content="https://cdn.gitgpt.chat/rtx/images/winejs_install_completed.png">
+    <meta property="og:url" content="">
+    <meta property="og:type" content="website">
+    <meta name="twitter:title" content="WineJS · The first real WebOS">
+    <meta name="twitter:description"
+        content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
+    <meta name="twitter:image" content="https://cdn.gitgpt.chat/rtx/images/winejs_install_completed.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="description"
+        content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
+
+    <link rel="apple-touch-icon" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" sizes="180x180">
+
+    <meta itemprop="description"
+        content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
+
+    <meta property="og:description"
+        content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
+
+    <meta name="twitter:description"
+        content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
+
+    <meta name="description"
+        content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            color: #e0e0e0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        h1,
+        h2,
+        h3,
+        p,
+        li {
+            color: #f0f0f0;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+            margin: 2.5rem 0 1rem 0;
+            border-left: 4px solid #ffffff;
+            padding-left: 1rem;
+        }
+
+        h3 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .hero-sub {
+            font-size: 1.25rem;
+            color: #bbbbbb;
+            max-width: 720px;
+            margin-bottom: 2rem;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px solid #2a2a2a;
+            margin: 2rem 0;
+        }
+
+        .hero-image {
+            width: 100%;
+            max-width: 720px;
+            border-radius: 24px;
+            background: #0a0a0a;
+            border: 1px solid #2c2c2c;
+            margin: 1.5rem 0 2rem 0;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.8);
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 24px;
+        }
+
+        .required-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0 2rem 0;
+        }
+
+        .required-card {
+            background: #0a0a0a;
+            border: 1px solid #2a2a2a;
+            border-radius: 28px;
+            padding: 1.5rem;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .required-card:hover {
+            border-color: #4a4a4a;
+            background: #111111;
+        }
+
+        .card-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 1.2rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0f0f0f;
+            border-radius: 60px;
+            padding: 12px;
+        }
+
+        .card-icon img {
+            max-width: 100%;
+            max-height: 70px;
+            object-fit: contain;
+        }
+
+        .required-card h3 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            margin-top: 1rem;
+            background: transparent;
+            border: 1.5px solid #ffffff;
+            color: #ffffff;
+            padding: 0.6rem 1.4rem;
+            border-radius: 60px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+
+        .screenshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.8rem;
+            margin: 2rem 0 1rem;
+        }
+
+        .screenshot-card {
+            background: #080808;
+            border: 1px solid #2c2c2c;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .screenshot-card img {
+            width: 100%;
+            height: auto;
+            display: block;
+            background: #000;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .screenshot-caption {
+            padding: 1rem;
+            font-size: 0.85rem;
+            text-align: center;
+            color: #aaa;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0 1rem;
+        }
+
+        .app-tile {
+            background: #0c0c0c;
+            border: 1px solid #262626;
+            border-radius: 18px;
+            padding: 0.85rem 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            min-height: 90px;
+        }
+
+        .app-tile img {
+            max-width: 80%;
+            max-height: 55px;
+            object-fit: contain;
+        }
+
+        .app-tile:hover {
+            border-color: #5a5a5a;
+            background: #141414;
+        }
+
+        /* improved code block with copy button */
+        .code-snippet {
+            background: #0a0a0a;
+            border: 1px solid #2c2c2c;
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .code-header p {
+            margin-bottom: 0;
+            font-weight: 600;
+        }
+
+        .copy-btn {
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            color: #e0e0e0;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-family: monospace;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #2a2a2a;
+            border-color: #666;
+        }
+
+        .copy-btn.copied {
+            background: #2a2a2a;
+            border-color: #ffffff;
+            color: white;
+        }
+
+        .command-line {
+            background: #050505;
+            border-radius: 14px;
+            padding: 1rem;
+            font-family: 'Fira Code', 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            white-space: nowrap;
+            border: 1px solid #222;
+            margin: 0.5rem 0 0 0;
+        }
+
+        .command-line code {
+            color: #0f0;
+            background: transparent;
+            font-family: inherit;
+        }
+
+        .footer-note {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #6a6a6a;
+            margin-top: 3rem;
+            border-top: 1px solid #222;
+            padding-top: 2rem;
+        }
+
+        a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        @media (max-width: 680px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 2.4rem;
+            }
+
+            .required-grid {
+                gap: 1rem;
+            }
+
+            .command-line {
+                font-size: 0.7rem;
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>WineJS<br><span style="color: #ffffff;">the first real WebOS</span></h1>
+        <div class="hero-sub">
+            One server. One domain. One unified install script template.<br>
+            Install any <strong>Windows app</strong> → gets a URL. Install any <strong>web app</strong> → gets a
+            URL.<br>
+            40+ apps already working. Add more in minutes.
+        </div>
+
+        <div class="hero-image">
+            <img src="https://cdn.gitgpt.chat/rtx/images/winejs_install_completed.png"
+                alt="WineJS installation completed dashboard">
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: space-between; margin: 2rem 0;">
+            <div style="flex:1; min-width: 200px;">
+                <h3>⚡ Windows apps</h3>
+                <p style="color:#bbb">KasmVNC + Wine (Wine Is Not an Emulator). Real compatibility layer, no VM
+                    overhead.</p>
+            </div>
+            <div style="flex:1; min-width: 200px;">
+                <h3>🌐 Web apps</h3>
+                <p style="color:#bbb">Docker containers, automatically integrated. Same script template for both worlds.
+                </p>
+            </div>
+            <div style="flex:1; min-width: 200px;">
+                <h3>🔗 Unified result</h3>
+                <p style="color:#bbb"><code
+                        style="background:#1a1a1a; padding:2px 6px; border-radius: 40px;">https://yourdomain.com/appname</code>
+                    — no manual nginx, no port fights.</p>
+            </div>
+        </div>
+
+        <hr>
+
+        <h2>📦 In order to use WineJS you need these three apps</h2>
+        <div class="required-grid">
+            <div class="required-card">
+                <div class="card-icon">
+                    <img src="https://www.mozilla.org/media/img/firefox/developer/page-image.5c2b5c5ce10a.png"
+                        alt="Firefox Developer Edition">
+                </div>
+                <h3>Firefox Developer Edition</h3>
+                <p style="font-size:0.9rem; color:#aaa">Essential browser for WineJS workflow & extensions.</p>
+                <a href="https://www.firefox.com/en-US/channel/desktop/developer/" class="btn" target="_blank"
+                    rel="noopener noreferrer">Download →</a>
+            </div>
+
+            <div class="required-card">
+                <div class="card-icon">
+                    <img src="https://cdn.gitgpt.chat/rtx/images/winejs_firefox_extension_digitalocean_winejs_installer.png"
+                        alt="WineJS DigitalOcean Manager">
+                </div>
+                <h3>WineJS Firefox Addon<br>DigitalOcean Droplet Manager</h3>
+                <p style="font-size:0.9rem; color:#aaa">One-click droplet creation + WineJS installer.</p>
+                <a href="https://igiteam.github.io/sh/?url=https%3A%2F%2Fcdn.gitgpt.chat%2Frtx%2Fwinejs-terminal-firefox-digitalocean_droplets.sh&_=1777538829230"
+                    class="btn" target="_blank" rel="noopener noreferrer">Install add-on →</a>
+            </div>
+
+            <div class="required-card">
+                <div class="card-icon">
+                    <img src="https://cdn.gitgpt.chat/rtx/images/winejs_firefox_extension_digitalocean_create_droplet.png"
+                        alt="WineJS Firefox Addon">
+                </div>
+                <h3>WineJS Firefox Addon</h3>
+                <p style="font-size:0.9rem; color:#aaa">Terminal integration, script runner, quick deploy.</p>
+                <a href="https://igiteam.github.io/sh/?url=https%3A%2F%2Fcdn.gitgpt.chat%2Frtx%2Fwinejs-terminal-firefox.sh&_=1777538860181"
+                    class="btn" target="_blank" rel="noopener noreferrer">Install add-on →</a>
+            </div>
+        </div>
+
+        <h2>⚙️ Deploy WineJS in minutes</h2>
+        <div class="screenshot-grid">
+            <div class="screenshot-card">
+                <img src="https://cdn.gitgpt.chat/rtx/images/winejs_firefox_extension_digitalocean_winejs_installer.png"
+                    alt="extension installer">
+                <div class="screenshot-caption">1. Firefox extension with integrated installer</div>
+            </div>
+            <div class="screenshot-card">
+                <img src="https://cdn.gitgpt.chat/rtx/images/winejs_firefox_extension_digitalocean_create_droplet_set_site_domain.png"
+                    alt="create droplet set domain">
+                <div class="screenshot-caption">2. Configure domain & droplet</div>
+            </div>
+            <div class="screenshot-card">
+                <img src="https://cdn.gitgpt.chat/rtx/images/winejs_firefox_extension_digitalocean_create_droplet.png"
+                    alt="create droplet button">
+                <div class="screenshot-caption">3. One-click droplet creation</div>
+            </div>
+            <div class="screenshot-card">
+                <img src="https://cdn.gitgpt.chat/rtx/images/winejs_firefox_extension_digitalocean_open_terminal.png"
+                    alt="open terminal">
+                <div class="screenshot-caption">4. Open terminal in your browser</div>
+            </div>
+            <div class="screenshot-card">
+                <img src="https://cdn.gitgpt.chat/rtx/images/igiteam_sh_winejs_bash_install_quick_command_copypaste.png"
+                    alt="quick command copy-paste">
+                <div class="screenshot-caption">5. Copy & run — instant WebOS server</div>
+            </div>
+            <div class="screenshot-card">
+                <img src="https://cdn.gitgpt.chat/rtx/images/winejs_install_completed_terminal.png"
+                    alt="terminal installation">
+                <div class="screenshot-caption">7. Run the WineJS installer script</div>
+            </div>
+            <div class="screenshot-card">
+                <img src=" https://cdn.gitgpt.chat/rtx/images/winejs_install_completed.png" alt="terminal installation">
+                <div class="screenshot-caption">8. WineJS install completed in 5-10minutes</div>
+            </div>
+            <div class="screenshot-card">
+                <img src="https://cdn.gitgpt.chat/rtx/images/igiteam_sh_winejs_codesnippet_open_source.png"
+                    alt="open source snippet">
+                <div class="screenshot-caption">9. Fully open source, inspect & extend</div>
+            </div>
+        </div>
+
+        <!-- improved quick terminal command with copy button & clean formatting -->
+        <div class="code-snippet">
+            <div class="code-header">
+                <p>🚀 QUICK TERMINAL COMMAND — deploy WineJS on any Linux server</p>
+                <button class="copy-btn" id="copyWineJsBtn" onclick="copyWineJsCommand()">📋 COPY</button>
+            </div>
+            <div class="command-line">
+                <code
+                    id="wineJsCommand">curl -o "winejs.sh" "https://gitgpt.chat/rtx/winejs.sh" && chmod +x "winejs.sh" && sudo "./winejs.sh"</code>
+            </div>
+            <div class="open-source-section">
+                <div class="oss-content">
+                    <a href="https://igiteam.github.io/sh/" target="_blank" rel="noopener noreferrer" class="oss-link"
+                        style="text-decoration: underline ;">📖WineJS is
+                        fully open-source</a>
+                    <span class="oss-divider">·</span>
+                    <span class="oss-text">Inspect it, fork it, contribute. No secrets. No lock-in.</span>
+                </div>
+            </div>
+            <p style="margin-top: 0.8rem; font-size: 0.85rem;">⚡ DigitalOcean droplet ready script — creates a fresh VM
+                with WineJS preinstalled.<br>
+                Netlify / static hosting also supported. Everything automated, from nginx to SSL.</p>
+        </div>
+
+        <h2>📁 40+ apps ready to install · everything just a link</h2>
+        <div class="apps-grid">
+            <div class="app-tile" title="MilkShape 3D [Windows]"><img src="https://wine.gitgpt.chat/icons/milkshape.jpg"
+                    alt="MilkShape 3D Windows App"></div>
+            <div class="app-tile" title="Forgejo GitLFS [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/gitlfs.png" alt="Forgejo GitLFS"></div>
+            <div class="app-tile" title="VSCode Server [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/vscodeserver.png" alt="VSCode Server"></div>
+            <div class="app-tile" title="ArchiveBox [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/archivebox-logo.png" alt="ArchiveBox"></div>
+            <div class="app-tile" title="Artalk Comments [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/artalk-logo.png" alt="Artalk"></div>
+            <div class="app-tile" title="BitPoll [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/bitpoll-logo.png" alt="BitPoll"></div>
+            <div class="app-tile" title="Bugzilla [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/bugzilla-bug-tracker-logo.png" alt="Bugzilla"></div>
+            <div class="app-tile" title="Cal Appointment Scheduling [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/cal-appointment-scheduling-logo.png" alt="Cal"></div>
+            <div class="app-tile" title="Castopod [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/castopod-logo.png" alt="Castopod"></div>
+            <div class="app-tile" title="ChangeDetection [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/changedetection-logo.png" alt="ChangeDetection"></div>
+            <div class="app-tile" title="Chhoto URL Shortener [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/chhoto-url-logo.png" alt="Chhoto URL"></div>
+            <div class="app-tile" title="ChiefOnboarding [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/chiefonboarding-logo.png" alt="ChiefOnboarding"></div>
+            <div class="app-tile" title="CommaFeed RSS Reader [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/commafeed-logo.png" alt="CommaFeed"></div>
+            <div class="app-tile" title="ConvertX [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/convertx-logo.png" alt="ConvertX"></div>
+            <div class="app-tile" title="Dagu Workflow [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/dagu_logo_dark.png" alt="Dagu"></div>
+            <div class="app-tile" title="Directory Lister [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/directorylister-logo.png" alt="Directory Lister"></div>
+            <div class="app-tile" title="Discount Bandit [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/discount-bandit-logo.png" alt="Discount Bandit"></div>
+            <div class="app-tile" title="Dittofeed [WebApp]"><img src="https://cdn.gitgpt.chat/rtx/images/dittofeed.png"
+                    alt="Dittofeed"></div>
+            <div class="app-tile" title="Droposs [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/droposs-logo.png" alt="Droposs"></div>
+            <div class="app-tile" title="Ganymede Twitch Archiver [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/ganymede-logo.png" alt="Ganymede"></div>
+            <div class="app-tile" title="GitLFS [WebApp]"><img src="https://cdn.gitgpt.chat/rtx/images/gitlfs.png"
+                    alt="GitLFS">
+            </div>
+            <div class="app-tile" title="Huly Project Management [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/huly-project-management-logo.png" alt="Huly"></div>
+            <div class="app-tile" title="Karaoke Eternal [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/karaoke-eternal-logo.png" alt="Karaoke Eternal"></div>
+            <div class="app-tile" title="Mergeable [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/mergeable-logo.png" alt="Mergeable"></div>
+            <div class="app-tile" title="Mumble VoIP [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/mumble-voip-logo.png" alt="Mumble"></div>
+            <div class="app-tile" title="n8n Automation [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/n8n_logo.png" alt="n8n"></div>
+            <div class="app-tile" title="Neko Social Virtual Browser [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/neko-social-virtual-browser.png" alt="Neko"></div>
+            <div class="app-tile" title="OpenSpy MP Servers [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/openspy-logo.png" alt="OpenSpy"></div>
+            <div class="app-tile" title="Owncast Live Streaming [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/owncast-logo.png" alt="Owncast"></div>
+            <div class="app-tile" title="Paperless-ngx [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/paperless-ngx-logo.png" alt="Paperless-ngx"></div>
+            <div class="app-tile" title="Postiz Social Media Manager [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/postiz-logo.png" alt="Postiz"></div>
+            <div class="app-tile" title="Pretix Ticket Sales [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/pretix_logo.png" alt="Pretix"></div>
+            <div class="app-tile" title="PufferPanel Game Server [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/pufferpanel-icon.png" alt="PufferPanel"></div>
+            <div class="app-tile" title="Saleor Commerce [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/saleor-logo.png" alt="Saleor"></div>
+            <div class="app-tile" title="Screego Screen Sharing [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/screego_screensharing_logo.png" alt="Screego"></div>
+            <div class="app-tile" title="SearXNG Search Engine [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/searxng_logo.png" alt="SearXNG"></div>
+            <div class="app-tile" title="SolidInvoice [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/solidinvoice-logo.png" alt="SolidInvoice"></div>
+            <div class="app-tile" title="Sosse Web Crawler [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/sosse-logo.png" alt="Sosse"></div>
+            <div class="app-tile" title="Svix Webhook Server [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/svix-live-webhook-server.png" alt="Svix"></div>
+            <div class="app-tile" title="Sympa Mailing List [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/sympa-logo.png" alt="Sympa"></div>
+            <div class="app-tile" title="VSCode Server [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/vscodeserver.png" alt="VSCode Server"></div>
+            <div class="app-tile" title="Webhook Tester [WebApp]"><img
+                    src="https://cdn.gitgpt.chat/rtx/images/webhook-tester-logo.png" alt="Webhook Tester"></div>
+            <div class="app-tile" title="+ more coming soon"><span style="color:#aaa; font-size: 0.7rem;">+ more
+                    coming</span>
+            </div>
+        </div>
+
+        <div
+            style="background: #0a0a0a; border-radius: 24px; padding: 2rem; margin: 2rem 0; border: 1px solid #2c2c2c; text-align: center;">
+            <p style="font-size: 1.2rem; font-weight: 500;">📌 Same script template for any app — Windows or web</p>
+            <p style="color: #aaa; max-width: 700px; margin: 0.8rem auto;">No manual nginx config, no port management,
+                no authentication setup, no storage mounting.<br>
+                <strong>WineJS turns a server into an operating system where every application – Windows or web – is
+                    just a link.</strong>
+            </p>
+            <div style="margin-top: 1.2rem;">
+                <span
+                    style="background:#1a1a1a; border-radius: 60px; padding: 0.3rem 1rem; font-family: monospace;">winejs_install_[app].sh
+                    → yourdomain.com/appname</span>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            WineJS · open source · self-hosted · KasmVNC + Wine + Docker · unified WebOS layer<br>
+            Firefox extensions, DigitalOcean integration, 40+ ready-to-install applications.<br>
+            <span style="color:#555;">© WineJS — the first real WebOS. One domain. Unlimited apps.</span>
+        </div>
+    </div>
+
+    <script>
+        function copyWineJsCommand() {
+            const commandElement = document.getElementById('wineJsCommand');
+            const commandText = commandElement.innerText || commandElement.textContent;
+
+            navigator.clipboard.writeText(commandText).then(() => {
+                const btn = document.getElementById('copyWineJsBtn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✅ COPIED!';
+                btn.classList.add('copied');
+
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Copy failed:', err);
+                alert('Manual copy: ' + commandText);
+            });
+        }
+    </script>
+</body>
+
+</html>

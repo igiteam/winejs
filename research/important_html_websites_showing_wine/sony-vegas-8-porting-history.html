@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sony Vegas Pro 8.0 - Porting Journey</title>
+</head>
+
+<body>
+    <h1>Sony Vegas Pro 8.0 - Porting Journey</h1>
+    <h2>The Problem: Installing Sony Vegas Pro 8.0 on macOS</h2>
+
+    <h3>Initial Setup</h3>
+    <pre>
+Tools Used:
+- Wineskin Winery
+- Wrapper: Wineskin-3.0.6_2
+- Engine: WS11WineCX64Bit19.0.1-1.tar.7z
+    </pre>
+
+    <h3>First Issue: Missing Dependencies</h3>
+    <pre>
+Sony Vegas installer requires:
+- .NET Framework 3.0
+- Visual C++ 2005 Redistributable
+
+The installer tries to download these automatically but fails (dead links).
+    </pre>
+
+    <h3>Solution Attempt: Winetricks</h3>
+    <pre>
+Winetricks is a built-in tool with collection of DLLs/files.
+Plan: Manually install dependencies so Sony Vegas installer finds them.
+
+First attempt with 64-bit engine failed:
+    </pre>
+
+    <pre>
+Executing cd /Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources
+warning: taskset/cpuset not available on your platform!
+fatal error: /Library/Developer/CommandLineTools/usr/bin/lipo: can't figure out the architecture type of: /Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources/wineserver
+fatal error: /Library/Developer/CommandLineTools/usr/bin/lipo: can't figure out the architecture type of: ./wineserver
+------------------------------------------------------
+warning: Unknown file arch of /Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources/wineserver.
+------------------------------------------------------
+fatal error: /Library/Developer/CommandLineTools/usr/bin/lipo: can't figure out the architecture type of: /Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources/wine
+fatal error: /Library/Developer/CommandLineTools/usr/bin/lipo: can't figure out the architecture type of: ./wine
+------------------------------------------------------
+warning: Unknown file arch of /Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources/wine.
+------------------------------------------------------
+Using winetricks 20250102-next - sha256sum: ae6f98e9fe58410f7103e7a3142d988ee114a76d842d16029c0884be4e0523e4 with wine-8.0.1 (WineskinCX 23.7.1-2) and WINEARCH=win64
+Executing w_do_call dotnet30
+Executing load_dotnet30 
+------------------------------------------------------
+warning: This package (dotnet30) does not work on a 64-bit installation. You must use a prefix made with WINEARCH=win32.
+------------------------------------------------------
+    </pre>
+
+    <h3>Architecture Problem Identified</h3>
+    <pre>
+Problem: .NET Framework 3.0 is 32-bit only, but wrapper was 64-bit.
+Developer: I tried to use 'prefix  WINEARCH=win32' but I couldn't figure out, so I decided to try 32bit engine
+Solution: Switch to 32-bit engine.
+    </pre>
+
+    <h3>Second Attempt: 32-bit Engine</h3>
+    <pre>
+I found 289 wineskin compiled engine list
+</pre>
+    <pre>
+WS11WineCX64Bit19.0.1-1.tar.7z
+│ │ │ │ │ │ │ │
+│ │ │ │ │ │ │ └── Patch version
+│ │ │ │ │ │ └────── Wine version (19.0.1 = CrossOver 19.0.1 based)
+│ │ │ │ │ └────────── 64-bit, if no 64 indicating 32-bit, but not always!
+│ │ │ │ └────────────── CX = CrossOver (better compatibility)
+│ │ │ └────────────────── Wine
+│ │ └────────────────────── Wineskin version 11
+│ └────────────────────────── Wineskin
+</pre>
+    <a href="https://github.com/vitor251093/porting-kit-engines/releases/" target="_blank"
+        rel="norefferrer">https://github.com/vitor251093/porting-kit-engines/releases/</a>
+    <pre>
+New Engine: WS11WineCX21.2.0.tar.7z (Wine 6.0.2, 32-bit)
+
+Progress: Files download successfully to cache, but installation fails:
+    </pre>
+
+    <pre>
+Executing cd /Users/gabrielmajorsky/.cache/winetricks/dotnet30
+------------------------------------------------------
+warning: Installing .NET 3.0 runtime silently, as otherwise it gets hidden behind taskbar. Installation usually takes about 3 minutes.
+------------------------------------------------------
+Executing wine dotnetfx3.exe /q /c:install.exe /q
+wine: Read access denied for device L"\\??\\Z:\\", FS volume label and serial are not available.
+------------------------------------------------------
+warning: Note: command wine dotnetfx3.exe /q /c:install.exe /q returned status 67. Aborting.
+    </pre>
+
+    <h3>Z: Drive Access Issue</h3>
+    <pre>
+Problem: Wine cannot access Z: drive (macOS root filesystem)
+Attempted fix: Full Disk Access permissions
+- System Settings → Privacy & Security → Full Disk Access
+- Added Terminal and Wineskin app to list
+- Restarted system
+
+Result: Same Z: drive access error persists
+    </pre>
+
+    <h3>Current Status</h3>
+    <pre>
+File Locations (Finder -> Go -> Go to Folder):
+- Wineskin Winery: /Applications
+- Engines: ~/Library/Application Support/Wineskin/Engines/
+- Wrapper: ~/Library/Application Support/Wineskin/Wrapper/
+- Created Wineskin Apps: ~/Applications/Wineskin
+- Winetricks Cache: ~/.cache/winetricks
+
+What Works:
+- Wine binaries are functional
+- Files download to cache successfully
+- 32-bit architecture is correct
+
+What's Broken:
+- Z: drive file system access
+- .NET Framework installation
+- Visual C++ 2005 installation
+    </pre>
+
+    <h3>Next Steps to Try</h3>
+    <pre>
+1. Try different .NET version (dotnet35, dotnet48)
+2. Remap Z: drive to different location
+3. Manual .NET installation via Wineskin "Install Software"
+4. Try Porting Kit with pre-configured recipes
+5. Use newer Wine engine (Wine 8.x+)
+</pre>
+
+
+    <h3>Next Steps to Try</h3>
+    <pre>
+I went to Wineskin -> Tools -> Config Utility (winecfg) -> Drives
+
+In Drives I see three drives
+Letter | Target Folder
+C: ../drive_c (~/Applications/Wineskin/sonyvegas8/Contents/SharedSupport/prefix/drive_c)
+D: /volumes/FAR_CRY1 (iso mounted on macosx (cause i want to install setup.exe later)
+Z: / (macOS root folder)
+
+Basically it says it has a problem reading Z:/ but first of all what to do with Z when it should only care about C:/ ?
+
+Z: drive is Wine's bridge to macOS filesystem:
+Z: / = Your macOS root filesystem
+Wine uses Z: to access macOS files, including:
+Downloaded installers in your Downloads folder
+Winetricks cache in ~/.cache/winetricks
+Temporary files
+The problem: When you run wine dotnetfx3.exe, Wine tries to:
+Find the executable in the current directory (which might be Z: drive)
+Access temporary files on Z: drive
+Write logs and configuration
+
+basically it says
+wine: Read access denied for device L"\\??\\Z:\\", FS volume label and serial are not available.
+
+first of all
+it was able to download the dotnet30.exe here
+~/.cache/winetricks/dotnet30/dotnetfx3.exe
+
+so i assume it had write access because it was able to download it
+
+but now it tries to read ~/.cache/winetricks/dotnet30/dotnetfx3.exe
+to install in
+~/Applications/Wineskin/sonyvegas8/Contents/SharedSupport/prefix/drive_c
+
+The Path Translation Problem
+
+What's happening:
+
+Winetricks downloads to: ~/.cache/winetricks/dotnet30/dotnetfx3.exe (macOS path)
+Wine tries to access: Z:/Users/gabrielmajorsky/.cache/winetricks/dotnet30/dotnetfx3.exe
+But Z: drive has permission issues, so it fails
+
+so in a sense winetricks is nothing more just another istaller with a list of files t download into cache and install
+automatically
+
+Winetricks = Automated Dependency Installer
+
+It's essentially a smart script that:
+
+Downloads required files (DLLs, frameworks, redistributables)
+
+Installs them in the correct order
+
+Configures Wine registry and settings
+
+Winetricks Anatomy
+bash
+
+# It's just a big shell script with "recipes"
+~/.cache/winetricks/ # Download cache
+/usr/bin/winetricks # Main script
+/usr/share/winetricks/ # Recipe files
+
+Example: The dotnet30 "recipe"
+
+If you look at what winetricks does for dotnet30:
+bash
+
+# 1. Downloads Microsoft installer
+wget https://download.microsoft.com/.../dotnetfx3.exe
+
+# 2. Runs it with specific parameters
+wine dotnetfx3.exe /q /c:install.exe /q
+
+# 3. Sets registry keys if needed
+wine regedit /S some_settings.reg
+</pre>
+
+    <pre>
+Manual Terminal Installation 
+Breakthrough After identifying winetricks limitations and Z: drive issues, 
+we switched to manual terminal installation: 
+
+# Navigate to Wineskin resources 
+cd "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources" 
+# Set the Wine prefix export 
+WINEPREFIX="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix" 
+# Copy .NET 3.0 from cache to C: drive (bypassing Z: drive entirely) 
+cp ~/.cache/winetricks/dotnet30/dotnetfx3.exe "$WINEPREFIX/drive_c/" 
+# Install directly from C: drive 
+./wine "$WINEPREFIX/drive_c/dotnetfx3.exe" /passive 
+
+The Working Engine WS11WineCX21.2.0.tar.7z 
+(Wine 6.0.2, 32-bit) 
+- CrossOver-based for better compatibility 
+- 32-bit architecture required for .NET 3.0 
+- Complete library dependencies (no missing libinotify.0.dylib) 
+
+Key Infrastructure Discoveries Wineskin Winery: 
+
+/Applications Engines:
+ ~/Library/Application Support/Wineskin/Engines/ 
+
+Wrapper: 
+~/Library/Application Support/Wineskin/Wrapper/ 
+
+Wineskin Apps: 
+~/Applications/Wineskin 
+
+Winetricks Cache: 
+~/.cache/winetricks 
+
+Engine Archive Source 
+https://github.com/vitor251093/porting-kit-engines/releases 
+
+Current Success Status: 
+✅ .NET 3.0 installer running successfully 
+✅ No more library dependency errors 
+✅ Windows processes active (ngen.exe, MSI installer) 
+✅ Normal installation progress observed 
+
+Next Steps After .NET Installation 
+# Install VC++ 2005 
+./winetricks vcrun2005 
+# Install Sony Vegas 
+./wine "/path/to/SonyVegas8Setup.exe" 
+
+</pre>
+    <h3>Killing terminal process if its stuck</h3>
+    <pre>
+# Kill the specific .NET installer
+pkill -f "dotnetfx3.exe"
+
+# Kill any remaining wine processes
+pkill -f "wine32on64-preloader"
+
+# Clean up the Wine server
+cd "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources"
+./wineserver -k
+
+# Verify everything is dead
+ps aux | grep wine
+ps aux | grep dotnetfx3
+</pre>
+    <h3>Lessons Learned - Broken Winetricks</h3>
+    <pre>
+- 32-bit apps need 32-bit Wine prefix (WINEARCH=win32)
+- .NET Framework versions have architecture requirements
+- Z: drive represents macOS root filesystem
+- Full Disk Access doesn't always solve Wine file system issues
+- Winetricks cache location: ~/.cache/winetricks
+- Different Wine engines have different compatibility
+    </pre>
+
+    <h3>How to install apps using terminal</h3>
+    <pre>
+# Make sure we're in the right directory
+cd "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources"
+
+# Set the Wine prefix
+export WINEPREFIX="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix"
+
+# Run .NET installer WITH GUI (no silent flags)
+./wine "$WINEPREFIX/drive_c/dotnetfx3.exe"
+</pre>
+
+    <h3>Getting read access error on Z:\</h3>
+    <pre>
+# Make sure we're in the right directory
+cd "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources"
+
+# Set the Wine prefix
+export WINEPREFIX="~/.cache/winetricks"
+
+# Run .NET installer WITH GUI (no silent flags)
+./wine "$WINEPREFIX/dotnet30/dotnetfx3.exe"
+</pre>
+    <h3>Copy selected installer to drive_c</h3>
+    <pre>
+cd "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources"
+export WINEPREFIX="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix"
+
+# Create the folder structure
+mkdir -p "$WINEPREFIX/drive_c/winetricks/dotnet30"
+
+# Copy the installer
+cp ~/.cache/winetricks/dotnet30/dotnetfx3.exe "$WINEPREFIX/drive_c/winetricks/dotnet30/"
+
+# Install from C: drive
+./wine "$WINEPREFIX/drive_c/winetricks/dotnet30/dotnetfx3.exe"
+
+    
+</pre>
+    <h3>Delete file</h3>
+    <pre>
+rm -rf "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app"
+</pre>
+    <h3>Copy all installers to drive_c</h3>
+    <pre>
+cd "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources"
+export WINEPREFIX="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix"
+
+# Scan all frameworks
+ls -la "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Frameworks"
+
+# Check Wine version
+./wine --version
+
+# Copy entire winetricks cache to C: drive
+cp -r ~/.cache/winetricks "$WINEPREFIX/drive_c/"
+
+# Now install from C: drive (no Z: drive issues)
+./wine "$WINEPREFIX/drive_c/winetricks/dotnet35/dotnetfx35.exe"
+
+open your app directory, i use ‘sonyvegas’ as a name for the wrapper
+code "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app"
+</pre>
+    <h3>Breakthrough happened with the following commands</h3>
+    <pre>
+Here's a complete list of all the commands from your Phase 2 technical breakthroughs:
+Navigation & Setup Commands
+bash
+
+cd "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources"
+export WINEPREFIX="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix"
+
+Wine Version Checks
+bash
+
+./wine --version
+# Results:
+# - "wine-10.0 (Kegworks Battle.net)"
+# - "Error: the wine loader was not found in ./../../../SharedSupport/wine/bin"
+
+Dependency Installation Attempts
+bash
+
+# Copy winetricks cache to C: drive
+cp -r ~/.cache/winetricks "$WINEPREFIX/drive_c/"
+
+# Install .NET from C: drive
+./wine "$WINEPREFIX/drive_c/winetricks/dotnet35/dotnetfx35.exe"
+./wine "$WINEPREFIX/drive_c/winetricks/dotnet30/dotnetfx3.exe" /passive
+
+File System Investigation
+bash
+
+# Check engine structure
+ls -la "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/"
+find "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app" -name "wine" -type f
+ls -la "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources"
+
+Direct Binary Access Attempts
+bash
+
+# Try using real wine binary directly
+"/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/wine/bin/wine" --version
+"/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/wine/bin/wine"
+"$WINEPREFIX/drive_c/winetricks/dotnet30/dotnetfx3.exe" /passive
+
+Library Dependency Debugging
+bash
+
+# Check for missing libinotify
+find . -name "libinotify*" 2>/dev/null
+ls -la lib/
+find . -name "libinotify*" -o -name "Frameworks" -type d
+ls -la ../Frameworks/ 2>/dev/null
+ls -la "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Frameworks"
+
+Script Analysis
+bash
+
+# Debug wineserver script
+otool -L wineserver
+file wineserver
+cat wineserver
+
+Error Messages Encountered
+
+"Error: the wine loader was not found in ./../../../SharedSupport/wine/bin"
+
+"Bad CPU type in executable"
+
+"No such file or directory"
+
+"dyld: Library not loaded: @rpath/libinotify.0.dylib"
+
+Key Discoveries
+
+Wine binaries existed but scripts couldn't find them due to broken relative paths
+
+libinotify.0.dylib was present in Frameworks folder but not accessible
+
+Scripts used $(dirname "$0") which returned empty when called directly
+
+Path resolution failed: ./../../../SharedSupport/wine/bin → invalid path
+
+This phase revealed the core issue: broken path resolution in Wineskin wrapper scripts that prevented accessing the
+actual Wine binaries, even though they were properly installed in the engine.
+
+
+Here's the complete list of commands from this Phase 2 breakthrough session:
+Script Analysis & Debugging
+bash
+
+# Check wineserver script
+otool -L wineserver
+file wineserver
+cat wineserver
+
+# Verify real wineserver exists
+ls -la "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/wine/bin/wineserver"
+
+# Test real wineserver binary
+"/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/wine/bin/wineserver" --version
+otool -L "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/wine/bin/wineserver" | grep
+inotify
+
+# Debug script path issues
+export WINESKINPATH="$(dirname "$0")/../../../SharedSupport/wine/bin"
+echo "WINESKINPATH: $WINESKINPATH"
+ls -la "$WINESKINPATH/wineserver"
+
+Library Path Fixes
+bash
+
+# Try different library path configurations
+export DYLD_LIBRARY_PATH="../Frameworks"
+./wine "$WINEPREFIX/drive_c/winetricks/dotnet30/dotnetfx3.exe" /passive
+
+export DYLD_LIBRARY_PATH="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Frameworks"
+"$DYLD_LIBRARY_PATH/../SharedSupport/wine/bin/wine" --version
+"$DYLD_LIBRARY_PATH/../SharedSupport/wine/bin/wine"
+"/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix/drive_c/winetricks/dotnet30/dotnetfx3.exe"
+/passive
+
+DYLD_LIBRARY_PATH="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Frameworks" \
+"/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/wine/bin/wine" \
+"/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix/drive_c/winetricks/dotnet30/dotnetfx3.exe"
+/passive
+
+# Try wine64 binary
+export DYLD_LIBRARY_PATH="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Frameworks"
+"$DYLD_LIBRARY_PATH/../SharedSupport/wine/bin/wine64" --version
+"$DYLD_LIBRARY_PATH/../SharedSupport/wine/bin/wine64"
+"/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix/drive_c/winetricks/dotnet30/dotnetfx3.exe"
+/passive
+
+# Reset library paths
+export DYLD_LIBRARY_PATH="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Frameworks"
+export DYLD_INSERT_LIBRARIES=""
+unset DYLD_LIBRARY_PATH
+unset DYLD_FALLBACK_LIBRARY_PATH
+./wine64
+"/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix/drive_c/winetricks/dotnet30/dotnetfx3.exe"
+/passive
+
+The BREAKTHROUGH: Creating wine64_fixed
+bash
+
+# Analyze original wine64 script
+cat wine64
+
+# Create fixed version with absolute paths
+cat > wine64_fixed << 'EOF' #!/bin/sh export
+WINETRICKS_FALLBACK_LIBRARY_PATH="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Frameworks:/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Frameworks/GStreamer.framework/Libraries"
+export
+GST_PLUGIN_PATH="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Frameworks/GStreamer.framework/Libraries/gstreamer-1.0"
+export WINESKINPATH="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/wine/bin"
+export WINEPREFIX="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix" export
+DYLD_FALLBACK_LIBRARY_PATH="$WINETRICKS_FALLBACK_LIBRARY_PATH" exec "$WINESKINPATH/wine64" "$@" EOF chmod +x
+wine64_fixed # Test the fixed script ./wine64_fixed "$WINEPREFIX/drive_c/winetricks/dotnet30/dotnetfx3.exe" /passive
+Dependency Installation (SUCCESS!) bash # Verify .NET installer exists ls
+-la "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix/drive_c/winetricks/dotnet30/"
+# Install .NET using Windows paths ./wine64_fixed "C:\\winetricks\\dotnet30\\dotnetfx3.exe" /passive
+./wine64_fixed "C:\\winetricks\\dotnet30\\dotnetfx3.exe" /q ./wine64_fixed "C:\\winetricks\\dotnet30\\dotnetfx3.exe"
+/quiet /norestart ./wine64_fixed "C:\\winetricks\\dotnet35\\dotnetfx35.exe" /quiet /norestart # Verify installation
+./wine64_fixed reg query "HKLM\\Software\\Microsoft\\NET Framework Setup\\NDP\\v3.0" 2>/dev/null
+./wine64_fixed cmd /c "dir C:\\windows\\Microsoft.NET\\Framework\\v3.0*"
+
+# Install VC++ 2005
+./wine64_fixed "C:\\winetricks\\vcrun2005\\vcredist_x86.exe" /q
+./wine64_fixed "C:\\winetricks\\vcrun2005\\vcredist_x86.exe" /qb
+./wine64_fixed "C:\\winetricks\\vcrun2005\\vcredist_x86.exe"
+
+# Verify VC++ installation
+./wine64_fixed reg query "HKLM\\Software\\Microsoft\\VisualStudio\\8.0\\VC\\" 2>/dev/null
+./wine64_fixed cmd /c "dir C:\\windows\\system32\\msvcr*.dll" | head -10
+
+Registry Hacking for Missing Dependencies
+bash
+
+# Check dependency status
+./wine64_fixed reg query "HKLM\\Software\\Microsoft\\NET Framework Setup\\NDP\\v3.0"
+./wine64_fixed reg query "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall" | grep -i "visual.*2005"
+./wine64_fixed cmd /c "dir C:\\windows\\system32\\msvcr80.dll"
+./wine64_fixed cmd /c "dir C:\\windows\\Microsoft.NET\\Framework\\v3.0"
+./wine64_fixed reg query "HKLM\\SOFTWARE\\Microsoft\\NET Framework Setup\\NDP" /s | grep -i "install.*0x1"
+./wine64_fixed reg query "HKLM\\SOFTWARE\\Microsoft\\VisualStudio\\8.0" 2>/dev/null
+
+# Create fake VC++ 2005 registry entries
+cat > fix_vc2005.reg << 'EOF' Windows Registry Editor Version 5.00
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{837b34e3-7c30-493c-8f6a-2b0f04e2912c}] 
+"DisplayName"="Microsoft Visual C++ 2005 Redistributable" 
+"DisplayVersion"="8.0.61001" 
+"Publisher"="Microsoft Corporation" 
+"UninstallString"="MsiExec.exe /X{837b34e3-7c30-493c-8f6a-2b0f04e2912c}" 
+"InstallLocation"="C:\\Program Files\\Microsoft Visual Studio 8\\" 
+"VersionMajor"=dword:00000008 
+"VersionMinor"=dword:00000000 
+"NoModify"=dword:00000001 
+"NoRepair"=dword:00000001
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\VisualStudio\8.0] 
+"InstallDir"="C:\\Program Files\\Microsoft Visual Studio 8\\" 
+"ProductDir"="C:\\Program Files\\Microsoft Visual Studio 8\\"
+EOF ./wine64_fixed 
+regedit fix_vc2005.reg ./wine64_fixed reg
+query "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{837b34e3-7c30-493c-8f6a-2b0f04e2912c}" 
+
+#Create fake x64 entries for Sony Vegas 
+cat> fix_x64_deps.reg << 'EOF' 
+Windows Registry Editor Version 5.00 ;
+.NET 3.0 x86 (already exists) 
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\NET FrameworkSetup\NDP\v3.0] 
+"Install"=dword:00000001 
+"SP"=dword:00000002 
+"Version"="3.0.30729.5420" ; 
+.NET 3.0 x64 (fake entries) 
+[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\NET FrameworkSetup\NDP\v3.0] 
+"Install"=dword:00000001 
+"SP"=dword:00000002 
+"Version"="3.0.30729.5420"
+[HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\NET Framework
+Setup\NDP\v3.0\Setup] 
+"InstallSuccess"=dword:00000001 ; 
+VC++ 2005 x86
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{837b34e3-7c30-493c-8f6a-2b0f04e2912c}] 
+"DisplayName"="Microsoft Visual C++ 2005 Redistributable (x86)" 
+"DisplayVersion"="8.0.61001" 
+"Publisher"="Microsoft Corporation"; 
+VC++ 2005 x64
+[HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{6E8E85E8-CE4B-4FF5-91F7-04999C9FAE6A}] 
+"DisplayName"="Microsoft Visual C++ 2005 Redistributable (x64)" 
+"DisplayVersion"="8.0.61001" 
+"Publisher"="Microsoft Corporation"
+EOF ./wine64_fixed 
+
+regedit fix_x64_deps.reg ./wine64_fixed reg
+query "HKLM\\SOFTWARE\\Wow6432Node\\Microsoft\\NET Framework Setup\\NDP\\v3.0" ./wine64_fixed reg
+query "HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\{6E8E85E8-CE4B-4FF5-91F7-04999C9FAE6A}"
+
+Vegas Pro Testing & Final Issues bash 
+# Find and test Vegas executable ./wine64_fixed cmd
+/c "dir C:\\Program Files\\Sony\\*.* /s" | grep -i "vegas.*exe"
+./wine64_fixed "C:\\Program Files\\Sony\\Vegas Pro 8.1\\vegas.exe"
+./wine64_fixed "C:\\Program Files\\Sony\\Vegas Pro 8.1\\vegas81.exe" 
+# Try different configurations for
+floating point crash export WINEDLLOVERRIDES="mscoree,mshtml="
+./wine64_fixed "C:\\Program Files\\Sony\\Vegas Pro 8.1\\vegas.exe" 
+# Attempt to fix codec issues (winetricks missing) .
+/winetricks quartz ./winetricks wmp9 ./winetricks d3dx9 ./winetricks vcrun2008 
+# Disable problematic plugins 
+./wine64_fixed cmd /c "ren 'C:\Program Files\Sony\Vegas Pro 8.1\FileIO Plug-Ins\rm9plug' 'rm9plug.old'" 
+./wine64_fixed cmd /c "ren 'C:\Program Files\Sony\Vegas Pro 8.1\FileIO Plug-Ins\mxfplug' 'mxfplug.old'" 
+# Try with debug
+disabled WINEDEBUG=-all ./wine64_fixed "C:\\Program Files\\Sony\\Vegas Pro 8.1\\vegas81.exe" 
+# Try Windows XP compatibility ./wine64_fixed winecfg 
+./wine64_fixed "C:\\Program Files\\Sony\\Vegas Pro 8.1\\vegas81.exe"
+
+Key Successes: 
+✅ wine64_fixed script - Solved path resolution issues 
+✅ .NET 3.0 installed - Confirmed via registry 
+✅ VC++ 2005 runtime files - Present in system32 
+✅ Registry hacking - Fake entries tricked installer
+✅ Dependencies satisfied - Both .NET and VC++ requirements met 
+Remaining Issue: 
+❌ Floating point exception 
+- Vegas crashes due to Wine engine bugs with multimedia codecs
+
+🎬 Vegas Pro Installation & Testing
+Successful Installation:
+- Sony Vegas Pro 8.1 installed successfully
+- Registration/activation completed
+- Splash screen loads
+- All plugins initialize
+
+Final Issue Identified:
+./wine64_fixed "C:\\Program Files\\Sony\\Vegas Pro 8.1\\vegas81.exe"
+# ❌ Result: "Floating point exception: 8"
+</pre>
+    <h3>Advanced</h3>
+    <pre>
+# Check if the engine extracted properly
+ls -la "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/"
+
+# Check the Wineskin structure
+find "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app" -name "wine" -type f
+
+# See what's actually in Resources
+ls -la "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources"
+
+cd "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources"
+export WINEPREFIX="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix"
+
+# Use the REAL wine binary directly
+"/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/wine/bin/wine" --version
+
+# Copy winetricks cache
+cp -r ~/.cache/winetricks "$WINEPREFIX/drive_c/"
+
+# Install .NET using the real wine binary
+"/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/wine/bin/wine"
+"$WINEPREFIX/drive_c/winetricks/dotnet30/dotnetfx3.exe" /passive
+</pre>
+    <h3>reconstructing journey</h3>
+    <pre>
+Start with openning these in new tabs in finder
+/Applications Engines:
+~/Library/Application Support/Wineskin/Engines/
+
+Wrapper:
+~/Library/Application Support/Wineskin/Wrapper/
+
+Wineskin Apps:
+~/Applications/Wineskin
+
+Winetricks Cache:
+~/.cache/winetricks
+
+ok im using the same engine which had several issues, but at the end its a 64bit and we installed 32bit app, which was
+the first issue i wasnt able to do with prefix arch=32bit in winetricks and we started to use terminal
+
+second issue was the disk reading error due where the winetricks downloaded the dotnet30.exe
+
+third issue it kept failing to see when dotnet30 and vsc++ 2005 was installed
+than we came up with using terminal and the wine64_fixed
+i also changed the setup.exe which seemed to be able to download the files
+
+so im gonna start again using engine:
+WS12WineCX64Bit23.7.1-2.tar.7z
+wrapper:
+Wineskin-3.0.6_2
+
+with this we should be able to still instsall the app, but getting the CPU error which would make us change the engine
+
+
+# NAVIGATE TO THE NEW WRAPPER
+cd "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources"
+
+# CREATE wine64_fixed IMMEDIATELY
+cat > wine64_fixed << 'EOF' 
+#!/bin/sh
+export WINETRICKS_FALLBACK_LIBRARY_PATH="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Frameworks:/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Frameworks/GStreamer.framework/Libraries"
+export GST_PLUGIN_PATH="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Frameworks/GStreamer.framework/Libraries/gstreamer-1.0"
+export WINESKINPATH="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/wine/bin"
+export WINEPREFIX="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix"
+export DYLD_FALLBACK_LIBRARY_PATH="$WINETRICKS_FALLBACK_LIBRARY_PATH"
+exec "$WINESKINPATH/wine64" "$@"
+EOF
+
+# MAKE IT EXECUTABLE
+chmod +x wine64_fixed
+
+# TEST IT 
+./wine64_fixed --version
+
+cd "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources"
+export WINEPREFIX="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix"
+
+# Copy winetricks cache
+cp -r ~/.cache/winetricks "$WINEPREFIX/drive_c/"
+
+#get winetricks
+cd "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents"
+ls -la
+
+# Check what's in the main app structure
+find . -maxdepth 3 -type d | grep -v "prefix/drive_c" | sort
+
+# Specifically look at the engine structure
+ls -la SharedSupport/
+ls -la Wineskin.app/Contents/
+ls -la Frameworks/
+
+# Check what Wine binaries we actually have
+find . -name "wine*" -type f | grep -v "prefix/drive_c"
+find . -name "winetricks" -type f
+
+# See the complete app structure
+tree -L 3 -I "drive_c|prefix" 2>/dev/null || find . -maxdepth 3 -type d | grep -v "prefix" | grep -v "drive_c"
+
+cd "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/Wineskin.app/Contents/Resources"
+
+# Make sure environment variables are still set
+export WINEPREFIX="/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents/SharedSupport/prefix"
+export WINE="./../../../SharedSupport/wine/bin/wine64"
+export WINESERVER="./../../../SharedSupport/wine/bin/wineserver"
+export WINETRICKS_FALLBACK_LIBRARY_PATH="./../../../Frameworks:./../../../Frameworks/GStreamer.framework/Libraries"
+export DYLD_FALLBACK_LIBRARY_PATH="$WINETRICKS_FALLBACK_LIBRARY_PATH"
+export GST_PLUGIN_PATH="./../../../Frameworks/GStreamer.framework/Libraries/gstreamer-1.0"
+
+cd "/Users/gabrielmajorsky/Applications/Wineskin/sonyvegas.app/Contents"
+# Check if there are multiple wine binaries
+find . -name "wine*" -type f | grep -v "drive_c"
+
+I tried:
+WS12WineSikarugir10.0_2_D3DMetal-v2.1.tar
+wine-10.0 (Sikarugir) 
+i was able to run keygen, isntall sony vgas, patch, enter key, and it didnt crash immediately, it started to load, but i got this errr:
+1G1-EWMN-KG57-SZM8
+9VSW0HRS5-6R19G1773-DGNHF223B-28YMLWD2P-7DYSBW3H9-ZYF2EVK6N
+
+An error occured starting Vegas Pro
+A neccessary function has not been implemented.
+
+    <h3>Breakthrough Far Cry 1 on MacOSX</h3>
+
+    <pre>WS11WineCX20.0.4.tar.7z
+this is the first engie I was able to install Far Cry 1 
+with directX9.0 and Adobe support and was able to launch the game and the editor too.
+    </pre>
+    </pre>
+    <h3>Lessons Learned - Manual terminal installation</h3>
+    <pre>
+Manual terminal installation bypasses winetricks limitations
+- Copy files to C: drive to avoid Z: drive permission issues
+- Engine selection is critical
+- CrossOver-based engines work best
+- 32-bit engines required for .NET 3.0 compatibility
+- WoW64 mode (32-bit on 64-bit) provides best compatibility</pre>
+    <h3>Developers note:</h3>
+    <pre>
+I really want to learn how to build my own:
+-Wineskin Winery (so I can change the default engine list and wrapper)
+-Wine Wrapper (so I can edit the list of apps/dlls in winetricks with easy to add prefix=win32)
+-Wine Engine (so I can distribute and fix engines I like)</pre>
+    </br>
+
+    <h3>Building Custom Wine Engines:</h3>
+    <pre>
+    # Clone Wine source (this is not the right method but its a good start)
+    git clone https://github.com/wine-mirror/wine
+    cd wine
+    
+    # Configure for macOS (32-bit compatibility)
+    ./configure --enable-win32on64 --with-macosx-version-min=10.9
+    make -j4
+    
+    # Package as Wineskin engine
+    tar -czf WS11WineCustom64Bit.tar.gz -C /path/to/prefix .
+    </pre>
+    <h3>Create your own engine repository:</h3>
+    <pre>
+    <xmp>
+    <?xml version="1.0" encoding="UTF-8"?>
+    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+    <plist version="1.0">
+        <dict>
+            <key>Engines</key>
+            <dict>
+                <key>WS11WineCustom32Bit</key>
+                <dict>
+                    <key>DownloadURL</key>
+                    <string>https://your-server.com/engines/WS11WineCustom32Bit.tar.7z</string>
+                    <key>SHA256</key>
+                    <string>your_sha256_here</string>
+                </dict>
+            </dict>
+        </dict>
+    </plist>
+    </xmp>
+
+</body>
+
+</html>
