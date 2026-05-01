@@ -25,6 +25,9 @@ set -e
 
 # The unified platform is complete! 🚀
 
+#WineJS - the first real WebOS
+#https://cdn.gitgpt.chat/rtx/winejs_first_real_webos.html
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'

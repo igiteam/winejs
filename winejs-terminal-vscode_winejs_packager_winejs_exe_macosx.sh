@@ -22,6 +22,9 @@ set -e
 # │  ✅ Professional first-run setup with progress dialogs      │
 # └─────────────────────────────────────────────────────────────┘
 
+#WineJS - the first real WebOS
+#https://cdn.gitgpt.chat/rtx/winejs_first_real_webos.html
+
 # Colors
 RED='\033[0;31m'
 GREEN='\033[0;32m'

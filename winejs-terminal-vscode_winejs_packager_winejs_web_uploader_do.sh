@@ -16,8 +16,11 @@ set -e
 # │  ✅ ZIP creation                                            │
 # │  ✅ Spaces upload (both zip + icon)                         │
 # │  ✅ GENERATES install_AppName.sh                            │
-# │  ✅ Matches your MilkShape pattern exactly!                 │
+# │  ✅ Ready to install on WineJS                              │
 # └─────────────────────────────────────────────────────────────┘
+
+#WineJS - the first real WebOS
+#https://cdn.gitgpt.chat/rtx/winejs_first_real_webos.html
 
 # Colors
 RED='\033[0;31m'

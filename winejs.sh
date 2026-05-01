@@ -4426,6 +4426,14 @@ cat > /opt/winejs/translator/public/index.html << EOF
             <a href="https://unrealenginegames.netlify.app/" target="_blank" rel="noopener noreferrer">
                 <img src="https://unrealenginegames.netlify.app/ue3.png" style="height: 45px;" alt="Unreal Engine 1-4" />
             </a>
+            <!--  Website Design Musem Archive   -->
+            <a href="https://cdn.gitgpt.chat/rtx/webdesign_museum_archive/Web%20Design%20Museum%20Archive.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.gitgpt.chat/rtx/images/winejs-webdesignmuseum-archive.png" style="height: 45px;" alt="Website Design Musem Archive" />
+            </a>
+            <!--  iSO CD/DVD  -->
+            <a href="https://cdn.gitgpt.chat/rtx/winejs-cd-dvd-up/winejs-cd-dvd-up.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.gitgpt.chat/rtx/images/winejs-cd-dvd-up-icon.png" style="height: 45px;" alt="iSO CD/DVD" />
+            </a>
         </div>
     </div>
 
