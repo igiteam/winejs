@@ -15,18 +15,32 @@
     <meta itemprop="name" content="WineJS · The first real WebOS">
     <meta itemprop="description"
         content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
-    <meta itemprop="image" content="https://cdn.gitgpt.chat/rtx/images/winejs_install_completed.png">
+    <meta itemprop="image" content="https://cdn.gitgpt.chat/rtx/images/winejs_version_0_51__30_04_2026.png">
     <meta property="og:title" content="WineJS · The first real WebOS">
     <meta property="og:description"
         content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
-    <meta property="og:image" content="https://cdn.gitgpt.chat/rtx/images/winejs_install_completed.png">
+    <meta property="og:image" content="https://cdn.gitgpt.chat/rtx/images/winejs_version_0_51__30_04_2026.png">
     <meta property="og:url" content="">
     <meta property="og:type" content="website">
     <meta name="twitter:title" content="WineJS · The first real WebOS">
     <meta name="twitter:description"
         content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
-    <meta name="twitter:image" content="https://cdn.gitgpt.chat/rtx/images/winejs_install_completed.png">
+    <meta name="twitter:image" content="https://cdn.gitgpt.chat/rtx/images/winejs_version_0_51__30_04_2026.png">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="description"
+        content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
+
+    <link rel="apple-touch-icon" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" sizes="180x180">
+
+    <meta itemprop="description"
+        content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
+
+    <meta property="og:description"
+        content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
+
+    <meta name="twitter:description"
+        content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
+
     <meta name="description"
         content="WineJS turns any server into a real WebOS. Install Windows apps and web apps with one unified script. 40+ apps ready. Yourdomain.com/appname — done.">
 
@@ -116,6 +130,7 @@
             border: 1px solid #2c2c2c;
             margin: 1.5rem 0 2rem 0;
             box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.8);
+            position: relative;
         }
 
         .hero-image img {
@@ -123,6 +138,12 @@
             height: auto;
             display: block;
             border-radius: 24px;
+            transition: opacity 0.5s ease-in-out;
+            opacity: 1;
+        }
+
+        .hero-image img.fade-out {
+            opacity: 0;
         }
 
         .required-grid {
@@ -345,6 +366,171 @@
                 word-break: break-all;
             }
         }
+
+        .templating-engine {
+            background: #0a0a0a;
+            border: 1px solid #2a2a2a;
+            border-radius: 24px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .engine-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .engine-icon {
+            font-size: 2rem;
+        }
+
+        .engine-header h3 {
+            margin: 0;
+            font-size: 1.6rem;
+        }
+
+        .engine-lead {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #ddd;
+        }
+
+        .engine-lead strong {
+            color: #fff;
+        }
+
+        .pattern-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #050505;
+            border-radius: 16px;
+            border-left: 3px solid #fff;
+        }
+
+        .pattern-step {
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #ccc;
+        }
+
+        .pattern-step code {
+            background: #1a1a1a;
+            padding: 0.1rem 0.4rem;
+            border-radius: 6px;
+            color: #0f0;
+        }
+
+        .genius-note {
+            background: #0f0f0f;
+            border: 1px solid #2a2a2a;
+            border-radius: 16px;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .genius-icon {
+            font-size: 1.8rem;
+        }
+
+        .genius-list {
+            margin: 0.5rem 0 0 1.2rem;
+            color: #aaa;
+        }
+
+        .genius-list li {
+            margin: 0.25rem 0;
+        }
+
+        .dev-guide {
+            background: #050505;
+            border-radius: 16px;
+            padding: 1.2rem;
+            margin-top: 1rem;
+        }
+
+        .guide-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .guide-icon {
+            font-size: 1.3rem;
+        }
+
+        .guide-steps {
+            margin-left: 1.5rem;
+            color: #ccc;
+        }
+
+        .guide-steps li {
+            margin: 0.75rem 0;
+        }
+
+        .guide-steps ul {
+            margin-left: 1.5rem;
+            margin-top: 0.3rem;
+            color: #888;
+        }
+
+        .guide-outcome {
+            margin-top: 1rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #2a2a2a;
+            color: #0f0;
+            font-family: monospace;
+        }
+
+        code {
+            background: #1a1a1a;
+            padding: 0.1rem 0.4rem;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-img {
+            max-width: 90%;
+            max-height: 90%;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .popup-img.zoomed {
+            transform: scale(2);
+            cursor: zoom-out;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -354,7 +540,7 @@
         <h1>WineJS<br><span style="color: #ffffff;">the first real WebOS</span></h1>
         <div class="hero-sub">
             One server. One domain. One unified install script template.<br>
-            Install any <strong>Windows app</strong> → gets a URL. Install any <strong>web app</strong> → gets a
+            Install any <strong>Windows app</strong> → gets a URL. Install any <strong>Web app</strong> → gets a
             URL.<br>
             40+ apps already working. Add more in minutes.
         </div>
@@ -363,6 +549,50 @@
             <img src="https://cdn.gitgpt.chat/rtx/images/winejs_install_completed.png"
                 alt="WineJS installation completed dashboard">
         </div>
+        <script>
+            // Hero image rotation with fade transition - runs every 5 seconds
+            const heroImages = [
+                {
+                    src: "https://cdn.gitgpt.chat/rtx/images/winejs_install_completed.png",
+                    alt: "WineJS installation completed dashboard"
+                },
+                {
+                    src: "https://cdn.gitgpt.chat/rtx/images/winejs_version_0_41__08_03_2026.png",
+                    alt: "WineJS version 0.41 dashboard with MilkShape 3D installed"
+                },
+                {
+                    src: "https://cdn.gitgpt.chat/rtx/images/winejs_milkshape_windows_exe_installed_on_domain.png",
+                    alt: "WineJS running MilkShape 3D Windows EXE in browser"
+                },
+                {
+                    src: "https://cdn.gitgpt.chat/rtx/images/winejs_version_0_51__30_04_2026.png",
+                    alt: "WineJS version 0.51 dashboard with MilkShape 3D, Forgejo Git, and PufferPanel installed"
+                },
+                {
+                    src: "https://cdn.gitgpt.chat/rtx/images/winejs_forgejo_gitlfs_installed_on_domain.png",
+                    alt: "WineJS running Forgejo Git server with Git LFS support in browser"
+                }
+            ];
+
+            let currentImageIndex = 0;
+            const heroImgElement = document.querySelector('.hero-image img');
+
+            function rotateHeroImage() {
+                // Fade out
+                heroImgElement.style.opacity = '0.5';
+
+                // Wait for fade to complete, then change image and fade back in
+                setTimeout(() => {
+                    currentImageIndex = (currentImageIndex + 1) % heroImages.length;
+                    heroImgElement.src = heroImages[currentImageIndex].src;
+                    heroImgElement.alt = heroImages[currentImageIndex].alt;
+                    heroImgElement.style.opacity = '1';
+                }, 500); // Match this with the CSS transition duration (0.5s)
+            }
+
+            // Start rotation every 5 seconds
+            setInterval(rotateHeroImage, 5000);
+        </script>
 
         <div style="display: flex; flex-wrap: wrap; gap: 2rem; justify-content: space-between; margin: 2rem 0;">
             <div style="flex:1; min-width: 200px;">
@@ -381,11 +611,34 @@
                         style="background:#1a1a1a; padding:2px 6px; border-radius: 40px;">https://yourdomain.com/appname</code>
                     — no manual nginx, no port fights.</p>
             </div>
+            <div class="genius-note" style="background: #0f0f0f; margin-top: 1rem;">
+                <span class="genius-icon">📁</span>
+                <div>
+                    <strong>Shared storage across ALL apps — the collaboration hub:</strong><br><br>
+                    Every app on your WineJS server — Windows apps, web apps, games, tools — shares the same
+                    <strong>upload and
+                        download folder</strong> at <code>/var/www/uploads</code>.<br><br>
+                    What does this mean in practice?<br><br>
+                    • A 3D artist uploads a model to <code>/upload</code> (DumbDrop portal)<br>
+                    • A game developer opens MilkShape 3D at <code>/milkshape</code> → loads the model from
+                    <code>/uploads</code> →
+                    edits it → saves back to <code>/uploads</code><br>
+                    • Anyone can then download the finished model from <code>/download</code> (FileServer
+                    portal)<br><br>
+                    <strong>No USB drives. No email attachments. No "send me the file."</strong> Just one shared
+                    workspace. All apps
+                    see it. All users can access it.<br><br>
+                    This turns your WineJS server into a <strong>collaborative production pipeline</strong> — perfect
+                    for game jams,
+                    remote teams, classrooms, or just moving files between Windows apps and web apps without leaving
+                    your browser.
+                </div>
+            </div>
         </div>
 
         <hr>
 
-        <h2>📦 In order to use WineJS you need these three apps</h2>
+        <h2>📦 In order to install WineJS you need these three apps</h2>
         <div class="required-grid">
             <div class="required-card">
                 <div class="card-icon">
@@ -530,9 +783,7 @@
                     src="https://cdn.gitgpt.chat/rtx/images/droposs-logo.png" alt="Droposs"></div>
             <div class="app-tile" title="Ganymede Twitch Archiver [WebApp]"><img
                     src="https://cdn.gitgpt.chat/rtx/images/ganymede-logo.png" alt="Ganymede"></div>
-            <div class="app-tile" title="GitLFS [WebApp]"><img src="https://cdn.gitgpt.chat/rtx/images/gitlfs.png"
-                    alt="GitLFS">
-            </div>
+
             <div class="app-tile" title="Huly Project Management [WebApp]"><img
                     src="https://cdn.gitgpt.chat/rtx/images/huly-project-management-logo.png" alt="Huly"></div>
             <div class="app-tile" title="Karaoke Eternal [WebApp]"><img
@@ -571,8 +822,6 @@
                     src="https://cdn.gitgpt.chat/rtx/images/svix-live-webhook-server.png" alt="Svix"></div>
             <div class="app-tile" title="Sympa Mailing List [WebApp]"><img
                     src="https://cdn.gitgpt.chat/rtx/images/sympa-logo.png" alt="Sympa"></div>
-            <div class="app-tile" title="VSCode Server [WebApp]"><img
-                    src="https://cdn.gitgpt.chat/rtx/images/vscodeserver.png" alt="VSCode Server"></div>
             <div class="app-tile" title="Webhook Tester [WebApp]"><img
                     src="https://cdn.gitgpt.chat/rtx/images/webhook-tester-logo.png" alt="Webhook Tester"></div>
             <div class="app-tile" title="+ more coming soon"><span style="color:#aaa; font-size: 0.7rem;">+ more
@@ -595,10 +844,686 @@
             </div>
         </div>
 
+        <h2>📦 In order to install apps on WineJS you need vscode, and these extensions</h2>
+        <div class="required-grid">
+            <div class="required-card">
+                <div class="card-icon">
+                    <img src="https://cdn.gitgpt.chat/rtx/images/vscode-getting-started.png"
+                        alt="VSCode (Visual Studio Code)">
+                </div>
+                <h3>VSCode (Visual Studio Code)</h3>
+                <p style="font-size:0.9rem; color:#aaa">Essential IDE for WineJS workflow & extensions.</p>
+                <a href="https://code.visualstudio.com/download" class="btn" target="_blank"
+                    rel="noopener noreferrer">Download →</a>
+            </div>
+            <div class="required-card">
+                <div class="card-icon">
+                    <img src="https://cdn.gitgpt.chat/rtx/images/winejs-packager-logo.png"
+                        alt="Pack and upload Windows apps for WineJS(DigitalOcean Spaces Required)">
+                </div>
+                <h3>WineJS Project Packager<br></h3>
+                <p style="font-size:0.9rem; color:#aaa">Pack and upload Windows apps for WineJS</p>
+                <a href="https://igiteam.github.io/sh/?url=https%3A%2F%2Fcdn.gitgpt.chat%2Frtx%2Fwinejs-terminal-vscode_winejs_packager.sh&_=1777544290168"
+                    class="btn" target="_blank" rel="noopener noreferrer">Install add-on →</a>
+            </div>
+
+            <div class="required-card">
+                <div class="card-icon">
+                    <img src="https://cdn.gitgpt.chat/rtx/images/winejs-web-packager-logo.png"
+                        alt="Pack and upload Web apps for WineJS(DigitalOcean Spaces Required)">
+                </div>
+                <h3>WineJS Project Packager Web<br></h3>
+                <p style="font-size:0.9rem; color:#aaa">Pack and upload Web apps for WineJS</p>
+                <a href="https://igiteam.github.io/sh/?url=https://cdn.gitgpt.chat/rtx/winejs-terminal-vscode_winejs_packager_web_javascript.sh&e=1"
+                    class="btn" target="_blank" rel="noopener noreferrer">Install add-on →</a>
+            </div>
+        </div>
+        <div class="templating-engine">
+            <div class="engine-header">
+                <span class="engine-icon">📐</span>
+                <h3>The Universal Web App Template Pattern</h3>
+            </div>
+
+            <p class="engine-lead">WineJS installation is based on a <strong>pre-defined template</strong>. Your
+                application
+                must follow the template format to be easily installed. Once you do, you can share it as
+                <code>winejs_install_yourappname_what_it_does.sh</code>.
+            </p>
+
+            <p>The WineJS platform (domain, network, ports, shared storage, nginx, translator) creates a universal
+                installer
+                template that works for <strong>ANY</strong> self-hosted web app. The pattern is:</p>
+
+            <div class="pattern-steps">
+                <div class="pattern-step">✓ Verify WineJS platform → <code>/opt/winejs</code> exists, network ready
+                </div>
+                <div class="pattern-step">✓ Get domain → from existing WineJS config or user input</div>
+                <div class="pattern-step">✓ Find next available port → auto-detects, no conflicts</div>
+                <div class="pattern-step">✓ Create directories → consistent structure
+                    (<code>/opt/winejs/apps/[app]</code>,
+                    <code>/opt/winejs/data/[app]</code>, etc.)
+                </div>
+                <div class="pattern-step">✓ Generate config.json → app metadata, port, icon, category</div>
+                <div class="pattern-step">✓ Create docker-compose.yml → container definition, volume mounts, network
+                </div>
+                <div class="pattern-step">✓ Add to nginx → reverse proxy route at <code>/appname</code></div>
+                <div class="pattern-step">✓ Create helper script → <code>winejs-[app]</code> CLI tool</div>
+                <div class="pattern-step">✓ Create uninstall script → clean removal</div>
+                <div class="pattern-step">✓ Restart translator → app appears at
+                    <code>https://yourdomain.com/appname</code>
+                </div>
+            </div>
+
+            <div class="genius-note">
+                <span class="genius-icon">⚡</span>
+                <div>
+                    <strong>By following this guide, we translated 40 different installers in under 1 hour.</strong> You
+                    write
+                    <strong>one template</strong>, then for each app you:
+                    <ul class="genius-list">
+                        <li>Find the official Docker Compose or install docs on GitHub</li>
+                        <li>Extract the volume mounts, ports, environment variables</li>
+                        <li>Wrap it in the template with WineJS conventions</li>
+                        <li>Add app-specific features (webhooks, auto-heal, etc.)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="dev-guide">
+                <div class="guide-header">
+                    <span class="guide-icon">🔧</span>
+                    <strong>To add your own app to WineJS, you just need to:</strong>
+                </div>
+                <ol class="guide-steps">
+                    <li>Copy the template script (e.g., <code>winejs_install_forgejo.sh</code>)</li>
+                    <li>Replace app-specific values:
+                        <ul>
+                            <li><code>APP_LOGO_URL</code>, <code>APP_NAME</code>, <code>CATEGORY</code>,
+                                <code>DESCRIPTION</code>
+                            </li>
+                            <li>Docker image and version</li>
+                            <li>Port mapping</li>
+                            <li>Volume mounts (where data persists)</li>
+                            <li>Environment variables</li>
+                            <li>Any custom features (webhook, auto-heal, etc.)</li>
+                        </ul>
+                    </li>
+                    <li>Download/place an icon in the icons directory</li>
+                    <li>Run the script</li>
+                </ol>
+                <p class="guide-outcome">That's it. Your app is now available at
+                    <code>https://yourdomain.com/appname</code>.
+                </p>
+            </div>
+        </div>
+
+        <div class="templating-engine">
+            <div class="engine-header">
+                <span class="engine-icon">📦</span>
+                <h3>The Windows Packager Pattern</h3>
+            </div>
+
+            <p class="engine-lead">WineJS Packager is a <strong>VS Code extension</strong> that turns any Windows
+                application
+                into an installable package for your WineJS server. Right-click any folder → package it → get an
+                <code>install_yourapp.sh</code> script. You must be able to upload your package to somewhere for WineJS
+                to
+                download.
+            </p>
+
+            <p>The packager follows a universal pattern that works for <strong>ANY</strong> Windows application. The
+                process is:
+            </p>
+
+            <div class="pattern-steps">
+                <div class="pattern-step">✓ Right-click any folder → extension activates</div>
+                <div class="pattern-step">✓ Scan for EXE files → filters out installers/uninstallers</div>
+                <div class="pattern-step">✓ User selects main executable → the app launcher</div>
+                <div class="pattern-step">✓ Handle icon → extract from EXE (with preview), external URL, or default
+                </div>
+                <div class="pattern-step">✓ Create ZIP archive → full app folder compressed</div>
+                <div class="pattern-step">✓ Upload to Spaces → both <code>.zip</code> and icon to <code>rtx/wine/</code>
+                </div>
+                <div class="pattern-step">✓ Generate install script → <code>install_yourapp.sh</code> with all URLs
+                    embedded
+                </div>
+                <div class="pattern-step">✓ Save to <code>foldername_install/</code> → next to original folder</div>
+            </div>
+
+            <div class="genius-note">
+                <span class="genius-icon">⚡</span>
+                <div>
+                    <strong>The install script contains everything needed:</strong> It downloads from Spaces, finds the
+                    next
+                    available port, creates directories, generates <code>launch.sh</code> with auto-heal, creates
+                    <code>config.json</code> with metadata, builds <code>docker-compose.yml</code> with gamepad/Wiimote
+                    support,
+                    copies the icon, patches KasmVNC (no control bar), and starts the container.
+                    <br><br>
+                    <strong>One script. One app. One URL.</strong> The system is designed for <strong>one app per
+                        URL</strong>. Once
+                    installed, the app is <strong>always on</strong> — even if you close your browser, the container
+                    keeps running.
+                    And if the app crashes? The auto-heal monitor <strong>restarts it immediately</strong>.
+                    <br><br>
+                    When you open the URL, the app launches in <strong>full-screen mode</strong>, automatically filling
+                    the
+                    available screen space. No borders. No toolbars. No distractions. Just the app, ready to use, on any
+                    device.
+                </div>
+            </div>
+
+            <div class="dev-guide">
+                <div class="guide-header">
+                    <span class="guide-icon">🔧</span>
+                    <strong>To package your own Windows app for WineJS, you just need to:</strong>
+                </div>
+                <ol class="guide-steps">
+                    <li>Place your Windows EXE and all its files in a folder</li>
+                    <li>Right-click the folder in VS Code</li>
+                    <li>Select <code>WineJS: Package Windows App</code></li>
+                    <li>Enter the app name (auto-filled from folder name)</li>
+                    <li>Pick the main EXE from the scanned list</li>
+                    <li>Choose icon option:
+                        <ul>
+                            <li><strong>Extract from EXE</strong> – preview grid, pick the best size</li>
+                            <li><strong>External URL</strong> – provide a direct image link</li>
+                            <li><strong>Default icon</strong> – uses WineJS placeholder</li>
+                        </ul>
+                    </li>
+                    <li>Select app category (<code>Game</code>, <code>Graphics</code>, <code>Utility</code>, etc.)</li>
+                </ol>
+                <p class="guide-outcome">That's it. You now have <code>foldername_install/install_yourapp.sh</code>. Run
+                    it on
+                    any WineJS server. Your app appears at <code>https://yourdomain.com/yourapp</code>.</p>
+            </div>
+
+            <div class="dev-guide" style="margin-top: 1rem;">
+                <div class="guide-header">
+                    <span class="guide-icon">☁️</span>
+                    <strong>What gets uploaded to DigitalOcean Spaces:</strong>
+                </div>
+                <ul class="genius-list" style="margin-top: 0.5rem;">
+                    <li><code>rtx/wine/yourapp.zip</code> – the full Windows application package</li>
+                    <li><code>rtx/wine/images/yourapp.png</code> – the app icon</li>
+                </ul>
+                <p class="guide-outcome" style="margin-top: 0.75rem;">The install script downloads directly from your
+                    Spaces
+                    CDN. No manual file transfers. No scp. No rsync. Just run the script.</p>
+            </div>
+
+            <!-- NEW: Registry Auto-Import Feature -->
+            <div class="registry-feature"
+                style="margin-top: 1.5rem; background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 20px; padding: 1.5rem;">
+                <div class="guide-header" style="margin-bottom: 0.75rem;">
+                    <span class="guide-icon">📝</span>
+                    <strong>Registry Auto-Import (<code>wineregkey.reg</code>)</strong>
+                </div>
+
+                <p style="color: #ccc; margin-bottom: 1rem;">The packager automatically detects a file named
+                    <code>wineregkey.reg</code> in your Windows app folder and injects it into the Wine registry during
+                    installation.
+                </p>
+
+                <div class="pattern-steps" style="margin: 1rem 0;">
+                    <div class="pattern-step">✓ During packaging → extension checks for <code>wineregkey.reg</code>
+                    </div>
+                    <div class="pattern-step">✓ Sets <code>hasRegFile = true</code> → passes to install script generator
+                    </div>
+                    <div class="pattern-step">✓ During installation → install script runs
+                        <code>regedit /S wineregkey.reg</code>
+                        inside the container
+                    </div>
+                    <div class="pattern-step">✓ Registry keys merge into the app's dedicated Wine prefix</div>
+                </div>
+
+                <div class="genius-note" style="margin: 1rem 0; background: #0f0f0f;">
+                    <span class="genius-icon">⚙️</span>
+                    <div>
+                        <strong>How it works under the hood:</strong><br>
+                        <code>wineregkey.reg</code> is a standard Windows registry file (exported from regedit). Wine
+                        includes a
+                        <code>regedit</code> command that understands <code>.reg</code> files. The <code>/S</code> flag
+                        runs
+                        silently with no prompts. The registry keys get merged into the Wine prefix for that app only –
+                        no
+                        system-wide changes.
+                    </div>
+                </div>
+
+                <div style="margin: 1rem 0;">
+                    <div class="guide-header" style="margin-bottom: 0.5rem;">
+                        <span class="guide-icon">🎯</span>
+                        <strong>What you can do with this:</strong>
+                    </div>
+                    <ul class="genius-list">
+                        <li>Pre-set registry keys before the app first runs</li>
+                        <li>Register DLLs (<code>regsvr32</code> equivalents)</li>
+                        <li>Set file associations so your app opens specific file types</li>
+                        <li>Configure app settings that would normally require clicking through setup wizards</li>
+                        <li>Skip first-run dialogs and tutorials</li>
+                    </ul>
+                </div>
+
+                <div style="margin: 1rem 0;">
+                    <div class="guide-header" style="margin-bottom: 0;">
+                        <span class="guide-icon">📄</span>
+                        <strong>Example <code>wineregkey.reg</code> file:</strong>
+                    </div>
+                    <div class="code-snippet"
+                        style="background: #050505; padding: 1rem; border-radius: 12px; font-family: monospace; font-size: 0.8rem; overflow-x: auto;">
+                        <pre style="color: #0f0; margin: 0;">
+Windows Registry Editor Version 5.00
+        
+[HKEY_CURRENT_USER\Software\MyApp]
+"Setting1"="value1"
+"FirstRun"=dword:00000000
+
+[HKEY_LOCAL_MACHINE\Software\MyApp]
+"InstallPath"="C:\\Program Files\\MyApp"</pre>
+                    </div>
+                </div>
+
+                <p class="guide-outcome" style="margin-top: 0.75rem; border-top-color: #2a2a2a;">⚠️ <strong>Powerful but
+                        use
+                        wisely:</strong> Instead of making users run installers or manually edit registry, just drop a
+                    <code>.reg</code> file in the folder and the packager handles the rest. Avoid putting license keys
+                    or serial
+                    numbers in public scripts.
+                </p>
+            </div>
+        </div>
+
+        <div class="templating-engine">
+            <div class="engine-header">
+                <span class="engine-icon">🍷</span>
+                <h3>The Desktop Packager Pattern</h3>
+            </div>
+
+            <p class="engine-lead">WineJS Desktop Packager is a <strong>VS Code extension</strong> that turns any
+                Windows EXE
+                into a native macOS desktop app. Right-click a folder → create a <code>.app</code> bundle. No terminal.
+                No
+                manual Wine config.</p>
+
+            <p>The extension follows a universal pattern that works for <strong>ANY</strong> Windows application. The
+                process
+                is:</p>
+
+            <div class="pattern-steps">
+                <div class="pattern-step">✓ Right-click any folder → extension activates</div>
+                <div class="pattern-step">✓ Scans for EXE files → filters out installers/uninstallers</div>
+                <div class="pattern-step">✓ Extracts real icons from EXE → using <code>icoutils</code> +
+                    <code>wrestool</code>
+                </div>
+                <div class="pattern-step">✓ Creates macOS app bundle → <code>AppName.app/Contents/MacOS/launcher</code>
+                </div>
+                <div class="pattern-step">✓ Generates <code>Info.plist</code> → app metadata, category, bundle ID</div>
+                <div class="pattern-step">✓ Converts PNG to <code>.icns</code> → macOS native icon format</div>
+                <div class="pattern-step">✓ Creates symlink or copies files → instant creation (symlink mode)</div>
+                <div class="pattern-step">✓ Places app on Desktop + <code>~/Applications</code></div>
+                <div class="pattern-step">✓ Adds to Dock automatically → via <code>PlistBuddy</code></div>
+                <div class="pattern-step">✓ Creates install/uninstall scripts → <code>Install.command</code> +
+                    <code>Uninstall.command</code>
+                </div>
+                <div class="pattern-step">✓ Signs the app bundle → Gatekeeper compatibility</div>
+            </div>
+
+            <div class="genius-note">
+                <span class="genius-icon">⚡</span>
+                <div>
+                    <strong>The magic is in the launcher:</strong> Instead of manually configuring Wine prefixes or
+                    dealing with
+                    terminal commands, the extension generates a launcher script that calls
+                    <code>open "$EXE_PATH"</code>. macOS
+                    Launch Services handles the rest – finding Wine, setting up the environment, running the Windows
+                    app.
+                    <strong>No terminal window appears. No bouncing Dock icon. It just works.</strong>
+                </div>
+            </div>
+
+            <div class="dev-guide">
+                <div class="guide-header">
+                    <span class="guide-icon">🔧</span>
+                    <strong>To package your own Windows app, you just need to:</strong>
+                </div>
+                <ol class="guide-steps">
+                    <li>Place your Windows EXE and all its files in a folder</li>
+                    <li>Right-click the folder in VS Code</li>
+                    <li>Select <code>WineJS: Create macOS Desktop App (No Terminal)</code></li>
+                    <li>Enter the app name (auto-filled from folder name)</li>
+                    <li>Pick the main EXE from the scanned list</li>
+                    <li>Choose icon option:
+                        <ul>
+                            <li><strong>Extract from EXE</strong> – pulls real icons from the Windows executable</li>
+                            <li><strong>External URL</strong> – provide a direct image link</li>
+                            <li><strong>Default icon</strong> – uses WineJS placeholder</li>
+                        </ul>
+                    </li>
+                    <li>Select app category (<code>Game</code>, <code>Graphics</code>, <code>Utility</code>, etc.)</li>
+                    <li>Wait 2-3 seconds – the .app bundle is created instantly</li>
+                </ol>
+                <p class="guide-outcome">That's it. Your Windows app is now a native macOS app. Double-click to launch.
+                    No
+                    terminal. No Wine config. No headaches.</p>
+            </div>
+
+            <div class="dev-guide" style="margin-top: 1rem;">
+                <div class="guide-header">
+                    <span class="guide-icon">📦</span>
+                    <strong>What gets generated:</strong>
+                </div>
+                <ul class="genius-list" style="margin-top: 0.5rem;">
+                    <li><code>AppName.app</code> – native macOS application bundle</li>
+                    <li>Placed on your Desktop + <code>~/Applications</code></li>
+                    <li>Automatically added to your Dock</li>
+                    <li><code>Install.command</code> – reinstall script (in <code>~/.winejs-scripts/</code>)</li>
+                    <li><code>Uninstall.command</code> – complete removal script</li>
+                    <li>Wine prefix at <code>~/.wine-AppName/</code> (separate for each app)</li>
+                </ul>
+                <p class="guide-outcome" style="margin-top: 0.75rem;">⚠️ <strong>Requirement:</strong> Wine must be
+                    installed on
+                    your Mac (<code>brew install --cask wine-stable</code>). The extension handles everything else.</p>
+            </div>
+        </div>
+        <div class="templating-engine" style="border-color: #2a2a2a;">
+            <div class="engine-header">
+                <span class="engine-icon">💰</span>
+                <h3>The Cost Reality</h3>
+            </div>
+
+            <p class="engine-lead">Most "one-click app" platforms charge you <strong>per application</strong>. Want
+                WordPress?
+                $5. Want Nextcloud? Another $5. Want a game server? Another $5.</p>
+
+            <p>Each app requires its own server. Its own IP address. Its own SSL certificate. Its own nginx
+                configuration. Its
+                own everything.</p>
+
+            <p><strong>By the time you have 10 apps, you're paying $50+ per month for 10 different servers running at 5%
+                    capacity each.</strong> That's inefficient and expensive.</p>
+
+            <div class="comparison-grid"
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin: 1.5rem 0;">
+                <div style="background: #0a0a0a; border: 1px solid #2a2a2a; border-radius: 16px; padding: 1rem;">
+                    <div style="text-align: center; font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem;">❌
+                        Traditional
+                        Platforms</div>
+                    <div class="pattern-step" style="font-size: 0.8rem;">📦 WordPress → $5/mo → separate server</div>
+                    <div class="pattern-step" style="font-size: 0.8rem;">📦 Nextcloud → $5/mo → separate server</div>
+                    <div class="pattern-step" style="font-size: 0.8rem;">📦 Game Server → $5/mo → separate server</div>
+                    <div class="pattern-step" style="font-size: 0.8rem;">📦 n8n → $5/mo → separate server</div>
+                    <div class="pattern-step" style="font-size: 0.8rem;">📦 10 apps = <strong>$50+/month</strong></div>
+                    <div class="pattern-step" style="font-size: 0.8rem;">⚙️ Each server runs at <strong>~5%
+                            capacity</strong>
+                        (wasted resources)</div>
+                </div>
+
+                <div style="background: #0a0a0a; border: 1px solid #00ff9d; border-radius: 16px; padding: 1rem;">
+                    <div
+                        style="text-align: center; font-size: 1.2rem; font-weight: bold; margin-bottom: 0.5rem; color: #00ff9d;">
+                        ✅ WineJS</div>
+                    <div class="pattern-step" style="font-size: 0.8rem;">🍷 One server → <strong>$6/mo</strong></div>
+                    <div class="pattern-step" style="font-size: 0.8rem;">🌐 One domain → all apps share it</div>
+                    <div class="pattern-step" style="font-size: 0.8rem;">🔒 One SSL certificate → covers everything
+                    </div>
+                    <div class="pattern-step" style="font-size: 0.8rem;">🚀 Unlimited apps → same server</div>
+                    <div class="pattern-step" style="font-size: 0.8rem;">⚙️ Server runs efficiently at <strong>optimal
+                            capacity</strong></div>
+                </div>
+            </div>
+
+            <div class="genius-note" style="background: #0f0f0f;">
+                <span class="genius-icon">🧮</span>
+                <div>
+                    <strong>The math is simple:</strong><br>
+                    Traditional approach: 10 apps × $6 = <strong>$60/month</strong> + management overhead for 10
+                    servers<br>
+                    WineJS: 1 server × $6 = <strong>$6/month</strong> + zero overhead<br>
+                    <span style="color: #00ff9d;">You save <strong>$54/month</strong> – or <strong>$648/year</strong> –
+                        for
+                        every 10 applications.</span>
+                </div>
+            </div>
+
+            <div style="margin: 1.5rem 0;">
+                <div class="guide-header" style="margin-bottom: 0.5rem;">
+                    <span class="guide-icon">🌐</span>
+                    <strong>All running on the same $6 DigitalOcean droplet:</strong>
+                </div>
+                <div
+                    style="display: flex; flex-direction: column; gap: 0.25rem; font-family: monospace; font-size: 0.85rem; background: #050505; padding: 1rem; border-radius: 12px;">
+                    <div>https://yourdomain.com/milkshape → Windows 3D modeling app</div>
+                    <div>https://yourdomain.com/forgejo → Git server</div>
+                    <div>https://yourdomain.com/n8n → Automation workflow</div>
+                    <div>https://yourdomain.com/ganymede → Twitch archiver</div>
+                    <div>https://yourdomain.com/paperless → Document management</div>
+                    <div>https://yourdomain.com/yourapp → Whatever you want</div>
+                </div>
+                <p style="margin-top: 0.75rem; color: #aaa;">All with HTTPS. All with auto-start containers. All with
+                    shared
+                    storage. All with gamepad/Wiimote support. <strong>All on ONE server.</strong></p>
+            </div>
+
+            <div class="genius-note" style="background: #0f0f0f;">
+                <span class="genius-icon">🎯</span>
+                <div>
+                    <strong>This changes the economics of self-hosting.</strong> You're no longer locked into paying per
+                    application or managing dozens of underutilized servers. WineJS turns a single $6 server into a
+                    platform
+                    that can run <strong>unlimited applications</strong> – Windows apps, web apps, automation tools,
+                    game
+                    servers, and more – all sharing the same infrastructure.
+                </div>
+            </div>
+
+            <p class="guide-outcome" style="text-align: center; margin-top: 1rem; font-size: 1.1rem;">
+                🍷 <strong>WineJS. One server. Unlimited apps. Your infrastructure. Your rules.</strong>
+            </p>
+        </div>
+        <div class="templating-engine" style="margin-top: 2rem;">
+            <div class="engine-header">
+                <span class="engine-icon">⚠️</span>
+                <h3>Technical Limitations & The Real Revolution</h3>
+            </div>
+
+            <div class="genius-note" style="background: #0f0f0f; margin-bottom: 1.5rem;">
+                <span class="genius-icon">🖥️</span>
+                <div>
+                    <strong>Hardware Reality:</strong> Most standard DigitalOcean droplets (and similar VPS providers)
+                    do
+                    <strong>not</strong> include GPU acceleration. Windows apps running through Wine + KasmVNC on
+                    CPU-only
+                    servers will feel <strong>laggy</strong> – fine for utilities, document editors, and lightweight
+                    tools, but
+                    not suitable for 3D rendering, gaming, or graphics-intensive workloads.
+                    <br><br>
+                    For GPU-accelerated Windows apps, you need a dedicated server with passthrough GPU (or a provider
+                    like Vultr
+                    Bare Metal, Hetzner AX-series, or a local homelab). The platform supports it – the cloud provider
+                    just needs
+                    to offer it.
+                </div>
+            </div>
+
+            <div class="genius-note" style="background: #0f0f0f; border-left-color: #00ff9d;">
+                <span class="genius-icon">🌍</span>
+                <div>
+                    <strong>But here's where it gets revolutionary:</strong><br><br>
+                    WineJS enables <strong>multi-user access</strong> to any Windows application. Multiple people can
+                    connect to
+                    the same app instance simultaneously, each controlling their own mouse and keyboard input. The
+                    server sees
+                    each connection as a separate session.
+                    <br><br>
+                    This isn't screen sharing. This is <strong>true collaborative access</strong> to software that was
+                    never
+                    designed for collaboration.
+                </div>
+            </div>
+
+            <div style="margin: 1.5rem 0;">
+                <div class="guide-header" style="margin-bottom: 0.5rem;">
+                    <span class="guide-icon">💡</span>
+                    <strong>What this unlocks:</strong>
+                </div>
+                <ul class="genius-list">
+                    <li><strong>Abandonware preservation</strong> – Rare Windows 95/98/XP software that no longer runs
+                        on modern
+                        machines? Run it in a browser. No installation. No VM. Just a URL.</li>
+                    <li><strong>Legacy business apps</strong> – That invoicing system from 2005 that only runs on
+                        Windows XP?
+                        Put it online. Your whole team can access it from anywhere, on any device.</li>
+                    <li><strong>Collaborative creative work</strong> – Two designers in different countries, both
+                        controlling
+                        the same 3D modeling app simultaneously. One sculpts, another adjusts lighting. Real-time.</li>
+                    <li><strong>Training & education</strong> – Teacher runs the software, students connect and follow
+                        along. No
+                        one needs to install anything.</li>
+                    <li><strong>Museum & archive access</strong> – Historic software, interactive exhibits, digital
+                        preservation
+                        – accessible to anyone with a browser.</li>
+                </ul>
+            </div>
+
+            <div class="genius-note" style="background: #0f0f0f;">
+                <span class="genius-icon">🔗</span>
+                <div>
+                    <strong>The revolutionary part:</strong> Any Windows application – from an obscure 1998 shareware
+                    game to a
+                    professional 3D modeling tool – becomes <strong>just a URL</strong>. You share the link. Anyone
+                    clicks it.
+                    The app runs. No installation. No compatibility checks. No "sorry, this only works on Windows."
+                    <br><br>
+                    <span style="color: #00ff9d;">That's not just convenient. That changes who gets to use what
+                        software.</span>
+                </div>
+            </div>
+
+            <p class="guide-outcome" style="text-align: center; margin-top: 1rem;">
+                🍷 <strong>WineJS. Turn any Windows app into a web app. Share the link. Collaborate. Preserve.
+                    Revolutionize.</strong>
+            </p>
+        </div>
+        <div class="templating-engine" style="margin-top: 2rem; border-color: #00ff9d;">
+            <div class="engine-header">
+                <span class="engine-icon">🌍</span>
+                <h3>The Open Invitation</h3>
+            </div>
+
+            <p style="margin-bottom: 1rem;">✅ <strong>Already working right now:</strong> <a
+                    href="https://wine.gitgpt.chat/" target="_blank" rel="noopener noreferrer"
+                    style="color: #00ff9d;">wine.gitgpt.chat</a> — Windows apps and
+                web apps running simultaneously on the same server. Live. Right now.</p>
+
+            <div class="genius-note" style="margin: 1rem 0;">
+                <span class="genius-icon">⚡</span>
+                <div>
+                    <strong>Speed matters:</strong><br>
+                    • Project IGI (400MB game) → ZIP + upload: <strong>3-4 minutes</strong> → install: <strong>2-3
+                        minutes</strong><br>
+                    • Forgejo Git server → install: <strong>2-3 minutes</strong><br>
+                    • Uninstall any app → <strong>~10 seconds</strong>
+                </div>
+            </div>
+
+            <div class="genius-note" style="margin: 1rem 0; background: #0f0f0f;">
+                <span class="genius-icon">🔓</span>
+                <div>
+                    <strong>Access by default — you control the locks:</strong><br>
+                    Once you install an app on WineJS, <strong>anyone with the URL can access it</strong>. No
+                    password. No login
+                    screen. Just the app.<br><br>
+                    Password protection is removed by default because every app handles authentication
+                    differently:<br>
+                    • <strong>Web apps (Forgejo, Paperless, etc.)</strong> → built-in user/password systems. They
+                    already have their
+                    own login.<br>
+                    • <strong>Windows apps (games, MilkShape 3D, etc.)</strong> → no built-in authentication. They
+                    were never
+                    designed for multi-user web access.<br><br>
+                    <strong>You decide:</strong> If you want to password-protect a Windows app, you can add
+                    authentication at the
+                    nginx level or set up a simple auth proxy. The platform supports it — but <strong>by default,
+                        it's
+                        open</strong>. Share the link. Let people use it. Add locks only where you need
+                    them.<br><br>
+                    <span style="color: #00ff9d;">Your server. Your rules. Your audience.</span>
+                </div>
+            </div>
+
+            <div style="margin: 1rem 0;">
+                <div class="guide-header" style="margin-bottom: 0.5rem;">
+                    <span class="guide-icon">🖥️</span>
+                    <strong>Tested & working (even if laggy on CPU-only servers):</strong>
+                </div>
+                <ul class="genius-list">
+                    <li>Project IGI</li>
+                    <li>Return to Castle Wolfenstein (RTCW)</li>
+                    <li>MilkShape 3D</li>
+                    <li>Hitman: Codename 47</li>
+                    <li>Medal of Honor: Pacific Assault</li>
+                    <li>Sonic Vegas Pro </li>
+                    <li>RyAudio Sample Librarian </li>
+                    <li>...and more Windows apps running in browser</li>
+                </ul>
+                <p style="margin-top: 0.5rem; color: #aaa;">⚠️ <strong>Laggy but it works!</strong> GPU-powered servers
+                    would
+                    unlock full performance. The platform is ready — the cloud provider just needs to offer it.</p>
+            </div>
+
+            <div class="genius-note" style="margin: 1rem 0; border-left-color: #ffaa00;">
+                <span class="genius-icon">🛠️</span>
+                <div>
+                    <strong>Help wanted — join the revolution:</strong> Some games will need tweaking (widescreen fixes,
+                    controller mappings, etc.). If you're a modder, reverse engineer, or just someone who loves old
+                    games/softwares —
+                    <strong>help us build the library</strong>. Package your favourite abandonware, share the install
+                    script,
+                    and let others run it with one click. - Discord link above. Feel free to join the community!
+                </div>
+            </div>
+
+            <div class="genius-note" style="margin: 1rem 0; border-left-color: #00ff9d;">
+                <span class="genius-icon">🔗</span>
+                <div>
+                    <strong>The big vision:</strong> Twilight (and similar archives) could become a source for
+                    <strong>any old
+                        Windows app</strong> — instantly runnable in a browser. No installation. No VM. No compatibility
+                    headaches. Just a URL.
+                    <br><br>
+                    <span style="color: #00ff9d;">This changes how we think about software. Share your favourite Windows
+                        or web
+                        app with anyone, anywhere, with just a link.</span>
+                </div>
+            </div>
+
+            <p class="guide-outcome" style="text-align: center; margin-top: 1rem; font-size: 1rem;">
+                🍷 <strong>Try it. Break it. Improve it. Share it. This is yours now too.</strong>
+            </p>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-top: 1rem;">
+            <a href="https://github.com/igiteam/winejs" target="_blank" rel="noopener noreferrer"
+                style="color: #fff; text-decoration: underline;">🐙 GitHub</a>
+            <a href="https://igiteam.github.io/sh/" target="_blank" rel="noopener noreferrer"
+                style="color: #fff; text-decoration: underline;">📜 WineJS Install Script</a>
+            <a href="https://igiteam.github.io/sh_terminal/?url1=https%3A%2F%2Figiteam.github.io%2Fsh%2F%3Furl%3Dhttps%253A%252F%252Fcdn.gitgpt.chat%252Frtx%252Fwinejs.sh%26_%3D1777548019178&url2=https%3A%2F%2Figiteam.github.io%2Fsh%2F%3Furl%3Dhttps%253A%252F%252Fcdn.gitgpt.chat%252Frtx%252Fwinejs-terminal-firefox.sh%26_%3D1777548019189&url3=https%3A%2F%2Figiteam.github.io%2Fsh%2F%3Furl%3Dhttps%253A%252F%252Fcdn.gitgpt.chat%252Frtx%252Fwinejs-terminal-vscode_winejs_packager.sh%26_%3D1777548019199&url4=https%3A%2F%2Figiteam.github.io%2Fsh%2F%3Furl%3Dhttps%253A%252F%252Fcdn.gitgpt.chat%252Frtx%252Fwinejs-terminal-firefox-digitalocean_droplets.sh%26_%3D1777548019209"
+                target="_blank" rel="noopener noreferrer" style="color: #fff; text-decoration: underline;">🔗
+                MultiBash</a>
+            <a href="https://buymeacoffee.com/igiteam" target="_blank" rel="noopener noreferrer"
+                style="color: #fff; text-decoration: underline;">☕ Support Us</a>
+            <a href="https://discord.gg/TUn2KgWE9S" target="_blank" rel="noopener noreferrer"
+                style="color: #fff; text-decoration: underline;">💬 Discord</a>
+        </div>
         <div class="footer-note">
             WineJS · open source · self-hosted · KasmVNC + Wine + Docker · unified WebOS layer<br>
             Firefox extensions, DigitalOcean integration, 40+ ready-to-install applications.<br>
             <span style="color:#555;">© WineJS — the first real WebOS. One domain. Unlimited apps.</span>
+        </div>
+        <!-- Modal Popup (add once at bottom of body) -->
+        <div class="popup" id="popupModal">
+            <span class="close" id="closeBtn">&times;</span>
+            <img class="popup-img" src="" alt="Preview">
         </div>
     </div>
 
@@ -622,6 +1547,69 @@
                 alert('Manual copy: ' + commandText);
             });
         }
+        // ============================================
+        // FIXED: CLICK IMAGE TO PREVIEW - WORKS WITH YOUR EXISTING IMAGES
+        // ============================================
+
+        // Get elements
+        const popup = document.getElementById('popupModal');
+        const popupImg = document.querySelector('.popup-img');
+        const closeBtn = document.getElementById('closeBtn');
+
+        // Function to open preview when image is clicked
+        function openPreview(imageSrc) {
+            if (!popup || !popupImg) return;
+            popup.style.display = 'flex';
+            popupImg.src = imageSrc;
+        }
+
+        // Function to close preview
+        function closePreview() {
+            if (!popup) return;
+            popup.style.display = 'none';
+            if (popupImg) popupImg.classList.remove('zoomed');
+        }
+
+        // Close button
+        if (closeBtn) closeBtn.addEventListener('click', closePreview);
+
+        // Zoom on image click
+        if (popupImg) {
+            popupImg.addEventListener('click', function () {
+                this.classList.toggle('zoomed');
+            });
+        }
+
+        // Close on background click
+        if (popup) {
+            popup.addEventListener('click', function (event) {
+                if (event.target === popup) closePreview();
+            });
+        }
+
+        // Close with Escape key
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') closePreview();
+        });
+
+        // ============================================
+        // ATTACH CLICK HANDLERS TO ALL YOUR IMAGES
+        // ============================================
+
+        // Select ALL images on the page (hero image, screenshot cards, app tiles)
+        document.querySelectorAll('img').forEach(img => {
+            // Skip the popup image itself
+            if (img === popupImg) return;
+
+            // Make cursor show zoom-in
+            img.style.cursor = 'zoom-in';
+
+            // Add click handler
+            img.addEventListener('click', function (e) {
+                e.stopPropagation();
+                openPreview(this.src);
+            });
+        });
     </script>
 </body>
 

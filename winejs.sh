@@ -4322,13 +4322,13 @@ cat > /opt/winejs/translator/public/index.html << EOF
                 <img src="https://dl.winehq.org/share/images/winehq_logo_glass.png" style="height: 30px" alt="WineHQ Logo" />
                 <img src="https://dl.winehq.org/share/images/winehq_logo_text.png" style="height: 25px;" alt="WineHQ Text" />
             </a>
+            <!-- Github WineJS  -->
+            <a href="https://github.com/igiteam/winejs" target="_blank" rel="noopener noreferrer">
+                <img src="https://cdn.gitgpt.chat/rtx/images/github-logo-white.png" style="height: 45px;" alt="WineJS Github Repo" />
+            </a>
             <!-- WineJS WebOS Info -->
             <a href="https://cdn.gitgpt.chat/rtx/winejs_first_real_webos.html" target="_blank" rel="noopener noreferrer">
                 <img src="https://cdn.gitgpt.chat/rtx/images/winejs-info-logo.png" style="height: 45px;" alt="WineJS WebOS Info" />
-            </a>
-            <!-- Github WineJS  -->
-            <a href="https://github.com/igiteam/winejs" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/github-logo-white.png" style="height: 45px;" alt="WineJS SH" />
             </a>
             <!-- SH WineJS  -->
             <a href="https://igiteam.github.io/sh/" target="_blank" rel="noopener noreferrer">
