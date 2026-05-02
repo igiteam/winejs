@@ -240,7 +240,7 @@
 
 <body>
     <div class="head">
-        <img src="favicon.png" alt="Xbox 360" onerror="this.src='https://via.placeholder.com/80x80?text=XBOX'" />
+        <img src="favicon.png" alt="Xbox 360" />
         <h1>Xbox 360 Games Archive</h1>
         <button id="toggleViewBtn">Switch to Grid View</button>
         <div class="aspect-selector">
@@ -443,8 +443,8 @@
                 games_list.forEach((game, index) => {
                     const formattedName = formatGameName(game.name);
                     const sizeGB = formatSize(game.size);
-                    const coverURL = game.cover || 'https://via.placeholder.com/80x60?text=No+Cover';
-                    const defaultCover = 'https://via.placeholder.com/80x60?text=Loading';
+                    const coverURL = game.cover || 'https://cdn.gitgpt.chat/rtx/images/xbox360case.jpg';
+                    const defaultCover = 'https://cdn.gitgpt.chat/rtx/images/xbox360case.jpg';
 
                     // ===== TABLE VIEW =====
                     const row = document.createElement("tr");
@@ -497,7 +497,7 @@
                     // Title column
                     const titleCell = document.createElement("td");
                     const youtubeLink = document.createElement("a");
-                    youtubeLink.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(formattedName + " Xbox 360 Gameplay")}`;
+                    youtubeLink.href = `https://www.meyt.netlify.app/search/${encodeURIComponent(formattedName + " Xbox 360 Gameplay")}`;
                     youtubeLink.textContent = formattedName;
                     youtubeLink.target = "_blank";
                     titleCell.appendChild(youtubeLink);
@@ -540,7 +540,7 @@
                     gridImage.setAttribute('data-src', coverURL);
                     if (currentAspect === 'widescreen') {
                         gridImage.style.aspectRatio = '16/9';
-                        gridImage.style.maxWidth = '150px';
+                        gridImage.style.maxWidth = '300px';
                     } else {
                         gridImage.style.aspectRatio = '1/1';
                         gridImage.style.maxWidth = '130px';
