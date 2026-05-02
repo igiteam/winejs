@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xbox 360 Games Archive</title>
+    <link rel="image icon" type="png" href="favicon.png">
+    <meta name="author" content="Gabriel Majorsky">
+    <meta property="article:published_time" content="2024-12-29T10:00:00Z">
+
+    <!-- HTML Meta Tags -->
+    <meta name="description" content="A comprehensive archive of Xbox 360 games.">
+
+    <!-- Google / Search Engine Tags -->
+    <meta itemprop="name" content="Xbox 360 Games Archive">
+    <meta itemprop="description" content="A comprehensive archive of Xbox 360 games.">
+    <meta itemprop="image" content="https://xbox360games.netlify.app/xbox360games.png">
+
+    <!-- Additional SEO Keywords -->
+    <meta name="keywords"
+        content="Xbox 360 games, Xbox 360 archive, classic Xbox games, Xbox 360 game list, retro gaming, Xbox history, best Xbox 360 games, Xbox 360 collection, game preservation">
+
+    <!-- Facebook Meta Tags -->
+    <meta property="og:title" content="Xbox 360 Games Archive">
+    <meta property="og:url" content="https://xbox360games.netlify.app/">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="A comprehensive archive of Xbox 360 games.">
+    <meta property="og:site_name" content="Xbox 360 Games Archive">
+    <meta property="og:image" content="https://xbox360games.netlify.app/xbox360games.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:title" content="Xbox 360 Games Archive">
+    <meta name="twitter:description" content="A comprehensive archive of Xbox 360 games.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://xbox360games.netlify.app/xbox360games.png">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            overflow-y: scroll;
+        }
+
+        .game {
+            display: flex;
+            flex-wrap: wrap;
+            /* Allow wrapping */
+            align-items: center;
+            margin-bottom: 20px;
+            background: #fff;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0px;
+        }
+
+
+
+        /* Game cover style */
+        .game img {
+            width: 400px;
+            height: auto;
+            object-fit: cover;
+            margin-right: 15px;
+            border-radius: 4px;
+            cursor: zoom-in;
+        }
+
+        /* Game info container */
+        .game-info {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            /* Arrange info vertically */
+        }
+
+        .game-info h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .game-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .game-links {
+            flex-grow: 2;
+            display: flex;
+            margin-top: 6px;
+            width: 100%;
+        }
+
+        .game-links a {
+            color: #007BFF;
+            text-decoration: none;
+            display: inline-block;
+            padding: 4px;
+            margin-bottom: 6px;
+            text-align: left;
+            margin-right: 6px;
+            border: 1px solid #007BFF;
+            border-radius: 4px;
+        }
+
+        .game-links a:hover {
+            text-decoration: underline;
+        }
+
+        .xbox {
+            width: 100%;
+            display: block;
+        }
+
+        #games-list {
+            padding: 20px;
+        }
+
+        /* Alphabet bar at the bottom */
+        .alphabet-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            z-index: 1000;
+            height: 20px;
+            overflow: hidden;
+            overflow-x: scroll;
+            padding-right: 20px;
+            /* Added right padding to ensure content fits */
+        }
+
+        /* Hide the scrollbar across all browsers */
+        .alphabet-bar {
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* Internet Explorer 10+ */
+        }
+
+        .alphabet-bar::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari, and Edge */
+        }
+
+        .alphabet-bar a {
+            color: white;
+            text-decoration: none;
+            margin: 0 5px;
+            font-size: 16px;
+        }
+
+        .alphabet-bar a.active {
+            color: #FFD700;
+            /* Gold color for active letter */
+            font-weight: bold;
+            text-decoration: underline;
+        }
+
+        .alphabet-bar a:hover {
+            text-decoration: underline;
+        }
+
+        /* Scrolling section */
+        .game-section {
+            margin-bottom: 20px;
+        }
+
+
+
+        /* Media query for smaller screens */
+        @media (max-width: 768px) {
+
+            /* Stack images and info vertically on small screens */
+            .game {
+                flex-direction: column;
+                /* Stack vertically */
+                align-items: center;
+                /* Center content */
+            }
+
+            .game img {
+                width: 100%;
+                /* Make image responsive */
+                margin: 0 0 10px 0;
+                /* Add some margin below the image */
+            }
+
+            .game-info {
+                width: 100%;
+                /* Take full width for game info */
+                text-align: center;
+                /* Center the text */
+            }
+
+            /* Adjust the layout for smaller screens */
+            .alphabet-bar {
+                font-size: 14px;
+            }
+        }
+
+        /* Media query for larger screens */
+        @media (min-width: 769px) {
+            .game {
+                flex-direction: row;
+                /* Arrange cover and info side by side */
+                justify-content: flex-start;
+            }
+
+            .game img {
+                width: 400px;
+                /* Keep image size fixed for larger screens */
+                margin-right: 15px;
+            }
+
+            .game-info {
+                width: 60%;
+                /* Adjust width of game info */
+                text-align: left;
+                /* Align text to the left */
+            }
+        }
+
+        .head-table {
+            display: flex;
+            /* Use flexbox layout */
+            justify-content: space-between;
+            /* Distribute space between items */
+            align-items: center;
+            /* Vertically align items in the center */
+            width: 100%;
+            /* Ensure the container fills the width of its parent */
+        }
+
+        .xenia {
+            width: 100%;
+            display: block;
+        }
+
+        .xenia-img {
+            flex: 1;
+            /* Allow the image div to take up available space */
+            cursor: zoom-in;
+            transform: scale(1.15);
+            /* Scale the image to 2x its size */
+        }
+
+        .xenia-a-list {
+            flex: 2;
+            /* Allow the links div to take up more space */
+            display: flex;
+            /* Use flexbox for the list */
+            flex-direction: column;
+            /* Arrange the links vertically */
+            justify-content: center;
+            /* Center the links vertically */
+        }
+
+        .xenia-a-list a {
+            margin: 12px;
+        }
+
+        /* Popup Modal Styles */
+        .popup {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            /* Fixed position to cover the entire screen */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            /* Semi-transparent background */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            /* Ensure it's on top of other content */
+            overflow: hidden;
+        }
+
+        .popup-img {
+            max-width: 80%;
+            max-height: 80%;
+            transition: transform 0.3s ease;
+            /* Smooth zoom effect */
+            cursor: pointer;
+            /* Show pointer cursor on hover */
+        }
+
+        .popup-img.zoomed {
+            transform: scale(2);
+            /* Zoom in effect */
+        }
+
+        /* Close Button */
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 36px;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <img class='xbox' src="xbox360.png" alt="Xbox 360">
+    <div class="head-table">
+        <div class="xenia-img">
+            <img class='xenia' src="xenia.png" alt="Xenia Emulator">
+        </div>
+        <div class="xenia-a-list">
+            <a href="https://github.com/xenia-manager/xenia-manager" target="blank">Xenia Manager for PC(Xbox360 Game
+                Emulator)</a>
+            <a href="https://www.youtube.com/watch?v=DetLUZc1xhM" target="blank">Installation tutorial</a>
+        </div>
+    </div>
+    <!-- Popup Modal -->
+    <div class="popup" id="popupModal">
+        <span class="close" id="closeBtn">&times;</span>
+        <img class="popup-img" src="" alt="Zoomed Image">
+    </div>
+    <div id="games-list"></div>
+
+    <div class="alphabet-bar" id="alphabet-bar">
+        <!-- Alphabet links will be generated dynamically -->
+    </div>
+
+
+    <!-- LOAD DATA -->
+    <script src="./games_list.js"></script>
+    <script>
+        async function loadGames() {
+            const gamesList = document.getElementById('games-list');
+            const alphabetBar = document.getElementById('alphabet-bar');
+            const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+
+            // Group games by first letter
+            const groupedGames = {};
+
+            games_list.forEach(game => {
+                const firstLetter = game.name.charAt(0).toUpperCase();
+                if (!groupedGames[firstLetter]) {
+                    groupedGames[firstLetter] = [];
+                }
+                groupedGames[firstLetter].push(game);
+            });
+
+            // Create sections for each letter
+            alphabet.forEach(letter => {
+                if (groupedGames[letter]) {
+                    const section = document.createElement('div');
+                    section.classList.add('game-section');
+                    section.id = `section-${letter}`;
+
+                    const title = document.createElement('h2');
+                    title.textContent = letter;
+                    section.appendChild(title);
+
+                    groupedGames[letter].forEach(game => {
+                        const gameDiv = document.createElement('div');
+                        gameDiv.classList.add('game');
+
+                        // Set the default image (xbox360case.jpg)
+                        const defaultCover = 'xbox360case.jpg';
+
+                        const img = document.createElement('img');
+                        img.src = defaultCover; // Initially set to the default image
+                        img.loading = 'lazy'; // Lazy load the image
+                        img.alt = `Cover image for ${game.name}`; // Add alt text for accessibility
+
+                        // Lazy load the actual cover image when the user scrolls to it
+                        const realCoverURL = game.cover || `https://via.placeholder.com/400x140?text=${encodeURIComponent(game.name)}`;
+                        img.setAttribute('data-src', realCoverURL); // Store the actual cover URL in a data attribute
+
+                        img.addEventListener('load', () => {
+                            // When the image has loaded, update the `src` with the actual cover
+                            img.src = img.getAttribute('data-src');
+                        });
+                        // Add event listener for the image to show in the popup with zoom effect
+                        img.addEventListener('click', function () {
+                            const popup = document.getElementById('popupModal');
+                            const popupImg = document.querySelector('.popup-img');
+                            popup.style.display = 'flex'; // Display the popup
+                            popupImg.src = img.src; // Set the image source in the popup
+                        });
+
+                        const infoDiv = document.createElement('div');
+                        infoDiv.classList.add('game-info');
+
+                        const gameTitle = document.createElement('h3');
+                        gameTitle.textContent = game.name;
+
+                        const size = document.createElement('p');
+                        size.textContent = `Size: ${(game.size / (1024 ** 3)).toFixed(2)} GB`;
+
+                        const linksDiv = document.createElement('div');
+                        linksDiv.classList.add('game-links');
+
+                        const downloadlink = document.createElement('a');
+                        downloadlink.href = game.href;
+                        downloadlink.textContent = 'Download';
+                        downloadlink.target = '_blank';
+
+                        let formattedGame = formatGameName(game.name);
+                        const searchLink = document.createElement('a');
+                        searchLink.href = `https://www.google.com/search?hl=en&tbm=isch&q=${encodeURIComponent(formattedGame)}+Xbox+360+image`;
+                        searchLink.textContent = 'Search Game Images';
+                        searchLink.target = '_blank';
+
+                        const youtubeLink = document.createElement('a');
+                        youtubeLink.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(formattedGame + " Gameplay")}`;
+                        youtubeLink.textContent = 'Watch on YouTube';
+                        youtubeLink.target = '_blank';
+
+                        infoDiv.appendChild(gameTitle);
+                        infoDiv.appendChild(size);
+                        linksDiv.appendChild(downloadlink);
+                        linksDiv.appendChild(searchLink);
+                        linksDiv.appendChild(youtubeLink);
+                        infoDiv.appendChild(linksDiv);
+
+                        gameDiv.appendChild(img);
+                        gameDiv.appendChild(infoDiv);
+
+                        section.appendChild(gameDiv);
+                    });
+
+                    gamesList.appendChild(section);
+
+                    // Add alphabet links after the section is created
+                    const alphabetLink = document.createElement('a');
+                    alphabetLink.href = `#section-${letter}`;
+                    alphabetLink.textContent = letter;
+                    alphabetBar.appendChild(alphabetLink);
+                }
+            });
+
+            // Add scroll listener to highlight the active letter
+            window.addEventListener('scroll', () => {
+                let found = false;
+
+                // Loop through each alphabet section
+                alphabet.forEach(letter => {
+                    const section = document.getElementById(`section-${letter}`);
+                    const alphabetLink = alphabetBar.querySelector(`a[href="#section-${letter}"]`);
+
+                    if (alphabetLink) {  // Make sure the link exists
+                        if (section && isInView(section)) {
+                            // Highlight the first visible section
+                            if (!found) {
+                                alphabetLink.classList.add('active');
+                                found = true;
+                            } else {
+                                alphabetLink.classList.remove('active');
+                            }
+                        } else {
+                            alphabetLink.classList.remove('active');
+                        }
+                    }
+                });
+            });
+        }
+
+        // Helper function to check if a section is in view
+        function isInView(element) {
+            const rect = element.getBoundingClientRect();
+            return rect.top < window.innerHeight && rect.bottom >= 0; // Check if the section is in the viewport (even partially)
+        }
+
+        function formatGameName(gameName) {
+            // Remove the .zip extension and content inside parentheses
+            return gameName.replace(/\(.*?\)/g, '').replace('.zip', '').trim();
+        }
+
+        // Load games on page load
+        loadGames();
+
+
+    </script>
+
+    <script>
+        // Get elements
+        const xeniaImage = document.querySelector('.xenia');
+        const popup = document.getElementById('popupModal');
+        const popupImg = document.querySelector('.popup-img');
+        const closeBtn = document.getElementById('closeBtn');
+
+        // Function to close the popup
+        function closePopup() {
+            popup.style.display = 'none'; // Hide the popup
+            popupImg.classList.remove('zoomed'); // Remove the zoom effect
+        }
+
+        // When the image is clicked, open the popup and show the image
+        xeniaImage.addEventListener('click', function () {
+            popup.style.display = 'flex'; // Display the popup
+            popupImg.src = xeniaImage.src; // Set the image source in the popup
+        });
+
+        // When the close button is clicked, close the popup
+        closeBtn.addEventListener('click', closePopup);
+
+        // Allow zooming in and out within the popup by clicking the image
+        popupImg.addEventListener('click', function () {
+            popupImg.classList.toggle('zoomed'); // Toggle the zoom effect
+        });
+
+        // When clicking anywhere outside the image, close the popup
+        popup.addEventListener('click', function (event) {
+            if (event.target === popup) {
+                closePopup();
+            }
+        });
+
+        // Close the popup when the Escape key is pressed
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') {
+                closePopup();
+            }
+        });
+    </script>
+
+
+</body>
+
+</html>
