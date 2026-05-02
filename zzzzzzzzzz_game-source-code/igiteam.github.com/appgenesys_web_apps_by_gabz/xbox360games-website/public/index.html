@@ -46,11 +46,11 @@
         }
 
         th:nth-child(2) {
-            width: 10%;
+            width: 15%;
         }
 
         th:nth-child(3) {
-            width: 30%;
+            width: 35%;
         }
 
         th:nth-child(4) {
@@ -58,43 +58,53 @@
         }
 
         th:nth-child(5) {
-            width: 45%;
+            width: 35%;
         }
 
         td img {
-            width: 80px;
+            width: 120px;
             display: block;
             margin: 0 auto;
             cursor: zoom-in;
+            border-radius: 8px;
         }
 
         /* Grid View Styles */
         .grid-view {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
-            padding: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
         }
 
         .grid-item {
             text-align: center;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
+            border: 1px solid #333;
+            padding: 15px;
+            border-radius: 10px;
             background-color: rgb(23, 23, 23);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .grid-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            border-color: #007bff;
         }
 
         .grid-item img {
             width: 100%;
-            max-width: 150px;
+            max-width: 260px;
             height: auto;
             object-fit: cover;
             cursor: zoom-in;
+            border-radius: 8px;
+            margin-bottom: 10px;
         }
 
         .grid-item h3 {
-            font-size: 16px;
-            margin-top: 10px;
+            font-size: 18px;
+            margin: 10px 0;
         }
 
         .grid-item a {
@@ -105,27 +115,35 @@
             text-decoration: underline;
         }
 
+        .grid-info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: rgb(30, 30, 30);
+            border-radius: 6px;
+        }
+
         .grid-item .size {
-            font-size: 12px;
-            color: #888;
-            margin: 5px 0;
+            font-size: 14px;
+            color: #ffd700;
+            font-weight: bold;
         }
 
-        .grid-links {
-            margin-top: 8px;
+        .grid-download-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.2s;
         }
 
-        .grid-links a {
-            display: inline-block;
-            margin: 3px;
-            padding: 4px 8px;
-            font-size: 11px;
-            background-color: #007bff;
-            border-radius: 3px;
-        }
-
-        .grid-links a:hover {
-            background-color: #0056b3;
+        .grid-download-btn:hover {
+            background-color: #218838;
+            text-decoration: none;
         }
 
         .popup {
@@ -135,7 +153,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.9);
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -143,8 +161,8 @@
         }
 
         .popup-img {
-            max-width: 80%;
-            max-height: 80%;
+            max-width: 90%;
+            max-height: 90%;
             transition: transform 0.3s ease;
             cursor: pointer;
             object-fit: contain;
@@ -167,6 +185,9 @@
             display: flex;
             align-items: center;
             flex-wrap: wrap;
+            padding: 15px;
+            background: linear-gradient(135deg, #0a5c0a, #043504);
+            border-bottom: 3px solid #ffd700;
         }
 
         .head img {
@@ -175,18 +196,20 @@
         }
 
         .head h1 {
-            margin-left: 10px;
+            margin-left: 15px;
+            color: #ffd700;
         }
 
         .head button {
             margin: 10px;
             cursor: pointer;
-            padding: 8px;
+            padding: 8px 16px;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 4px;
             font-size: 14px;
+            font-weight: bold;
         }
 
         .head button:hover {
@@ -194,7 +217,8 @@
         }
 
         .desc {
-            margin: 10px 4px;
+            margin: 15px;
+            line-height: 1.5;
         }
 
         /* Aspect ratio selector */
@@ -204,14 +228,14 @@
             margin: 10px;
             gap: 5px;
             background-color: #333;
-            padding: 5px 10px;
-            border-radius: 5px;
+            padding: 5px 12px;
+            border-radius: 20px;
         }
 
         .aspect-selector label {
             cursor: pointer;
             padding: 4px 8px;
-            border-radius: 3px;
+            border-radius: 15px;
             transition: background 0.2s;
         }
 
@@ -223,6 +247,30 @@
             margin-right: 4px;
         }
 
+        /* Table link buttons */
+        .table-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .table-links a {
+            display: inline-block;
+            padding: 5px 12px;
+            background-color: #007bff;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .table-links a:first-child {
+            background-color: #28a745;
+        }
+
+        .table-links a:hover {
+            opacity: 0.9;
+            text-decoration: none;
+        }
+
         @media screen and (max-width: 768px) {
 
             th,
@@ -232,7 +280,21 @@
             }
 
             td img {
-                width: 50px;
+                width: 70px;
+            }
+
+            .grid-view {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .grid-item img {
+                max-width: 200px;
+            }
+
+            .head h1 {
+                font-size: 18px;
             }
         }
     </style>
@@ -240,7 +302,7 @@
 
 <body>
     <div class="head">
-        <img src="favicon.png" alt="Xbox 360" />
+        <img src="favicon.png" alt="Xbox 360" onerror="this.src='https://via.placeholder.com/80x80?text=XBOX'" />
         <h1>Xbox 360 Games Archive</h1>
         <button id="toggleViewBtn">Switch to Grid View</button>
         <div class="aspect-selector">
@@ -318,7 +380,6 @@
             const gameGrid = document.getElementById("gameGrid");
             const toggleViewBtn = document.getElementById("toggleViewBtn");
             const tableElement = document.getElementById("gameDataTable");
-            const headers = document.querySelectorAll("th");
             let currentView = null;
             let currentAspect = 'widescreen';
 
@@ -340,34 +401,6 @@
                     currentAspect = 'widescreen';
                     document.querySelector('input[value="widescreen"]').checked = true;
                 }
-            }
-
-            function applyAspectToTableImages() {
-                const tableImages = document.querySelectorAll('#gameDataTableBody td img');
-                tableImages.forEach(img => {
-                    if (currentAspect === 'widescreen') {
-                        img.style.width = '80px';
-                        img.style.height = '45px';
-                        img.style.objectFit = 'cover';
-                    } else {
-                        img.style.width = '60px';
-                        img.style.height = '60px';
-                        img.style.objectFit = 'cover';
-                    }
-                });
-            }
-
-            function applyAspectToGridImages() {
-                const gridImages = document.querySelectorAll('#gameGrid .grid-item img');
-                gridImages.forEach(img => {
-                    if (currentAspect === 'widescreen') {
-                        img.style.aspectRatio = '16/9';
-                        img.style.maxWidth = '150px';
-                    } else {
-                        img.style.aspectRatio = '1/1';
-                        img.style.maxWidth = '130px';
-                    }
-                });
             }
 
             // --- Save/Load View ---
@@ -402,7 +435,6 @@
                 toggleViewBtn.textContent = "Switch to Grid View";
                 currentView = "table";
                 if (savePreference) saveViewPreference('table');
-                // Re-render table
                 if (typeof games_list !== 'undefined') {
                     displayGameData();
                 }
@@ -415,7 +447,6 @@
                 toggleViewBtn.textContent = "Switch to List View";
                 currentView = "grid";
                 if (savePreference) saveViewPreference('grid');
-                // Re-render grid
                 if (typeof games_list !== 'undefined') {
                     displayGameData();
                 }
@@ -443,8 +474,8 @@
                 games_list.forEach((game, index) => {
                     const formattedName = formatGameName(game.name);
                     const sizeGB = formatSize(game.size);
-                    const coverURL = game.cover || 'https://cdn.gitgpt.chat/rtx/images/xbox360case.jpg';
-                    const defaultCover = 'https://cdn.gitgpt.chat/rtx/images/xbox360case.jpg';
+                    const coverURL = game.cover || 'https://via.placeholder.com/260x150?text=No+Cover';
+                    const defaultCover = 'https://via.placeholder.com/260x150?text=Loading';
 
                     // ===== TABLE VIEW =====
                     const row = document.createElement("tr");
@@ -460,13 +491,14 @@
                     coverImg.src = defaultCover;
                     coverImg.setAttribute('data-src', coverURL);
                     if (currentAspect === 'widescreen') {
-                        coverImg.style.width = '80px';
-                        coverImg.style.height = '45px';
+                        coverImg.style.width = '120px';
+                        coverImg.style.height = '68px';
                     } else {
-                        coverImg.style.width = '60px';
-                        coverImg.style.height = '60px';
+                        coverImg.style.width = '90px';
+                        coverImg.style.height = '90px';
                     }
                     coverImg.style.objectFit = 'cover';
+                    coverImg.style.borderRadius = '8px';
                     coverImg.alt = formattedName;
 
                     // Lazy load
@@ -497,7 +529,7 @@
                     // Title column
                     const titleCell = document.createElement("td");
                     const youtubeLink = document.createElement("a");
-                    youtubeLink.href = `https://www.meyt.netlify.app/search/${encodeURIComponent(formattedName + " Xbox 360 Gameplay")}`;
+                    youtubeLink.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(formattedName + " Xbox 360 Gameplay")}`;
                     youtubeLink.textContent = formattedName;
                     youtubeLink.target = "_blank";
                     titleCell.appendChild(youtubeLink);
@@ -505,28 +537,27 @@
 
                     // Size column
                     const sizeCell = document.createElement("td");
-                    sizeCell.textContent = sizeGB;
+                    sizeCell.textContent = `${sizeGB} GB`;
                     row.appendChild(sizeCell);
 
                     // Links column
                     const linksCell = document.createElement("td");
+                    const linksDiv = document.createElement("div");
+                    linksDiv.className = "table-links";
 
                     const downloadLink = document.createElement("a");
                     downloadLink.href = game.href || '#';
-                    downloadLink.textContent = "Download";
+                    downloadLink.textContent = "⬇️ Download";
                     downloadLink.target = "_blank";
-                    downloadLink.style.marginRight = "8px";
-                    downloadLink.style.display = "inline-block";
 
                     const imageSearchLink = document.createElement("a");
                     imageSearchLink.href = `https://www.google.com/search?hl=en&tbm=isch&q=${encodeURIComponent(formattedName + " Xbox 360 cover")}`;
-                    imageSearchLink.textContent = "Cover";
+                    imageSearchLink.textContent = "🖼️ Cover";
                     imageSearchLink.target = "_blank";
-                    imageSearchLink.style.marginRight = "8px";
-                    imageSearchLink.style.display = "inline-block";
 
-                    linksCell.appendChild(downloadLink);
-                    linksCell.appendChild(imageSearchLink);
+                    linksDiv.appendChild(downloadLink);
+                    linksDiv.appendChild(imageSearchLink);
+                    linksCell.appendChild(linksDiv);
                     row.appendChild(linksCell);
 
                     tableBody.appendChild(row);
@@ -539,12 +570,13 @@
                     gridImage.src = defaultCover;
                     gridImage.setAttribute('data-src', coverURL);
                     if (currentAspect === 'widescreen') {
-                        gridImage.style.aspectRatio = '4/3';
-                        gridImage.style.maxWidth = '300px';
+                        gridImage.style.aspectRatio = '16/9';
+                        gridImage.style.maxWidth = '280px';
                     } else {
                         gridImage.style.aspectRatio = '1/1';
-                        gridImage.style.maxWidth = '130px';
+                        gridImage.style.maxWidth = '240px';
                     }
+                    gridImage.style.width = '100%';
                     gridImage.alt = formattedName;
 
                     const gridObserver = new IntersectionObserver((entries) => {
@@ -574,24 +606,28 @@
                     titleLink.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(formattedName + " Xbox 360 Gameplay")}`;
                     titleLink.textContent = formattedName;
                     titleLink.target = "_blank";
-                    titleLink.style.color = "white";
+                    titleLink.style.color = "#ffd700";
                     titleLink.style.fontWeight = "bold";
                     gridTitle.appendChild(titleLink);
                     gridItem.appendChild(gridTitle);
 
-                    const gridSize = document.createElement("div");
+                    // Flex row for size + download button
+                    const infoRow = document.createElement("div");
+                    infoRow.className = "grid-info-row";
+
+                    const gridSize = document.createElement("span");
                     gridSize.className = "size";
                     gridSize.textContent = `💾 ${sizeGB} GB`;
-                    gridItem.appendChild(gridSize);
 
-                    const gridLinks = document.createElement("div");
-                    gridLinks.className = "grid-links";
                     const gridDownload = document.createElement("a");
                     gridDownload.href = game.href || '#';
-                    gridDownload.textContent = "Download";
+                    gridDownload.textContent = "⬇️ Download";
                     gridDownload.target = "_blank";
-                    gridLinks.appendChild(gridDownload);
-                    gridItem.appendChild(gridLinks);
+                    gridDownload.className = "grid-download-btn";
+
+                    infoRow.appendChild(gridSize);
+                    infoRow.appendChild(gridDownload);
+                    gridItem.appendChild(infoRow);
 
                     gameGrid.appendChild(gridItem);
                 });
@@ -643,7 +679,6 @@
                 setupPopupListeners();
                 toggleViewBtn.addEventListener("click", toggleView);
 
-                // Aspect radio listeners
                 const radios = document.querySelectorAll('input[name="aspect"]');
                 radios.forEach(radio => {
                     radio.addEventListener('change', handleAspectChange);
