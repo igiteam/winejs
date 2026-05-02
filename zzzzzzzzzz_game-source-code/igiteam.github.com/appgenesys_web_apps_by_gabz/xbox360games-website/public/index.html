@@ -86,7 +86,7 @@
 
         .grid-item img {
             width: 100%;
-            max-width: 200px;
+            max-width: 320px;
             height: auto;
             object-fit: cover;
             cursor: zoom-in;
@@ -472,7 +472,7 @@
                     coverImg.src = defaultCover;
                     coverImg.setAttribute('data-src', coverURL);
                     if (currentAspect === 'widescreen') {
-                        coverImg.style.width = '120px';
+                        coverImg.style.width = '240px';
                         coverImg.style.height = '68px';
                     } else {
                         coverImg.style.width = '90px';
@@ -551,7 +551,7 @@
                     gridImage.setAttribute('data-src', coverURL);
                     if (currentAspect === 'widescreen') {
                         gridImage.style.aspectRatio = '16/9';
-                        gridImage.style.maxWidth = '200px';
+                        gridImage.style.maxWidth = '240px';
                     } else {
                         gridImage.style.aspectRatio = '1/1';
                         gridImage.style.maxWidth = '160px';
