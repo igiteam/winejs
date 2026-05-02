@@ -46,11 +46,11 @@
         }
 
         th:nth-child(2) {
-            width: 15%;
+            width: 25%;
         }
 
         th:nth-child(3) {
-            width: 35%;
+            width: 30%;
         }
 
         th:nth-child(4) {
@@ -58,7 +58,7 @@
         }
 
         th:nth-child(5) {
-            width: 35%;
+            width: 30%;
         }
 
         td img {
@@ -71,7 +71,7 @@
         /* Grid View Styles */
         .grid-view {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 15px;
             padding: 10px;
         }
@@ -473,10 +473,10 @@
                     coverImg.setAttribute('data-src', coverURL);
                     if (currentAspect === 'widescreen') {
                         coverImg.style.width = '240px';
-                        coverImg.style.height = '68px';
+                        coverImg.style.height = '135px';
                     } else {
-                        coverImg.style.width = '90px';
-                        coverImg.style.height = '90px';
+                        coverImg.style.width = '120px';
+                        coverImg.style.height = '120px';
                     }
                     coverImg.style.objectFit = 'cover';
                     coverImg.alt = formattedName;
@@ -509,7 +509,7 @@
                     // Title column
                     const titleCell = document.createElement("td");
                     const youtubeLink = document.createElement("a");
-                    youtubeLink.href = `https://www.meyt.netlify.app/search/${encodeURIComponent(formattedName + " Xbox 360 Gameplay")}`;
+                    youtubeLink.href = `https://meyt.netlify.app/search/${encodeURIComponent(formattedName + " Xbox 360 Gameplay")}`;
                     youtubeLink.textContent = formattedName;
                     youtubeLink.target = "_blank";
                     titleCell.appendChild(youtubeLink);
@@ -551,10 +551,10 @@
                     gridImage.setAttribute('data-src', coverURL);
                     if (currentAspect === 'widescreen') {
                         gridImage.style.aspectRatio = '16/9';
-                        gridImage.style.maxWidth = '240px';
+                        gridImage.style.maxWidth = '320px';
                     } else {
                         gridImage.style.aspectRatio = '1/1';
-                        gridImage.style.maxWidth = '160px';
+                        gridImage.style.maxWidth = '200px';
                     }
                     gridImage.style.width = '100%';
                     gridImage.alt = formattedName;
@@ -583,7 +583,7 @@
 
                     const gridTitle = document.createElement("h3");
                     const titleLink = document.createElement("a");
-                    titleLink.href = `https://www.meyt.netlify.app/search/${encodeURIComponent(formattedName + " Xbox 360 Gameplay")}`;
+                    titleLink.href = `https://meyt.netlify.app/search/${encodeURIComponent(formattedName + " Xbox 360 Gameplay")}`;
                     titleLink.textContent = formattedName;
                     titleLink.target = "_blank";
                     titleLink.style.color = "white";
