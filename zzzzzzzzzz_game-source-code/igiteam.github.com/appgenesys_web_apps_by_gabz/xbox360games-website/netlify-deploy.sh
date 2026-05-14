@@ -5,7 +5,7 @@ export NODE_OPTIONS=--openssl-legacy-provider
 node -v
 npm -v
 #netlify deploy --prod --site your_site_id
-netlify deploy --prod --site 6a6d02d3-7cbd-43c6-8fda-da934eb71195
+netlify deploy --prod --site 7733b4c2-ca9d-4131-af46-71c873ea9a4e
 
 git add .
 git commit -m 'fixes'
