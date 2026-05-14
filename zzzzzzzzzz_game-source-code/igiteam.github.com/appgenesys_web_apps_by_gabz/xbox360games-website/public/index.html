@@ -579,62 +579,63 @@
 
                     gameGrid.appendChild(gridItem);
                 });
+            }
 
-                // --- Aspect Change Handler ---
-                function handleAspectChange() {
-                    const selected = document.querySelector('input[name="aspect"]:checked').value;
-                    currentAspect = selected;
-                    saveAspectPreference(currentAspect);
-                    displayGameData();
-                }
+            // --- Aspect Change Handler ---
+            function handleAspectChange() {
+                const selected = document.querySelector('input[name="aspect"]:checked').value;
+                currentAspect = selected;
+                saveAspectPreference(currentAspect);
+                displayGameData();
+            }
 
-                // --- Popup Functions ---
-                function closePopup() {
-                    const popup = document.getElementById('popupModal');
-                    const popupImg = document.querySelector('.popup-img');
-                    if (popup) popup.style.display = 'none';
-                    if (popupImg) popupImg.classList.remove('zoomed');
-                }
+            // --- Popup Functions ---
+            function closePopup() {
+                const popup = document.getElementById('popupModal');
+                const popupImg = document.querySelector('.popup-img');
+                if (popup) popup.style.display = 'none';
+                if (popupImg) popupImg.classList.remove('zoomed');
+            }
 
-                // --- Setup ---
-                function setupPopupListeners() {
-                    const popup = document.getElementById('popupModal');
-                    const closeBtn = document.getElementById('closeBtn');
-                    const popupImg = document.querySelector('.popup-img');
+            // --- Setup ---
+            function setupPopupListeners() {
+                const popup = document.getElementById('popupModal');
+                const closeBtn = document.getElementById('closeBtn');
+                const popupImg = document.querySelector('.popup-img');
 
-                    if (closeBtn) closeBtn.addEventListener('click', closePopup);
-                    if (popup) {
-                        popup.addEventListener('click', function (e) {
-                            if (e.target === popup) closePopup();
-                        });
-                    }
-                    if (popupImg) {
-                        popupImg.addEventListener('click', function () {
-                            popupImg.classList.toggle('zoomed');
-                        });
-                    }
-                    document.addEventListener('keydown', function (event) {
-                        if (event.key === 'Escape') closePopup();
+                if (closeBtn) closeBtn.addEventListener('click', closePopup);
+                if (popup) {
+                    popup.addEventListener('click', function (e) {
+                        if (e.target === popup) closePopup();
                     });
                 }
-
-                // --- Initialize ---
-                if (typeof games_list !== 'undefined' && games_list.length > 0) {
-                    loadAspectPreference();
-                    loadViewPreference();
-                    displayGameData();
-                    setupPopupListeners();
-                    toggleViewBtn.addEventListener("click", toggleView);
-
-                    const radios = document.querySelectorAll('input[name="aspect"]');
-                    radios.forEach(radio => {
-                        radio.addEventListener('change', handleAspectChange);
+                if (popupImg) {
+                    popupImg.addEventListener('click', function () {
+                        popupImg.classList.toggle('zoomed');
                     });
-                } else {
-                    console.error("games_list.js not loaded or empty");
-                    if (tableBody) tableBody.innerHTML = '<tr><td colspan="5">Error: games_list.js not found. Create the file with your game data.</td></tr>';
                 }
-            });
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'Escape') closePopup();
+                });
+            }
+
+            // --- Initialize ---
+            if (typeof games_list !== 'undefined' && games_list.length > 0) {
+                loadAspectPreference();
+                loadViewPreference();
+                displayGameData();
+                setupPopupListeners();
+                toggleViewBtn.addEventListener("click", toggleView);
+
+                const radios = document.querySelectorAll('input[name="aspect"]');
+                radios.forEach(radio => {
+                    radio.addEventListener('change', handleAspectChange);
+                });
+            } else {
+                console.error("games_list.js not loaded or empty");
+                if (tableBody) tableBody.innerHTML = '<tr><td colspan="5">Error: games_list.js not found. Create the file with your game data.</td></tr>';
+            }
+        });
     </script>
 </body>
 
