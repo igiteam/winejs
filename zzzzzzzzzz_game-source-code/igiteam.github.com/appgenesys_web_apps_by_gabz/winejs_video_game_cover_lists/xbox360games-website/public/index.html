@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xbox 360 Games Archive</title>
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <style>
+        body {
+            background-color: rgb(16, 16, 16);
+            color: white;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: rgb(23, 23, 23);
+        }
+
+        a {
+            color: white;
+            font-weight: bold;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+            vertical-align: middle;
+            word-wrap: break-word;
+        }
+
+        th:nth-child(1) {
+            width: 5%;
+        }
+
+        th:nth-child(2) {
+            width: 55%;
+        }
+
+        th:nth-child(3) {
+            width: 15%;
+        }
+
+        th:nth-child(4) {
+            width: 25%;
+        }
+
+        td img {
+            width: 240px;
+            display: block;
+            margin: 0 auto;
+            cursor: zoom-in;
+        }
+
+        /* Grid View Styles */
+        .grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            padding: 10px;
+        }
+
+        .grid-item {
+            text-align: center;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: rgb(23, 23, 23);
+        }
+
+        .grid-item img {
+            width: 100%;
+            max-width: 320px;
+            height: auto;
+            object-fit: cover;
+            cursor: zoom-in;
+        }
+
+        .grid-item h3 {
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .grid-item a {
+            text-decoration: none;
+        }
+
+        .grid-item a:hover {
+            text-decoration: underline;
+        }
+
+        .grid-item .size {
+            font-size: 12px;
+            color: #888;
+            margin: 5px 0;
+        }
+
+        .grid-links {
+            margin-top: 8px;
+        }
+
+        .grid-links a {
+            display: inline-block;
+            margin: 3px;
+            padding: 4px 8px;
+            font-size: 11px;
+            background-color: #007bff;
+            border-radius: 3px;
+        }
+
+        .grid-links a:hover {
+            background-color: #0056b3;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .popup-img {
+            max-width: 80%;
+            max-height: 80%;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            object-fit: contain;
+        }
+
+        .popup-img.zoomed {
+            transform: scale(2);
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            font-size: 36px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .head {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .head img {
+            width: 80px;
+            height: auto;
+        }
+
+        .head h1 {
+            margin-left: 10px;
+        }
+
+        .head button {
+            margin: 10px;
+            cursor: pointer;
+            padding: 8px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .head button:hover {
+            background-color: #0056b3;
+        }
+
+        .desc {
+            margin: 10px 4px;
+        }
+
+        /* Aspect ratio selector */
+        .aspect-selector {
+            display: inline-flex;
+            align-items: center;
+            margin: 10px;
+            gap: 5px;
+            background-color: #333;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .aspect-selector label {
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 3px;
+            transition: background 0.2s;
+        }
+
+        .aspect-selector label:hover {
+            background-color: #555;
+        }
+
+        .aspect-selector input {
+            margin-right: 4px;
+        }
+
+        /* New style for grid info row - size + download inline */
+        .grid-info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 8px;
+            padding: 5px 8px;
+            background-color: rgb(30, 30, 30);
+            border-radius: 4px;
+        }
+
+        .grid-download-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .grid-download-btn:hover {
+            background-color: #0056b3;
+            text-decoration: none;
+        }
+
+        .table-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .table-links a {
+            display: inline-block;
+            padding: 4px 10px;
+            background-color: #007bff;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .table-links a:hover {
+            background-color: #0056b3;
+            text-decoration: none;
+        }
+
+        @media screen and (max-width: 768px) {
+
+            th,
+            td {
+                padding: 5px;
+                font-size: 12px;
+            }
+
+            td img {
+                width: 70px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="head">
+        <img src="favicon.png" alt="Xbox 360" />
+        <h1>Xbox 360 Games Archive</h1>
+        <button id="toggleViewBtn">Switch to Grid View</button>
+        <div class="aspect-selector">
+            <label>
+                <input type="radio" name="aspect" value="square" checked> Front
+            </label>
+            <label>
+                <input type="radio" name="aspect" value="widescreen"> Front&Back
+            </label>
+        </div>
+        <a style="display: flex; justify-content: center; align-items: center; margin: 0 10px;"
+            href="https://github.com/xenia-manager/xenia-manager" target="_blank" rel="noreferrer">
+            <img src="https://cdn.gitgpt.chat/rtx/images/github-icon.png"
+                style="width: 30px; cursor: pointer; margin-right: 8px;">
+            <span>Xenia Manager</span>
+        </a>
+        <a style="display: flex; justify-content: center; align-items: center;"
+            href="https://ytembedxyz.netlify.app/?RGV0TFVaYzF4aE0" target="_blank" rel="noreferrer">
+            <img src="https://cdn.gitgpt.chat/rtx/images/youtube-icon.png" style="width: 30px;">
+            <span>Tutorial</span>
+        </a>
+    </div>
+    <div class="desc">Xbox 360 is a home video game console developed by Microsoft. This archive preserves the complete
+        library of Xbox 360 games, including downloadable content, updates, and emulator compatibility information. All
+        games are preserved for historical and educational purposes.</div>
+
+    <!-- Grid view container -->
+    <div id="gameGrid" class="grid-view" style="display: none;">
+        <!-- Grid items will be inserted here -->
+    </div>
+
+    <!-- Table view container -->
+    <table id="gameDataTable" style="display: block;">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Title</th>
+                <th>Size (GB)</th>
+                <th>Links</th>
+            </tr>
+        </thead>
+        <tbody id="gameDataTableBody">
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+
+    <div class="desc">
+        <p style="display: inline; margin-right: 20px;"><strong>2005</strong>: <a
+                href="https://en.wikipedia.org/wiki/Xbox_360">Xbox 360 Launch</a></p>
+        <p style="display: inline; margin-right: 20px;"><strong>2010</strong>: <a
+                href="https://en.wikipedia.org/wiki/Xbox_360_S">Xbox 360 S</a></p>
+        <p style="display: inline; margin-right: 20px;"><strong>2013</strong>: <a
+                href="https://en.wikipedia.org/wiki/Xbox_360_E">Xbox 360 E</a></p>
+        <p style="display: inline; margin-right: 20px;"><strong>2022</strong>: <a
+                href="https://github.com/xenia-project/xenia">Xenia Emulator</a></p>
+    </div>
+    <div class="desc">
+        The Xbox 360 was released on November 22, 2005, and became known for its Xbox Live service, achievement system,
+        and iconic game library including Halo, Gears of War, and Forza Motorsport. The console sold over 84 million
+        units worldwide.
+    </div>
+
+    <!-- Popup Modal -->
+    <div class="popup" id="popupModal">
+        <span class="close" id="closeBtn">&times;</span>
+        <img class="popup-img" src="" alt="Zoomed Image">
+    </div>
+
+    <script src="games_list.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tableBody = document.querySelector("#gameDataTableBody");
+            const gameGrid = document.getElementById("gameGrid");
+            const toggleViewBtn = document.getElementById("toggleViewBtn");
+            const tableElement = document.getElementById("gameDataTable");
+            let currentView = null;
+            let currentAspect = 'square';
+
+            // --- LocalStorage Keys ---
+            const STORAGE_KEY = 'xbox360_view_preference';
+            const ASPECT_KEY = 'xbox360_aspect_preference';
+
+            // --- Save/Load Aspect ---
+            function saveAspectPreference(aspect) {
+                localStorage.setItem(ASPECT_KEY, aspect);
+            }
+
+            function loadAspectPreference() {
+                const savedAspect = localStorage.getItem(ASPECT_KEY);
+                if (savedAspect === 'widescreen') {
+                    currentAspect = 'widescreen';
+                    document.querySelector('input[value="widescreen"]').checked = true;
+                } else {
+                    currentAspect = 'square';
+                    document.querySelector('input[value="square"]').checked = true;
+                }
+            }
+
+            // --- Save/Load View ---
+            function saveViewPreference(view) {
+                localStorage.setItem(STORAGE_KEY, view);
+            }
+
+            function loadViewPreference() {
+                const savedView = localStorage.getItem(STORAGE_KEY);
+                if (savedView === 'grid') {
+                    switchToGridView(false);
+                } else {
+                    switchToTableView(false);
+                }
+            }
+
+            // --- Helper Functions ---
+            function formatGameName(gameName) {
+                return gameName.replace(/\(.*?\)/g, '').replace('.zip', '').trim();
+            }
+
+            function formatSize(bytes) {
+                if (!bytes) return 'N/A';
+                return (bytes / (1024 ** 3)).toFixed(2);
+            }
+
+            // --- Remove duplicates based on formatted title ---
+            function removeDuplicates(games) {
+                const seen = new Map();
+                const uniqueGames = [];
+
+                for (const game of games) {
+                    const formattedTitle = formatGameName(game.name);
+                    if (!seen.has(formattedTitle)) {
+                        seen.set(formattedTitle, true);
+                        uniqueGames.push(game);
+                    }
+                }
+
+                return uniqueGames;
+            }
+
+            // --- Switch Views ---
+            function switchToTableView(savePreference = true) {
+                if (currentView === 'table') return;
+                tableElement.style.display = "table";
+                gameGrid.style.display = "none";
+                toggleViewBtn.textContent = "Switch to Grid View";
+                currentView = "table";
+                if (savePreference) saveViewPreference('table');
+                if (typeof games_list !== 'undefined') {
+                    displayGameData();
+                }
+            }
+
+            function switchToGridView(savePreference = true) {
+                if (currentView === 'grid') return;
+                tableElement.style.display = "none";
+                gameGrid.style.display = "grid";
+                toggleViewBtn.textContent = "Switch to List View";
+                currentView = "grid";
+                if (savePreference) saveViewPreference('grid');
+                if (typeof games_list !== 'undefined') {
+                    displayGameData();
+                }
+            }
+
+            function toggleView() {
+                if (currentView === "table") {
+                    switchToGridView(true);
+                } else {
+                    switchToTableView(true);
+                }
+            }
+
+            // --- Main Display Function ---
+            function displayGameData() {
+                if (!tableBody || !gameGrid) return;
+                if (typeof games_list === 'undefined') {
+                    console.error("games_list.js not loaded");
+                    return;
+                }
+
+                // Remove duplicates before displaying
+                const uniqueGames = removeDuplicates(games_list);
+
+                tableBody.innerHTML = "";
+                gameGrid.innerHTML = "";
+
+                uniqueGames.forEach((game, index) => {
+                    const formattedName = formatGameName(game.name);
+                    const sizeGB = formatSize(game.size);
+
+                    // Use cover_wide for widescreen, cover for square (front)
+                    let coverURL;
+                    let defaultCover = 'https://cdn.gitgpt.chat/rtx/images/xbox360case_placeholder.png';
+
+                    if (currentAspect === 'widescreen') {
+                        // Use cover_wide if available, fallback to cover, then placeholder
+                        coverURL = game.cover_wide || game.cover || defaultCover;
+                    } else {
+                        // Use cover (front cover) if available, fallback to placeholder
+                        coverURL = game.cover || defaultCover;
+                    }
+
+                    // ===== TABLE VIEW (LIST VIEW) - NO IMAGE =====
+                    const row = document.createElement("tr");
+
+                    // # column
+                    const numCell = document.createElement("td");
+                    numCell.textContent = index + 1;
+                    row.appendChild(numCell);
+
+                    // Title column
+                    const titleCell = document.createElement("td");
+                    const youtubeLink = document.createElement("a");
+                    youtubeLink.href = `https://meyt.netlify.app/search/${encodeURIComponent(formattedName + " Xbox 360 Gameplay")}`;
+                    youtubeLink.textContent = formattedName;
+                    youtubeLink.target = "_blank";
+                    titleCell.appendChild(youtubeLink);
+                    row.appendChild(titleCell);
+
+                    // Size column
+                    const sizeCell = document.createElement("td");
+                    sizeCell.textContent = `${sizeGB} GB`;
+                    row.appendChild(sizeCell);
+
+                    // Links column
+                    const linksCell = document.createElement("td");
+                    const linksDiv = document.createElement("div");
+                    linksDiv.className = "table-links";
+
+                    const downloadLink = document.createElement("a");
+                    downloadLink.href = game.href || '#';
+                    downloadLink.textContent = "Download";
+                    downloadLink.target = "_blank";
+
+                    const imageSearchLink = document.createElement("a");
+                    imageSearchLink.href = `https://www.google.com/search?hl=en&tbm=isch&q=${encodeURIComponent(formattedName + " Xbox 360 cover")}`;
+                    imageSearchLink.textContent = "Cover";
+                    imageSearchLink.target = "_blank";
+
+                    linksDiv.appendChild(downloadLink);
+                    linksDiv.appendChild(imageSearchLink);
+                    linksCell.appendChild(linksDiv);
+                    row.appendChild(linksCell);
+
+                    tableBody.appendChild(row);
+
+                    // ===== GRID VIEW =====
+                    const gridItem = document.createElement("div");
+                    gridItem.classList.add("grid-item");
+
+                    const gridImage = document.createElement("img");
+                    gridImage.src = defaultCover;
+                    gridImage.setAttribute('data-src', coverURL);
+
+                    // Set aspect ratio based on currentAspect
+                    if (currentAspect === 'widescreen') {
+                        gridImage.style.aspectRatio = '16 / 9';
+                        gridImage.style.maxWidth = '320px';
+                        gridImage.style.objectFit = 'cover';
+                        gridImage.style.objectPosition = 'center';
+                    } else {
+                        // Front cover aspect ratio (standard DVD/game case)
+                        gridImage.style.aspectRatio = '2 / 3';
+                        gridImage.style.maxWidth = '240px';
+                        gridImage.style.objectFit = 'contain';
+                        gridImage.style.objectPosition = 'center';
+                    }
+                    gridImage.style.width = '100%';
+                    gridImage.alt = formattedName;
+
+                    const gridObserver = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                const img = entry.target;
+                                const realSrc = img.getAttribute('data-src');
+                                if (realSrc && img.src !== realSrc) {
+                                    img.src = realSrc;
+                                }
+                                gridObserver.unobserve(img);
+                            }
+                        });
+                    });
+                    gridObserver.observe(gridImage);
+
+                    gridImage.addEventListener('click', () => {
+                        const popup = document.getElementById('popupModal');
+                        const popupImg = document.querySelector('.popup-img');
+                        popup.style.display = 'flex';
+                        popupImg.src = gridImage.src;
+                    });
+                    gridItem.appendChild(gridImage);
+
+                    const gridTitle = document.createElement("h3");
+                    const titleLink = document.createElement("a");
+                    titleLink.href = `https://meyt.netlify.app/search/${encodeURIComponent(formattedName + " Xbox 360 Gameplay")}`;
+                    titleLink.textContent = formattedName;
+                    titleLink.target = "_blank";
+                    titleLink.style.color = "white";
+                    titleLink.style.fontWeight = "bold";
+                    gridTitle.appendChild(titleLink);
+                    gridItem.appendChild(gridTitle);
+
+                    // Flex row for size + download button inline
+                    const infoRow = document.createElement("div");
+                    infoRow.className = "grid-info-row";
+
+                    const gridSize = document.createElement("span");
+                    gridSize.className = "size";
+                    gridSize.textContent = `💾 ${sizeGB} GB`;
+                    gridSize.style.color = "#888";
+                    gridSize.style.margin = "0";
+
+                    const gridDownload = document.createElement("a");
+                    gridDownload.href = game.href || '#';
+                    gridDownload.textContent = "Download";
+                    gridDownload.target = "_blank";
+                    gridDownload.className = "grid-download-btn";
+
+                    infoRow.appendChild(gridSize);
+                    infoRow.appendChild(gridDownload);
+                    gridItem.appendChild(infoRow);
+
+                    gameGrid.appendChild(gridItem);
+                });
+            }
+
+            // --- Aspect Change Handler ---
+            function handleAspectChange() {
+                const selected = document.querySelector('input[name="aspect"]:checked').value;
+                currentAspect = selected;
+                saveAspectPreference(currentAspect);
+                displayGameData();
+            }
+
+            // --- Popup Functions ---
+            function closePopup() {
+                const popup = document.getElementById('popupModal');
+                const popupImg = document.querySelector('.popup-img');
+                if (popup) popup.style.display = 'none';
+                if (popupImg) popupImg.classList.remove('zoomed');
+            }
+
+            // --- Setup ---
+            function setupPopupListeners() {
+                const popup = document.getElementById('popupModal');
+                const closeBtn = document.getElementById('closeBtn');
+                const popupImg = document.querySelector('.popup-img');
+
+                if (closeBtn) closeBtn.addEventListener('click', closePopup);
+                if (popup) {
+                    popup.addEventListener('click', function (e) {
+                        if (e.target === popup) closePopup();
+                    });
+                }
+                if (popupImg) {
+                    popupImg.addEventListener('click', function () {
+                        popupImg.classList.toggle('zoomed');
+                    });
+                }
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'Escape') closePopup();
+                });
+            }
+
+            // --- Initialize ---
+            if (typeof games_list !== 'undefined' && games_list.length > 0) {
+                loadAspectPreference();
+                loadViewPreference();
+                displayGameData();
+                setupPopupListeners();
+                toggleViewBtn.addEventListener("click", toggleView);
+
+                const radios = document.querySelectorAll('input[name="aspect"]');
+                radios.forEach(radio => {
+                    radio.addEventListener('change', handleAspectChange);
+                });
+            } else {
+                console.error("games_list.js not loaded or empty");
+                if (tableBody) tableBody.innerHTML = '<tr><td colspan="4">Error: games_list.js not found. Create the file with your game data.</td></tr>';
+            }
+        });
+    </script>
+</body>
+
+</html>
