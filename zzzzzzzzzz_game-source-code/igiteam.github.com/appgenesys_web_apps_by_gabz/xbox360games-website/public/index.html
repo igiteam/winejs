@@ -525,16 +525,16 @@
 
                     // Set aspect ratio based on currentAspect
                     if (currentAspect === 'widescreen') {
-                        gridImage.style.aspectRatio = '16/9';
+                        gridImage.style.aspectRatio = '4:3';
                         gridImage.style.maxWidth = '320px';
                         gridImage.style.objectFit = 'cover';
                         gridImage.style.objectPosition = 'center';
                     } else {
                         // Square aspect ratio for front cover (default)
-                        gridImage.style.aspectRatio = '1/1';
+                        gridImage.style.aspectRatio = '3:4';
                         gridImage.style.maxWidth = '240px';
                         gridImage.style.objectFit = 'cover';
-                        gridImage.style.objectPosition = 'center';
+                        gridImage.style.objectPosition = 'right';
                     }
                     gridImage.style.width = '100%';
                     gridImage.alt = formattedName;
