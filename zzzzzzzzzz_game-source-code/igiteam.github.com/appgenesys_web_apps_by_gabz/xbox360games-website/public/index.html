@@ -283,16 +283,15 @@
 
 <body>
     <div class="head">
-        <img src="favicon.png" alt="Xbox 360" onerror="this.src='https://via.placeholder.com/80x80?text=XBOX'" />
+        <img src="favicon.png" alt="Xbox 360" />
         <h1>Xbox 360 Games Archive</h1>
         <button id="toggleViewBtn">Switch to Grid View</button>
         <div class="aspect-selector">
-            <span>📐 Cover:</span>
             <label>
-                <input type="radio" name="aspect" value="widescreen" checked> Widescreen
+                <input type="radio" name="aspect" value="square" checked> Front
             </label>
             <label>
-                <input type="radio" name="aspect" value="square"> Square
+                <input type="radio" name="aspect" value="widescreen"> Front&Back
             </label>
         </div>
         <a style="display: flex; justify-content: center; align-items: center; margin: 0 10px;"
@@ -302,7 +301,7 @@
             <span>Xenia Manager</span>
         </a>
         <a style="display: flex; justify-content: center; align-items: center;"
-            href="https://www.youtube.com/watch?v=DetLUZc1xhM" target="_blank" rel="noreferrer">
+            href="https://ytembedxyz.netlify.app/?RGV0TFVaYzF4aE0" target="_blank" rel="noreferrer">
             <img src="https://cdn.gitgpt.chat/rtx/images/youtube-icon.png" style="width: 30px;">
             <span>Tutorial</span>
         </a>
@@ -458,53 +457,13 @@
                     const coverURL = game.cover || 'https://cdn.gitgpt.chat/rtx/images/xbox360case_placeholder.png';
                     const defaultCover = 'https://cdn.gitgpt.chat/rtx/images/xbox360case_placeholder.png';
 
-                    // ===== TABLE VIEW =====
+                    // ===== TABLE VIEW (LIST VIEW) - NO IMAGE =====
                     const row = document.createElement("tr");
 
                     // # column
                     const numCell = document.createElement("td");
                     numCell.textContent = index + 1;
                     row.appendChild(numCell);
-
-                    // Cover column
-                    const coverCell = document.createElement("td");
-                    const coverImg = document.createElement("img");
-                    coverImg.src = defaultCover;
-                    coverImg.setAttribute('data-src', coverURL);
-                    if (currentAspect === 'widescreen') {
-                        coverImg.style.width = '240px';
-                        coverImg.style.height = '135px';
-                    } else {
-                        coverImg.style.width = '120px';
-                        coverImg.style.height = '120px';
-                    }
-                    coverImg.style.objectFit = 'cover';
-                    coverImg.alt = formattedName;
-
-                    // Lazy load
-                    const observer = new IntersectionObserver((entries) => {
-                        entries.forEach(entry => {
-                            if (entry.isIntersecting) {
-                                const img = entry.target;
-                                const realSrc = img.getAttribute('data-src');
-                                if (realSrc && img.src !== realSrc) {
-                                    img.src = realSrc;
-                                }
-                                observer.unobserve(img);
-                            }
-                        });
-                    });
-                    observer.observe(coverImg);
-
-                    coverImg.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const popup = document.getElementById('popupModal');
-                        const popupImg = document.querySelector('.popup-img');
-                        popup.style.display = 'flex';
-                        popupImg.src = coverImg.src;
-                    });
-                    coverCell.appendChild(coverImg);
-                    row.appendChild(coverCell);
 
                     // Title column
                     const titleCell = document.createElement("td");
@@ -549,12 +508,19 @@
                     const gridImage = document.createElement("img");
                     gridImage.src = defaultCover;
                     gridImage.setAttribute('data-src', coverURL);
+
+                    // Set aspect ratio based on currentAspect
                     if (currentAspect === 'widescreen') {
                         gridImage.style.aspectRatio = '16/9';
                         gridImage.style.maxWidth = '320px';
+                        gridImage.style.objectFit = 'cover';
                     } else {
-                        gridImage.style.aspectRatio = '1/1';
-                        gridImage.style.maxWidth = '200px';
+                        // 4:3 aspect ratio for standard view
+                        gridImage.style.aspectRatio = '4/3';
+                        gridImage.style.maxWidth = '240px';
+                        gridImage.style.objectFit = 'cover';
+                        // Orient image from right (right-aligned with object-position)
+                        gridImage.style.objectPosition = 'right';
                     }
                     gridImage.style.width = '100%';
                     gridImage.alt = formattedName;
@@ -613,63 +579,62 @@
 
                     gameGrid.appendChild(gridItem);
                 });
-            }
 
-            // --- Aspect Change Handler ---
-            function handleAspectChange() {
-                const selected = document.querySelector('input[name="aspect"]:checked').value;
-                currentAspect = selected;
-                saveAspectPreference(currentAspect);
-                displayGameData();
-            }
+                // --- Aspect Change Handler ---
+                function handleAspectChange() {
+                    const selected = document.querySelector('input[name="aspect"]:checked').value;
+                    currentAspect = selected;
+                    saveAspectPreference(currentAspect);
+                    displayGameData();
+                }
 
-            // --- Popup Functions ---
-            function closePopup() {
-                const popup = document.getElementById('popupModal');
-                const popupImg = document.querySelector('.popup-img');
-                if (popup) popup.style.display = 'none';
-                if (popupImg) popupImg.classList.remove('zoomed');
-            }
+                // --- Popup Functions ---
+                function closePopup() {
+                    const popup = document.getElementById('popupModal');
+                    const popupImg = document.querySelector('.popup-img');
+                    if (popup) popup.style.display = 'none';
+                    if (popupImg) popupImg.classList.remove('zoomed');
+                }
 
-            // --- Setup ---
-            function setupPopupListeners() {
-                const popup = document.getElementById('popupModal');
-                const closeBtn = document.getElementById('closeBtn');
-                const popupImg = document.querySelector('.popup-img');
+                // --- Setup ---
+                function setupPopupListeners() {
+                    const popup = document.getElementById('popupModal');
+                    const closeBtn = document.getElementById('closeBtn');
+                    const popupImg = document.querySelector('.popup-img');
 
-                if (closeBtn) closeBtn.addEventListener('click', closePopup);
-                if (popup) {
-                    popup.addEventListener('click', function (e) {
-                        if (e.target === popup) closePopup();
+                    if (closeBtn) closeBtn.addEventListener('click', closePopup);
+                    if (popup) {
+                        popup.addEventListener('click', function (e) {
+                            if (e.target === popup) closePopup();
+                        });
+                    }
+                    if (popupImg) {
+                        popupImg.addEventListener('click', function () {
+                            popupImg.classList.toggle('zoomed');
+                        });
+                    }
+                    document.addEventListener('keydown', function (event) {
+                        if (event.key === 'Escape') closePopup();
                     });
                 }
-                if (popupImg) {
-                    popupImg.addEventListener('click', function () {
-                        popupImg.classList.toggle('zoomed');
+
+                // --- Initialize ---
+                if (typeof games_list !== 'undefined' && games_list.length > 0) {
+                    loadAspectPreference();
+                    loadViewPreference();
+                    displayGameData();
+                    setupPopupListeners();
+                    toggleViewBtn.addEventListener("click", toggleView);
+
+                    const radios = document.querySelectorAll('input[name="aspect"]');
+                    radios.forEach(radio => {
+                        radio.addEventListener('change', handleAspectChange);
                     });
+                } else {
+                    console.error("games_list.js not loaded or empty");
+                    if (tableBody) tableBody.innerHTML = '<tr><td colspan="5">Error: games_list.js not found. Create the file with your game data.</td></tr>';
                 }
-                document.addEventListener('keydown', function (event) {
-                    if (event.key === 'Escape') closePopup();
-                });
-            }
-
-            // --- Initialize ---
-            if (typeof games_list !== 'undefined' && games_list.length > 0) {
-                loadAspectPreference();
-                loadViewPreference();
-                displayGameData();
-                setupPopupListeners();
-                toggleViewBtn.addEventListener("click", toggleView);
-
-                const radios = document.querySelectorAll('input[name="aspect"]');
-                radios.forEach(radio => {
-                    radio.addEventListener('change', handleAspectChange);
-                });
-            } else {
-                console.error("games_list.js not loaded or empty");
-                if (tableBody) tableBody.innerHTML = '<tr><td colspan="5">Error: games_list.js not found. Create the file with your game data.</td></tr>';
-            }
-        });
+            });
     </script>
 </body>
 
