@@ -49,7 +49,7 @@ cd "$EXTNAME" || exit
 
 # Download Python icon
 echo -e "${CYAN}📥 Downloading Python icon...${NC}"
-curl -s -o media/logo.png "https://cdn.sdappnet.cloud/rtx/images/python.png" || {
+curl -s -o media/logo.png "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/python-logo.png" || {
     echo -e "${YELLOW}⚠️  Download failed, creating placeholder${NC}"
     # Create a simple colored placeholder
     echo "Placeholder for Python logo" > media/logo.png
@@ -136,6 +136,10 @@ cat <<'EOL' > src/extension.ts
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('✅ Python Script Runner activated!');
@@ -175,27 +179,6 @@ export function activate(context: vscode.ExtensionContext) {
                     // Determine which Python command to use
                     let pythonCmd = 'python3';
                     
-                    // Try to detect Python interpreter from VS Code Python extension
-                    try {
-                        const pythonExtension = vscode.extensions.getExtension('ms-python.python');
-                        if (pythonExtension) {
-                            const pythonPath = await pythonExtension.exports.settings.getExecutionDetails(scriptPath).execCommand;
-                            if (pythonPath && pythonPath.length > 0) {
-                                pythonCmd = pythonPath.join(' ');
-                            }
-                        }
-                    } catch (e) {
-                        // Fallback to checking common Python commands
-                        try {
-                            // Check if python3 exists
-                            const terminal2 = vscode.window.createTerminal('Python Check');
-                            terminal2.sendText('which python3 && echo "PYTHON3_FOUND" || echo "PYTHON3_NOT_FOUND"');
-                            // For simplicity, we'll just use python3 and let the terminal handle it
-                        } catch (e2) {
-                            // Keep default
-                        }
-                    }
-
                     // Check for virtual environment in common locations
                     const venvPaths = [
                         path.join(scriptDir, 'venv', 'bin', 'python'),
@@ -211,17 +194,31 @@ export function activate(context: vscode.ExtensionContext) {
                             if (fs.existsSync(venvPath)) {
                                 pythonCmd = `"${venvPath}"`;
                                 venvFound = true;
-                                vscode.window.showInformationMessage(`Using virtual env: ${path.basename(path.dirname(path.dirname(venvPath)))}`);
+                                terminal.sendText(`echo "✅ Using virtual env: ${path.basename(path.dirname(path.dirname(venvPath)))}"`);
                                 break;
                             }
                         } catch (e) {}
                     }
 
-                    // Run the Python script
-                    terminal.sendText(`cd "${scriptDir}" && ${pythonCmd} "${scriptName}"`);
+                    // Check for requirements.txt and install if found
+                    const requirementsPath = path.join(scriptDir, 'requirements.txt');
+                    if (fs.existsSync(requirementsPath)) {
+                        terminal.sendText(`echo "📦 Found requirements.txt - installing dependencies..."`);
+                        terminal.sendText(`${pythonCmd} -m pip install -r "${requirementsPath}"`);
+                        terminal.sendText(`echo "✅ Dependencies installed successfully!"`);
+                    }
 
-                    // Wait a bit for output
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    // Check for requirements.txt in parent directory
+                    const parentRequirementsPath = path.join(scriptDir, '..', 'requirements.txt');
+                    if (!fs.existsSync(requirementsPath) && fs.existsSync(parentRequirementsPath)) {
+                        terminal.sendText(`echo "📦 Found requirements.txt in parent directory - installing dependencies..."`);
+                        terminal.sendText(`${pythonCmd} -m pip install -r "${parentRequirementsPath}"`);
+                        terminal.sendText(`echo "✅ Dependencies installed successfully!"`);
+                    }
+
+                    // Run the Python script
+                    terminal.sendText(`echo "🚀 Running ${scriptName}..."`);
+                    terminal.sendText(`cd "${scriptDir}" && ${pythonCmd} "${scriptName}"`);
                 });
 
             } catch (error: any) {

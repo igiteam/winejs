@@ -1,0 +1,55 @@
+{
+  "name": "python-runner",
+  "displayName": "Python Script Runner",
+  "description": "One-click runner for Python scripts with virtual env support",
+  "repository": "https://github.com/yourusername/python-runner",
+  "publisher": "your-publisher-name",
+  "icon": "media/logo.png",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.81.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:pythonrunner.runPythonScript"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "pythonrunner.runPythonScript",
+        "title": "▶️ Run .py",
+        "category": "Python"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "pythonrunner.runPythonScript",
+          "group": "navigation",
+          "when": "resourceExtname == '.py'"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "pythonrunner.runPythonScript",
+          "group": "navigation",
+          "when": "resourceExtname == '.py'"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "20.x",
+    "@types/vscode": "^1.81.0",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {}
+}
