@@ -69,52 +69,63 @@ function activate(context) {
                     terminal.show();
                     // Determine which Python command to use
                     let pythonCmd = 'python3';
-                    // Try to detect Python interpreter from VS Code Python extension
-                    try {
-                        const pythonExtension = vscode.extensions.getExtension('ms-python.python');
-                        if (pythonExtension) {
-                            const pythonPath = await pythonExtension.exports.settings.getExecutionDetails(scriptPath).execCommand;
-                            if (pythonPath && pythonPath.length > 0) {
-                                pythonCmd = pythonPath.join(' ');
-                            }
-                        }
-                    }
-                    catch (e) {
-                        // Fallback to checking common Python commands
-                        try {
-                            // Check if python3 exists
-                            const terminal2 = vscode.window.createTerminal('Python Check');
-                            terminal2.sendText('which python3 && echo "PYTHON3_FOUND" || echo "PYTHON3_NOT_FOUND"');
-                            // For simplicity, we'll just use python3 and let the terminal handle it
-                        }
-                        catch (e2) {
-                            // Keep default
-                        }
-                    }
+                    let venvPath = null;
                     // Check for virtual environment in common locations
                     const venvPaths = [
-                        path.join(scriptDir, 'venv', 'bin', 'python'),
-                        path.join(scriptDir, '.venv', 'bin', 'python'),
-                        path.join(scriptDir, 'env', 'bin', 'python'),
-                        path.join(scriptDir, '..', 'venv', 'bin', 'python'),
-                        path.join(scriptDir, '..', '.venv', 'bin', 'python')
+                        path.join(scriptDir, 'venv'),
+                        path.join(scriptDir, '.venv'),
+                        path.join(scriptDir, 'env'),
+                        path.join(scriptDir, '..', 'venv'),
+                        path.join(scriptDir, '..', '.venv')
                     ];
-                    let venvFound = false;
-                    for (const venvPath of venvPaths) {
-                        try {
-                            if (fs.existsSync(venvPath)) {
-                                pythonCmd = `"${venvPath}"`;
-                                venvFound = true;
-                                vscode.window.showInformationMessage(`Using virtual env: ${path.basename(path.dirname(path.dirname(venvPath)))}`);
-                                break;
-                            }
+                    for (const venvDir of venvPaths) {
+                        const pythonExe = path.join(venvDir, 'bin', 'python');
+                        if (fs.existsSync(pythonExe)) {
+                            pythonCmd = `"${pythonExe}"`;
+                            venvPath = venvDir;
+                            terminal.sendText(`echo "✅ Using virtual env: ${path.basename(venvDir)}"`);
+                            break;
                         }
-                        catch (e) { }
+                    }
+                    // Check for requirements.txt and install if found
+                    const requirementsPath = path.join(scriptDir, 'requirements.txt');
+                    const parentRequirementsPath = path.join(scriptDir, '..', 'requirements.txt');
+                    let hasRequirements = false;
+                    let reqPath = null;
+                    if (fs.existsSync(requirementsPath)) {
+                        hasRequirements = true;
+                        reqPath = requirementsPath;
+                    }
+                    else if (fs.existsSync(parentRequirementsPath)) {
+                        hasRequirements = true;
+                        reqPath = parentRequirementsPath;
+                    }
+                    if (hasRequirements && reqPath) {
+                        terminal.sendText(`echo "📦 Found requirements.txt - installing dependencies..."`);
+                        // If no virtual environment exists, create one
+                        if (!venvPath) {
+                            const venvDir = path.join(scriptDir, '.venv');
+                            terminal.sendText(`echo "🔧 Creating virtual environment in .venv..."`);
+                            terminal.sendText(`python3 -m venv "${venvDir}"`);
+                            terminal.sendText(`echo "✅ Virtual environment created!"`);
+                            // Use the new venv's pip
+                            const venvPython = path.join(venvDir, 'bin', 'python');
+                            terminal.sendText(`${venvPython} -m pip install --upgrade pip`);
+                            terminal.sendText(`${venvPython} -m pip install -r "${reqPath}"`);
+                            terminal.sendText(`echo "✅ Dependencies installed in virtual environment!"`);
+                            // Update pythonCmd to use the venv
+                            pythonCmd = `"${venvPython}"`;
+                        }
+                        else {
+                            // Virtual environment exists, use it
+                            terminal.sendText(`${pythonCmd} -m pip install --upgrade pip`);
+                            terminal.sendText(`${pythonCmd} -m pip install -r "${reqPath}"`);
+                            terminal.sendText(`echo "✅ Dependencies installed successfully!"`);
+                        }
                     }
                     // Run the Python script
+                    terminal.sendText(`echo "🚀 Running ${scriptName}..."`);
                     terminal.sendText(`cd "${scriptDir}" && ${pythonCmd} "${scriptName}"`);
-                    // Wait a bit for output
-                    await new Promise(resolve => setTimeout(resolve, 1000));
                 });
             }
             catch (error) {

@@ -136,10 +136,6 @@ cat <<'EOL' > src/extension.ts
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-
-const execAsync = promisify(exec);
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('✅ Python Script Runner activated!');
@@ -178,42 +174,66 @@ export function activate(context: vscode.ExtensionContext) {
 
                     // Determine which Python command to use
                     let pythonCmd = 'python3';
+                    let venvPath = null;
                     
                     // Check for virtual environment in common locations
                     const venvPaths = [
-                        path.join(scriptDir, 'venv', 'bin', 'python'),
-                        path.join(scriptDir, '.venv', 'bin', 'python'),
-                        path.join(scriptDir, 'env', 'bin', 'python'),
-                        path.join(scriptDir, '..', 'venv', 'bin', 'python'),
-                        path.join(scriptDir, '..', '.venv', 'bin', 'python')
+                        path.join(scriptDir, 'venv'),
+                        path.join(scriptDir, '.venv'),
+                        path.join(scriptDir, 'env'),
+                        path.join(scriptDir, '..', 'venv'),
+                        path.join(scriptDir, '..', '.venv')
                     ];
 
-                    let venvFound = false;
-                    for (const venvPath of venvPaths) {
-                        try {
-                            if (fs.existsSync(venvPath)) {
-                                pythonCmd = `"${venvPath}"`;
-                                venvFound = true;
-                                terminal.sendText(`echo "✅ Using virtual env: ${path.basename(path.dirname(path.dirname(venvPath)))}"`);
-                                break;
-                            }
-                        } catch (e) {}
+                    for (const venvDir of venvPaths) {
+                        const pythonExe = path.join(venvDir, 'bin', 'python');
+                        if (fs.existsSync(pythonExe)) {
+                            pythonCmd = `"${pythonExe}"`;
+                            venvPath = venvDir;
+                            terminal.sendText(`echo "✅ Using virtual env: ${path.basename(venvDir)}"`);
+                            break;
+                        }
                     }
 
                     // Check for requirements.txt and install if found
                     const requirementsPath = path.join(scriptDir, 'requirements.txt');
+                    const parentRequirementsPath = path.join(scriptDir, '..', 'requirements.txt');
+                    
+                    let hasRequirements = false;
+                    let reqPath = null;
+                    
                     if (fs.existsSync(requirementsPath)) {
-                        terminal.sendText(`echo "📦 Found requirements.txt - installing dependencies..."`);
-                        terminal.sendText(`${pythonCmd} -m pip install -r "${requirementsPath}"`);
-                        terminal.sendText(`echo "✅ Dependencies installed successfully!"`);
+                        hasRequirements = true;
+                        reqPath = requirementsPath;
+                    } else if (fs.existsSync(parentRequirementsPath)) {
+                        hasRequirements = true;
+                        reqPath = parentRequirementsPath;
                     }
 
-                    // Check for requirements.txt in parent directory
-                    const parentRequirementsPath = path.join(scriptDir, '..', 'requirements.txt');
-                    if (!fs.existsSync(requirementsPath) && fs.existsSync(parentRequirementsPath)) {
-                        terminal.sendText(`echo "📦 Found requirements.txt in parent directory - installing dependencies..."`);
-                        terminal.sendText(`${pythonCmd} -m pip install -r "${parentRequirementsPath}"`);
-                        terminal.sendText(`echo "✅ Dependencies installed successfully!"`);
+                    if (hasRequirements && reqPath) {
+                        terminal.sendText(`echo "📦 Found requirements.txt - installing dependencies..."`);
+                        
+                        // If no virtual environment exists, create one
+                        if (!venvPath) {
+                            const venvDir = path.join(scriptDir, '.venv');
+                            terminal.sendText(`echo "🔧 Creating virtual environment in .venv..."`);
+                            terminal.sendText(`python3 -m venv "${venvDir}"`);
+                            terminal.sendText(`echo "✅ Virtual environment created!"`);
+                            
+                            // Use the new venv's pip
+                            const venvPython = path.join(venvDir, 'bin', 'python');
+                            terminal.sendText(`${venvPython} -m pip install --upgrade pip`);
+                            terminal.sendText(`${venvPython} -m pip install -r "${reqPath}"`);
+                            terminal.sendText(`echo "✅ Dependencies installed in virtual environment!"`);
+                            
+                            // Update pythonCmd to use the venv
+                            pythonCmd = `"${venvPython}"`;
+                        } else {
+                            // Virtual environment exists, use it
+                            terminal.sendText(`${pythonCmd} -m pip install --upgrade pip`);
+                            terminal.sendText(`${pythonCmd} -m pip install -r "${reqPath}"`);
+                            terminal.sendText(`echo "✅ Dependencies installed successfully!"`);
+                        }
                     }
 
                     // Run the Python script
