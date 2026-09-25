@@ -48,7 +48,7 @@ cd "$EXTNAME" || exit
 
 # Download terminal icon
 echo -e "${CYAN}📥 Downloading terminal icon...${NC}"
-curl -s -o media/logo.png "https://cdn.gitgpt.chat/rtx/images/bash.png"
+curl -s -o media/logo.png "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/Bash_Logo_Colored.png"
 
 # Create package.json
 cat <<EOL > package.json
@@ -56,7 +56,7 @@ cat <<EOL > package.json
   "name": "sh-runner",
   "displayName": "Shell Script Runner",
   "description": "One-click runner for shell scripts with auto chmod",
-  "repository": "https://github.com/yourusername/sh-runner",
+  "repository": "https://github.com/igiteam/sh-runner",
   "publisher": "songdropltd",
   "icon": "media/logo.png",
   "version": "1.0.0",

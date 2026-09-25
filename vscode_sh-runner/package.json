@@ -1,0 +1,55 @@
+{
+  "name": "sh-runner",
+  "displayName": "Shell Script Runner",
+  "description": "One-click runner for shell scripts with auto chmod",
+  "repository": "https://github.com/igiteam/sh-runner",
+  "publisher": "songdropltd",
+  "icon": "media/logo.png",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.81.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:shrunner.runShellScript"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "shrunner.runShellScript",
+        "title": "⚙️Run .sh",
+        "category": "Shell"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "shrunner.runShellScript",
+          "group": "navigation",
+          "when": "resourceExtname == '.sh'"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "shrunner.runShellScript",
+          "group": "navigation",
+          "when": "resourceExtname == '.sh'"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "20.x",
+    "@types/vscode": "^1.81.0",
+    "typescript": "^5.7.2"
+  },
+  "dependencies": {}
+}
