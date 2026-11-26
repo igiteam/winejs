@@ -20,7 +20,7 @@ set -e
 # └─────────────────────────────────────────────────────────────┘
 
 #WineJS - the first real WebOS
-#https://cdn.gitgpt.chat/rtx/winejs_first_real_webos.html
+#https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/winejs_first_real_webos.html
 
 # Colors
 RED='\033[0;31m'
@@ -70,7 +70,7 @@ cd "$EXTNAME" || exit
 
 # Download logo
 echo -e "${CYAN}📥 Downloading WineJS Packager logo...${NC}"
-curl -s -o sh/logo.png "https://cdn.gitgpt.chat/rtx/images/winejs-web-packager-logo.png"
+curl -s -o sh/logo.png "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/winejs-web-packager-logo.png"
 
 # ===============================================
 # Create icon extraction helper script
@@ -429,7 +429,7 @@ async function packageWindowsApp(folderPath: string, context: vscode.ExtensionCo
     const sanitizedAppName = appName.toLowerCase().replace(/\s+/g, '_');
     const zipPath = path.join(installFolder, `${sanitizedAppName}.zip`);
     const iconPath = path.join(installFolder, `${sanitizedAppName}.png`);
-    let iconUploadUrl = 'https://cdn.gitgpt.chat/rtx/images/wine-placeholder.png';
+    let iconUploadUrl = 'https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/wine-placeholder.png';
     let iconExtracted = false;
 
     // Helper function to get image dimensions
@@ -932,7 +932,7 @@ async function packageWindowsApp(folderPath: string, context: vscode.ExtensionCo
         }, async (progress) => {
             progress.report({ increment: 0, message: "Fetching default icon..." });
             try {
-                const defaultIconResponse = await fetch('https://cdn.gitgpt.chat/rtx/images/wine-placeholder.png');
+                const defaultIconResponse = await fetch('https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/wine-placeholder.png');
                 const defaultIconBuffer = Buffer.from(await defaultIconResponse.arrayBuffer());
                 fs.writeFileSync(iconPath, defaultIconBuffer);
                 progress.report({ increment: 100, message: "Default icon ready!" });
