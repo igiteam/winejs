@@ -1,6 +1,6 @@
 # WINEJS — Universal App Platform in the Browser
 
-![WINEJS - Windows Apps in Browser](https://raw.githubusercontent.com/igiteam/winejs/main/research/winejs-logo.png)
+![WINEJS - Windows Apps in Browser](https://raw.githubusercontent.com/igiteam/winejs/main/winejs-firefox-installer/icons/icon128.png)
 
 > **Status:** 🚧 *Under active development.*
 
