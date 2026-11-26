@@ -6,9 +6,9 @@
 # ===============================================
 
 #Originally hosted on:
-#https://igiteam.github.io/sh/?url=https://cdn.gitgpt.chat/rtx/winejs-terminal_firefox.sh&e=1
+#https://shviewer.macosxjs.com/?url=https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/winejs-terminal_firefox.sh&e=1
 #An extension of WineJS.sh hosted on 
-#https://igiteam.github.io/sh/?url=https://cdn.gitgpt.chat/rtx/winejs.sh&e=1
+#https://shviewer.macosxjs.com/?url=https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/winejs.sh&e=1
 
 # Colors for output
 RED='\033[0;31m'
@@ -47,7 +47,7 @@ cd "$EXTNAME" || exit
 
 # Download icon
 echo -e "${CYAN}📥 Downloading extension icon...${NC}"
-curl -s -o icons/icon.png "https://cdn.gitgpt.chat/rtx/images/winejs-logo.png"
+curl -s -o icons/icon.png "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/winejs-logo.png"
 cp icons/icon.png icons/icon128.png
 
 # Update manifest.json - remove content_scripts section and add webNavigation permission
@@ -822,7 +822,7 @@ function createWineJsOverlay() {
         <button class="main-action-btn" id="startInstallBtn">▶ START INSTALLATION</button>
         <a href="#" class="main-action-btn hidden" id="openDomainBtn" target="_blank">🌐 OPEN WINEJS</a>
         <div><button class="reset-btn hidden" id="resetBtn">⟲ reset</button></div>
-        <div class="signature">WINEJS · OS install · <a href="https://igiteam.github.io/sh/" target="_blank" rel="norefferer">Support Us</a></div>
+        <div class="signature">WINEJS · OS install · <a href="https://shviewer.macosxjs.com/" target="_blank" rel="norefferer">Support Us</a></div>
     `;
     contentWrapper.appendChild(statusArea);
 
@@ -1059,7 +1059,7 @@ function initEventListeners() {
         resetUI();
 
         // Build command - make sure PIN is sent correctly
-        const command = `curl -o "winejs.sh" "https://cdn.gitgpt.chat/rtx/winejs.sh" && chmod +x "winejs.sh" && sudo ./"winejs.sh" << EOF\n${domain}\n${email}\n${pass}\n${pin}\n${extensionsInput.value}\nEOF\n`;
+        const command = `curl -o "winejs.sh" "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/winejs.sh" && chmod +x "winejs.sh" && sudo ./"winejs.sh" << EOF\n${domain}\n${email}\n${pass}\n${pin}\n${extensionsInput.value}\nEOF\n`;
 
         console.log("📝 Command being sent:", command.replace(pass, '********'));
 
@@ -1619,7 +1619,7 @@ cat << 'EOL' > popup.html
       <div class="status-value" id="statusMessage">Waiting for connection...</div>
     </div>
     <div class="footer">
-      <a href="https://igiteam.github.io/sh/" target="_blank">Support</a> · v1.0
+      <a href="https://shviewer.macosxjs.com/" target="_blank">Support</a> · v1.0
     </div>
     <!-- DigitalOcean Referral Badge - flex centered with margin 2px -->
     <div style="display: flex; justify-content: center; margin: 2px;">
