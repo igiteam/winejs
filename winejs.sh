@@ -12,9 +12,9 @@
 # ============================================================
 
 #Originally hosted on:
-#https://igiteam.github.io/sh/?url=https://cdn.gitgpt.chat/rtx/winejs.sh&e=1
+#https://igiteam.github.io/sh/?url=https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/winejs.sh&e=1
 #Download WineJS Installation extension for Firefox!
-#https://igiteam.github.io/sh/?url=https://cdn.gitgpt.chat/rtx/winejs-terminal_firefox.sh&e=1
+#https://igiteam.github.io/sh/?url=https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/winejs-terminal_firefox.sh&e=1
 
 # Find all uninstall scripts in the apps directory
 # find /opt/winejs/apps -name "uninstall_*" -type f
@@ -1018,8 +1018,8 @@ mkdir -p /opt/winejs/apps/milkshape
 cd /opt/winejs/apps/milkshape
 
 # Download MilkShape and icon
-curl -L "https://cdn.gitgpt.chat/rtx/wine/MilkShape3D1.8.5.zip" -o milkshape.zip
-curl -L "https://cdn.gitgpt.chat/rtx/wine/images/milkshape3dicon.jpg" -o icon.jpg
+curl -L "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/wine/MilkShape3D1.8.5.zip" -o milkshape.zip
+curl -L "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/wine/images/milkshape3dicon.jpg" -o icon.jpg
 
 # Unzip with force overwrite and quiet mode, auto-answer yes to all prompts
 unzip -o -q milkshape.zip || true
@@ -1695,84 +1695,84 @@ app.get("/:appName*", async (req, res, next) => {
             pathPattern: (path) => true, // Any path works
             extractTitle: (path) => path.replace(/^\//, ''),
             searchSuffix: "xbox xemu",
-            icon: "https://cdn.gitgpt.chat/rtx/images/xbox-logo-original.png",
+            icon: "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/xbox-logo-original.png",
             displayName: "XEMU"
         },
         ps2: {
             pathPattern: (path) => true, // Any path works
             extractTitle: (path) => path.replace(/^\//, ''),
             searchSuffix: "ps2 pcsx2",
-            icon: "https://cdn.gitgpt.chat/rtx/images/pcsx2.png",
+            icon: "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/pcsx2.png",
             displayName: "PS2"
         },
         wii: {
             pathPattern: (path) => true,
             extractTitle: (path) => path.replace(/^\//, ''),
             searchSuffix: "wii dolphin",
-            icon: "https://cdn.gitgpt.chat/rtx/images/dolphin_wii_icon.png", 
+            icon: "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/dolphin_wii_icon.png", 
             displayName: "Wii"
         },
         gamecube: {
             pathPattern: (path) => true,
             extractTitle: (path) => path.replace(/^\//, ''),
             searchSuffix: "gamecube dolphin",
-            icon: "https://cdn.gitgpt.chat/rtx/images/gamecube-icon.png",
+            icon: "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/gamecube-icon.png",
             displayName: "GameCube"
         },
         dreamcast: {
             pathPattern: (path) => true,
             extractTitle: (path) => path.replace(/^\//, ''),
             searchSuffix: "dreamcast",
-            icon: "https://cdn.gitgpt.chat/rtx/images/dreamcast-icon.png",
+            icon: "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/dreamcast-icon.png",
             displayName: "Dreamcast"
         },
         ps1: {
             pathPattern: (path) => true,
             extractTitle: (path) => path.replace(/^\//, ''),
             searchSuffix: "ps1",
-            icon: "https://cdn.gitgpt.chat/rtx/images/Playstation-Logo.png",
+            icon: "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/Playstation-Logo.png",
             displayName: "PS1"
         },
         gba: {
             pathPattern: (path) => true,
             extractTitle: (path) => path.replace(/^\//, ''),
             searchSuffix: "gba",
-            icon: "https://cdn.gitgpt.chat/rtx/images/gba-icon.png",
+            icon: "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/gba-icon.png",
             displayName: "GBA"
         },
         psp: {
             pathPattern: (path) => true,
             extractTitle: (path) => path.replace(/^\//, ''),
             searchSuffix: "psp ppsspp",
-            icon: "https://cdn.gitgpt.chat/rtx/images/psp-icon.png",
+            icon: "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/psp-icon.png",
             displayName: "PSP"
         },
         n64: {
             pathPattern: (path) => true,
             extractTitle: (path) => path.replace(/^\//, ''),
             searchSuffix: "n64 mupen64",
-            icon: "https://cdn.gitgpt.chat/rtx/images/n64-icon.png",
+            icon: "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/n64-icon.png",
             displayName: "N64"
         },
         snes: {
             pathPattern: (path) => true,
             extractTitle: (path) => path.replace(/^\//, ''),
             searchSuffix: "snes snes9x",
-            icon: "https://cdn.gitgpt.chat/rtx/images/snes-icon.png",
+            icon: "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/snes-icon.png",
             displayName: "SNES"
         },
         genesis: {
             pathPattern: (path) => true,
             extractTitle: (path) => path.replace(/^\//, ''),
             searchSuffix: "sega genesis",
-            icon: "https://cdn.gitgpt.chat/rtx/images/genesis-icon.png",
+            icon: "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/genesis-icon.png",
             displayName: "Genesis"
         },
         sega: {
             pathPattern: (path) => true,
             extractTitle: (path) => path.replace(/^\//, ''),
             searchSuffix: "sega genesis",
-            icon: "https://cdn.gitgpt.chat/rtx/images/genesis-icon.png",
+            icon: "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/genesis-icon.png",
             displayName: "Sega Genesis"
         }
     };
@@ -1973,7 +1973,7 @@ function generateConsolePage(consoleName, title, iframeSrc, iconUrl) {
 function generate404Page(appName, appRegistry) {
   const winTitleBarCSS = getTitleBarCSS();
   const winTitleBarHTML = getTitleBarHTML(
-    'https://cdn.gitgpt.chat/rtx/images/winejs-logo.png',
+    'https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/winejs-logo.png',
     'WINEJS'
   );
 
@@ -1982,7 +1982,7 @@ function generate404Page(appName, appRegistry) {
     <html>
       <head>
         <title>App Not Found</title>
-        <link rel="icon" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" type="image/png">
+        <link rel="icon" href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/winejs-logo.png" type="image/png">
         <style>
           \${winTitleBarCSS}
           
@@ -2167,7 +2167,7 @@ function getTitleBarHTML(iconUrl, title) {
   return \`
     <div class="win-titlebar">
       <div class="win-logo">
-        <img src="\${iconUrl}" alt="\${title}" onerror="this.src='https://cdn.gitgpt.chat/rtx/images/winejs-logo.png'">
+        <img src="\${iconUrl}" alt="\${title}" onerror="this.src='https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/winejs-logo.png'">
         <span>\${title}</span>
       </div>
       <div class="win-controls">
@@ -2497,7 +2497,7 @@ cat > /opt/winejs/fileserver/www/index.html << 'EOF'
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FileServer</title>
-    <link rel="icon" href="https://cdn.gitgpt.chat/rtx/images/fileserver-icon.png" type="image/png">
+    <link rel="icon" href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/fileserver-icon.png" type="image/png">
     <style>
         * {
             margin: 0;
@@ -2921,7 +2921,7 @@ cat > /opt/winejs/fileserver/www/index.html << 'EOF'
     <!-- Windows 10-style title bar -->
     <div class="win-titlebar">
         <div class="win-logo">
-            <img src="https://cdn.gitgpt.chat/rtx/images/fileserver-logo.png" alt="">
+            <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/fileserver-logo.png" alt="">
             <span>FileServer</span>
         </div>
         <div class="win-controls">
@@ -3584,10 +3584,10 @@ cat > /opt/winejs/translator/public/index.html << EOF
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WINEJS - Windows Apps in Browser</title>
-    <link rel="icon" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" type="image/png">
-    <link rel="apple-touch-icon" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" sizes="180x180">
-    <link rel="icon" type="image/png" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" sizes="192x192">
-    <link rel="icon" type="image/png" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" sizes="512x512">
+    <link rel="icon" href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/winejs-logo.png" type="image/png">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/winejs-logo.png" sizes="180x180">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/winejs-logo.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/winejs-logo.png" sizes="512x512">
     <meta itemprop="name" content="WINEJS - Windows Apps in Browser">
     <meta itemprop="image"
         content="https://img.gitgpt.chat/?url=${DOMAIN_NAME}&w=1920&h=1080">
@@ -3600,7 +3600,7 @@ cat > /opt/winejs/translator/public/index.html << EOF
     <meta name="twitter:image"
         content="https://img.gitgpt.chat/?url=${DOMAIN_NAME}&w=1920&h=1080">
     <meta name="twitter:card" content="summary_large_image">
-    <link rel="apple-touch-icon" href="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" sizes="180x180">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/winejs-logo.png" sizes="180x180">
     <style>
         * {
             margin: 0;
@@ -4223,7 +4223,7 @@ cat > /opt/winejs/translator/public/index.html << EOF
     <!-- Windows 10-style title bar -->
     <div class="win-titlebar">
         <div class="win-logo">
-            <img src="https://cdn.gitgpt.chat/rtx/images/winejs-logo.png" alt="WINEJS">
+            <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/winejs-logo.png" alt="WINEJS">
             <span>WINEJS</span>
         </div>
         <div class="win-controls">
@@ -4324,83 +4324,83 @@ cat > /opt/winejs/translator/public/index.html << EOF
             </a>
             <!-- Github WineJS  -->
             <a href="https://github.com/igiteam/winejs" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/github-logo-white.png" style="height: 45px;" alt="WineJS Github Repo" />
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/github-logo-white.png" style="height: 45px;" alt="WineJS Github Repo" />
             </a>
             <!-- WineJS WebOS Info -->
-            <a href="https://cdn.gitgpt.chat/rtx/winejs_first_real_webos.html" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/winejs-info-logo.png" style="height: 45px;" alt="WineJS WebOS Info" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/winejs_first_real_webos.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/winejs-info-logo.png" style="height: 45px;" alt="WineJS WebOS Info" />
             </a>
             <!-- SH WineJS  -->
             <a href="https://igiteam.github.io/sh/" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/bash.png" style="height: 45px;" alt="WineJS SH" />
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/bash.png" style="height: 45px;" alt="WineJS SH" />
             </a>
             <!-- macOS Title -->
-            <a href="https://cdn.gitgpt.chat/rtx/macosx-apps.html" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/mac-os-x.png" style="height: 45px;" alt="macOS Apps" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/macosx-apps.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/mac-os-x.png" style="height: 45px;" alt="macOS Apps" />
             </a>
             <!-- Wine Winery -->
             <a href="https://github.com/igiteam/wine_wineskin_source" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/wine_winery.png" style="height: 45px;" alt="Wine Winery" />
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/wine_winery.png" style="height: 45px;" alt="Wine Winery" />
             </a>
             <!-- Wine Wineskin -->
             <a href="https://igiteam.github.io/wine_engines/" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/wine_wineskin.png" style="height: 45px;" alt="Wine Wineskin" />
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/wine_wineskin.png" style="height: 45px;" alt="Wine Wineskin" />
             </a>
             <!-- Wine Wineskin x64 -->
             <a href="https://igiteam.github.io/wine_engines/" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/wineskin_x64.png" style="height: 45px;" alt="Wine Wineskin x64" />
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/wineskin_x64.png" style="height: 45px;" alt="Wine Wineskin x64" />
             </a>
             <!-- macOSX Wine -->
-            <a href="https://cdn.gitgpt.chat/rtx/macosx_wine.html" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/winejs_white_transparent.png" style="height: 45px;" alt="macOSX Apps" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/macosx_wine.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/winejs_white_transparent.png" style="height: 45px;" alt="macOSX Apps" />
             </a>
             <!-- macOS Apps on Windows -->
-            <a href="https://cdn.gitgpt.chat/rtx/macosx-apps_windows.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/windowsnt.png" style="height: 45px;" alt="macOS Apps on Windows" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/macosx-apps_windows.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/windowsnt.png" style="height: 45px;" alt="macOS Apps on Windows" />
             </a>
             <!-- XEMU / Xbox -->
-            <a href="https://cdn.gitgpt.chat/rtx/xbox_games_xemu.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/xbox-logo-original.png" style="height: 45px;" alt="Xbox XEMU Games" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/xbox_games_xemu.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/xbox-logo-original.png" style="height: 45px;" alt="Xbox XEMU Games" />
             </a>
             <!-- PS2 / PCSX2 -->
-            <a href="https://cdn.gitgpt.chat/rtx/ps2_games_pcsx2.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/pcsx2.png" style="height: 45px;" alt="PS2 PCSX2 Games" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/ps2_games_pcsx2.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/pcsx2.png" style="height: 45px;" alt="PS2 PCSX2 Games" />
             </a>
             <!-- Wii / Dolphin -->
-            <a href="https://cdn.gitgpt.chat/rtx/wii_games_dolphin.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/dolphin_wii_icon.png" style="height: 45px;" alt="Wii Dolphin Emulator" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/wii_games_dolphin.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/dolphin_wii_icon.png" style="height: 45px;" alt="Wii Dolphin Emulator" />
             </a>
             <!-- GameCube / Dolphin -->
-            <a href="https://cdn.gitgpt.chat/rtx/gamecube_games_dolphin.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/gamecube-icon.png" style="height: 45px;" alt="GameCube Dolphin Emulator" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/gamecube_games_dolphin.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/gamecube-icon.png" style="height: 45px;" alt="GameCube Dolphin Emulator" />
             </a>
             <!-- N64 / N64JS -->
-            <a href="https://cdn.gitgpt.chat/rtx/n64_games_js.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/n64-icon.png" style="height: 45px;" alt="N64 Emulator" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/n64_games_js.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/n64-icon.png" style="height: 45px;" alt="N64 Emulator" />
             </a>
             <!-- Dreamcast / Demul -->
-            <a href="https://cdn.gitgpt.chat/rtx/dreamcast_games_demul.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/dreamcast-icon.png" style="height: 45px;" alt="Dreamcast Demul Emulator" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/dreamcast_games_demul.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/dreamcast-icon.png" style="height: 45px;" alt="Dreamcast Demul Emulator" />
             </a>
             <!-- PS1 / JS -->
-            <a href="https://cdn.gitgpt.chat/rtx/ps1_games_js.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/Playstation-Logo.png" style="height: 45px;" alt="PS1 Games Emulator" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/ps1_games_js.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/Playstation-Logo.png" style="height: 45px;" alt="PS1 Games Emulator" />
             </a>
             <!-- PSP / PPSSPP -->
-            <a href="https://cdn.gitgpt.chat/rtx/psp_games_ppsspp.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/psp-icon.png" style="height: 45px;" alt="PSP PPSSPP Emulator" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/psp_games_ppsspp.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/psp-icon.png" style="height: 45px;" alt="PSP PPSSPP Emulator" />
             </a>
             <!-- GBA / JS -->
-            <a href="https://cdn.gitgpt.chat/rtx/gba_games_js.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/gba-icon.png" style="height: 45px;" alt="GBA mGBA Emulator" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/gba_games_js.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/gba-icon.png" style="height: 45px;" alt="GBA mGBA Emulator" />
             </a>
             <!-- SNES / Snes9x -->
-            <a href="https://cdn.gitgpt.chat/rtx/snes_games_snes9x.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/snes-icon.png" style="height: 45px;" alt="SNES Snes9x Emulator" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/snes_games_snes9x.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/snes-icon.png" style="height: 45px;" alt="SNES Snes9x Emulator" />
             </a>
             <!-- Genesis / BlastEm -->
-            <a href="https://cdn.gitgpt.chat/rtx/genesis_games_blastem.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/genesis-icon.png" style="height: 45px;" alt="Genesis BlastEm Emulator" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/genesis_games_blastem.html?url=https://${DOMAIN_NAME}" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/genesis-icon.png" style="height: 45px;" alt="Genesis BlastEm Emulator" />
             </a>
             <!--  Lithtech Engine Games  -->
             <a href="https://lithtechenginegames.netlify.app/" target="_blank" rel="noopener noreferrer">
@@ -4408,7 +4408,7 @@ cat > /opt/winejs/translator/public/index.html << EOF
             </a>
             <!--  IdTech Engine Games  -->
             <a href="https://idtechenginegames.netlify.app/" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/idtechenginelogo.png" style="height: 45px;" alt=" IdTech Engine" />
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/idtechenginelogo.png" style="height: 45px;" alt=" IdTech Engine" />
             </a>
             <!--  Chrome Engine Games  -->
             <a href="https://chromeenginegames.netlify.app/" target="_blank" rel="noopener noreferrer">
@@ -4427,12 +4427,12 @@ cat > /opt/winejs/translator/public/index.html << EOF
                 <img src="https://unrealenginegames.netlify.app/ue3.png" style="height: 45px;" alt="Unreal Engine 1-4" />
             </a>
             <!--  Website Design Musem Archive   -->
-            <a href="https://cdn.gitgpt.chat/rtx/webdesign_museum_archive/Web%20Design%20Museum%20Archive.html" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/winejs-webdesignmuseum-archive.png" style="height: 45px;" alt="Website Design Musem Archive" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/webdesign_museum_archive/Web%20Design%20Museum%20Archive.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/winejs-webdesignmuseum-archive.png" style="height: 45px;" alt="Website Design Musem Archive" />
             </a>
             <!--  iSO CD/DVD  -->
-            <a href="https://cdn.gitgpt.chat/rtx/winejs-cd-dvd-up/winejs-cd-dvd-up.html" target="_blank" rel="noopener noreferrer">
-                <img src="https://cdn.gitgpt.chat/rtx/images/winejs-cd-dvd-up-icon.png" style="height: 45px;" alt="iSO CD/DVD" />
+            <a href="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/winejs-cd-dvd-up/winejs-cd-dvd-up.html" target="_blank" rel="noopener noreferrer">
+                <img src="https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/winejs-cd-dvd-up-icon.png" style="height: 45px;" alt="iSO CD/DVD" />
             </a>
         </div>
     </div>
@@ -4533,7 +4533,7 @@ cat > /opt/winejs/translator/public/index.html << EOF
 
                     let html = '';
                     for (const [key, app] of Object.entries(apps)) {
-                        const iconPath = app.icon ? app.icon : 'https://cdn.gitgpt.chat/rtx/images/wine-placeholder.png';
+                        const iconPath = app.icon ? app.icon : 'https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/wine-placeholder.png';
                         const isSelected = key === 'milkshape' ? 'selected' : '';
                         
                         html += \`
