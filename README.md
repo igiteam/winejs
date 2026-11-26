@@ -3,7 +3,7 @@
 <table>
   <tr>
     <td>
-      <img src="https://raw.githubusercontent.com/igiteam/winejs/main/winejs-firefox-installer/icons/icon128.png" alt="WINEJS - Windows Apps in Browser" width="64" height="64" />
+      <img src="https://raw.githubusercontent.com/igiteam/winejs/main/winejs_logo/winejs_banner.png" alt="WINEJS - Windows Apps in Browser" height="64" />
     </td>
     <td>
       <a href="https://winejs.org" target="_blank">https://winejs.org</a>
