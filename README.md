@@ -10,6 +10,9 @@
 
 WineJS is a unified, containerized platform that lets you run **Windows apps, web apps, console emulators, and developer tools** side-by-side in a browser-based Windows 10 desktop environment.
 
+```
+curl -o "winejs.sh" "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/winejs.sh" && chmod +x "winejs.sh" && sudo ./"winejs.sh"
+```
 ---
 
 ## 🏗️ Architecture: The Unified Platform
