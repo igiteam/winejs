@@ -81,7 +81,7 @@ cd "$EXTNAME" || exit
 
 # Download icon
 echo -e "${CYAN}📥 Downloading extension icon...${NC}"
-curl -s -o icons/icon.png "https://cdn.sdappnet.cloud/rtx/images/digitalocean-black-icon.png"
+curl -s -o icons/icon.png "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/images/digitalocean-black-icon.png"
 cp icons/icon.png icons/icon128.png
 
 # Create manifest.json
