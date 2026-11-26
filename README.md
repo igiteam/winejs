@@ -1,61 +1,137 @@
-![WINEJS - Windows Apps in Browser](https://github.com/igiteam/winejs/blob/main/WINEJS%20-%20Windows%20Apps%20in%20Browser.png "WINEJS - Windows Apps in Browser")
+# WINEJS — Universal App Platform in the Browser
 
-Under development.
+![WINEJS - Windows Apps in Browser](https://github.com/igiteam/winejs/blob/main/WINEJS%20-%20Windows%20Apps%20in%20Browser.png?raw=true "WINEJS - Windows Apps in Browser")
 
------VSCODE Extension - WineJS Packager-----------
-Web App Packager Flow:
+> **Status:** 🚧 *Under active development.*
 
-Right-click GitHub URL (or paste URL)
-│
-▼
-Enter app name (auto-filled from repo)
-│
-▼
-Select category (Game, App, Dashboard, etc.)
-│
-▼
-Get icon (URL or default)
-│
-▼
-Find next available port (same logic as Windows!)
-│
-▼
-GENERATE install_AppName.sh
+WineJS is a unified, containerized platform that lets you run **Windows apps, web apps, console emulators, and developer tools** side-by-side in a browser-based Windows 10 desktop environment.
 
-What the Install Script Does:
-bash
+---
 
+## 🏗️ Architecture: The Unified Platform
+
+Every application on WineJS—whether a legacy Windows `.exe` or a modern WebAssembly game—follows the exact same containerized pattern:
+
+* **All apps** = Isolated Docker containers
+* **All apps** = Standardized directory structure (`/opt/winejs/apps/` & `/opt/winejs/kasmvnc-instances/`)
+* **All apps** = Dynamic port allocation (`6900+`)
+* **All apps** = Auto-heal (`restart: unless-stopped`)
+* **All apps** = Shared `/uploads` volume
+* **All apps** = Unified Windows 10 Web Dashboard
+
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│                    WINEJS UNIVERSAL PLATFORM                    │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                 │
+│    Windows Apps            Web Apps             Console Apps    │
+│ ┌─────────────────┐   ┌─────────────────┐   ┌─────────────────┐ │
+│ │  winedrop-base  │   │  nginx:alpine   │   │  custom image   │ │
+│ │  + Wine         │   │  + static files │   │  (emulators/AI) │ │
+│ │  + KasmVNC      │   │                 │   │                 │ │
+│ └────────┬────────┘   └────────┬────────┘   └────────┬────────┘ │
+│          │                     │                     │          │
+│          └─────────────────────┼─────────────────────┘          │
+│                                │                                │
+│                                ▼                                │
+│                  ┌───────────────────────────┐                  │
+│                  │        TRANSLATOR         │                  │
+│                  │   (Reverse Port Proxy)    │                  │
+│                  └─────────────┬─────────────┘                  │
+│                                │                                │
+│                                ▼                                │
+│                  ┌───────────────────────────┐                  │
+│                  │   Windows 10 Dashboard    │                  │
+│                  │   ├── /milkshape          │                  │
+│                  │   ├── /quake3             │                  │
+│                  │   ├── /photonix           │                  │
+│                  │   └── /jellyfin           │                  │
+│                  └───────────────────────────┘                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🚀 What You Can Host
+
+| App Type | Examples | Container Base |
+| :--- | :--- | :--- |
+| **🪟 Windows** | MilkShape 3D, Project IGI, GIMP | `winedrop-base` + Wine + KasmVNC |
+| **🌐 Web (Static)** | Quake3 WASM, Doom, JS Games, React/Vue | `nginx:alpine` |
+| **🐳 Web (Dynamic)** | Nextcloud, Jellyfin, WordPress | Official Docker images |
+| **🎮 Console** | PS2, Wii, N64, NES/SNES | Browser emulator images |
+| **🤖 AI & ML** | Stable Diffusion, Local LLMs | Python + Model weights |
+| **📊 Databases** | PostgreSQL, MySQL | Official DB images |
+| **🔧 Dev Tools** | VS Code Server, Jupyter | `codercom/code-server` |
+
+---
+
+## 📦 VS Code Extension: WineJS Packager
+
+The **WineJS Packager** extension automates turning local Windows folders, GitHub repositories, or Docker images into one-click deployable installer scripts (`install_<AppName>.sh`).
+
+### Packager Ecosystem Flow
+
+```text
+     Windows Packager                      Web Packager
+            │                                    │
+            ▼                                    ▼
+    Right-click folder             Right-click URL / Paste repo
+            │                                    │
+            ▼                                    ▼
+       Select .EXE                 Enter Docker image or GitHub URL
+            │                                    │
+            ▼                                    ▼
+      Extract icon                   Get icon (URL or default)
+            │                                    │
+            ▼                                    ▼
+       Create ZIP                  Clone repo / Pull Docker image
+            │                                    │
+            ▼                                    ▼
+  Generate install.sh                   Generate install.sh
+            │                                    │
+            └─────────────────┬──────────────────┘
+                              ▼
+                  Install on WineJS Server
+                              │
+                              ▼
+                  Generate docker-compose.yml
+                              │
+                              ▼
+                  Translator proxies to port
+                              │
+                              ▼
+                  App appears in Dashboard!
+```
+
+---
+
+## 🛠️ Example Generated Installer (`install_quake3.sh`)
+
+When packaging a web app, the extension generates a standalone bash script that automatically finds the next open port, clones the repository, sets up Nginx via Docker, and registers the app with the WineJS Translator.
+
+```bash
 #!/bin/bash
-
 # ============================================
-
 # WineJS Web App Installer
-
 # Generated by WineJS Web Packager v1.0
-
 # ============================================
-
 # App: quake3
-
 # Repo: https://github.com/username/quake3-wasm
-
-# Port: 6903
-
 # ============================================
 
 set -e
 
 log() { echo "[$(date '+%H:%M:%S')] $1"; }
 
-# Find next available port (same as Windows version!)
-
-MAX*PORT=6900
+# 1. Find next available port (same logic as Windows apps)
+MAX_PORT=6900
 if [ -d "/opt/winejs/apps" ]; then
-for config in /opt/winejs/apps/*/config.json; do
-if [ -f "$config" ]; then
-PORT=$(grep -o '"port": [0-9]_' "$config" | awk '{print $2}')
+    for config in /opt/winejs/apps/*/config.json; do
+        if [ -f "$config" ]; then
+            PORT=$(grep -o '"port": [0-9]*' "$config" | awk '{print $2}')
             if [ -n "$PORT" ] && [ "$PORT" -gt "$MAX_PORT" ]; then
-MAX_PORT=$PORT
+                MAX_PORT=$PORT
             fi
         fi
     done
@@ -63,8 +139,7 @@ fi
 APP_PORT=$((MAX_PORT + 1))
 log "Using port: $APP_PORT"
 
-# Create directories
-
+# 2. Create directories
 APP_NAME="quake3"
 APP_DIR="/opt/winejs/apps/$APP_NAME"
 INSTANCE_DIR="/opt/winejs/kasmvnc-instances/$APP_NAME"
@@ -72,172 +147,58 @@ ICON_DIR="/opt/winejs/translator/public/icons"
 
 mkdir -p "$APP_DIR" "$INSTANCE_DIR" "$ICON_DIR"
 
-# Clone the repo
-
+# 3. Clone the repository
 git clone https://github.com/username/quake3-wasm.git "$APP_DIR"
 
-# Download icon
-
+# 4. Download icon
 curl -L https://example.com/quake3-icon.png -o "$ICON_DIR/$APP_NAME.png"
 
-# Create config.json
-
+# 5. Create config.json
 cat > "$APP_DIR/config.json" << EOF
 {
-    "name": "Quake3 WebAssembly",
-    "type": "web",
-    "port": $APP_PORT,
-    "icon": "/icons/$APP_NAME.png",
-"category": "Game"
+  "name": "Quake3 WebAssembly",
+  "type": "web",
+  "port": $APP_PORT,
+  "icon": "/icons/$APP_NAME.png",
+  "category": "Game"
 }
 EOF
 
-# Create docker-compose.yml (nginx serves the static files)
-
+# 6. Create docker-compose.yml (nginx serves static files)
 cat > "$INSTANCE_DIR/docker-compose.yml" << EOF
 version: '3.8'
 
 services:
-winejs-$APP_NAME:
+  winejs-$APP_NAME:
     image: nginx:alpine
     container_name: winejs-$APP_NAME
-restart: unless-stopped
-ports: - "127.0.0.1:$APP_PORT:80"
-volumes: - $APP_DIR:/usr/share/nginx/html:ro
-networks: - winejs-net
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:$APP_PORT:80"
+    volumes:
+      - $APP_DIR:/usr/share/nginx/html:ro
+    networks:
+      - winejs-net
 
 networks:
-winejs-net:
-external: true
+  winejs-net:
+    external: true
 EOF
 
-# Start the container
-
+# 7. Start the container & reload translator
 cd "$INSTANCE_DIR"
 docker-compose up -d
-
-# Restart translator
-
 pm2 restart translator
 
 log "✅ Quake3 WebAssembly installed at https://yourdomain.com/$APP_NAME"
+```
 
-The Magic:
-Same port detection as Windows apps
-Same directory structure (/opt/winejs/apps/ + /opt/winejs/kasmvnc-instances/)
-Same translator - just proxies to the port
-Same dashboard - shows up alongside MilkShape and IGI
-No Wine, No KasmVNC - just nginx serving static files
+---
 
-What You Can Host:
-Type Example
-GitHub Pages repos Quake3 WebAssembly, Doom, JS games
-Static sites Documentation, portfolios, dashboards
-WASM apps Figma-like tools, photo editors
-JS apps React, Vue, Angular apps
-Game emulators NES, SNES, GameBoy in browser
+## ✨ Why This Architecture Works
 
-Same pattern, same system, ANY web app in a container! 🚀
-
-Want me to help write the VS Code extension for this?
-FUCK YEAH! because with this all apps in docker, and it will runn literally anything!
-
-EXACTLY! 💥
-This is the UNIFIED PLATFORM:
-
-┌─────────────────────────────────────────────────────────────────┐
-│ WINEJS UNIVERSAL PLATFORM │
-├─────────────────────────────────────────────────────────────────┤
-│ │
-│ All apps = Docker containers │
-│ All apps = Same directory structure │
-│ All apps = Dynamic ports │
-│ All apps = Auto-heal (docker restart unless-stopped) │
-│ All apps = Shared /uploads volume │
-│ All apps = Same dashboard │
-│ │
-├─────────────────────────────────────────────────────────────────┤
-│ │
-│ Windows Apps Web Apps Console Apps │
-│ ┌─────────────────┐ ┌─────────────────┐ ┌───────────┐ │
-│ │ winedrop-base │ │ nginx:alpine │ │ custom │ │
-│ │ + Wine │ │ + static files │ │ image │ │
-│ │ + KasmVNC │ │ │ │ │ │
-│ └─────────────────┘ └─────────────────┘ └───────────┘ │
-│ │ │ │ │
-│ └────────────────────────┼────────────────────┘ │
-│ │ │
-│ ▼ │
-│ ┌─────────────────────────┐ │
-│ │ TRANSLATOR │ │
-│ │ (just proxies ports) │ │
-│ └─────────────────────────┘ │
-│ │ │
-│ ▼ │
-│ ┌─────────────────────────┐ │
-│ │ Windows 10 Dashboard │ │
-│ │ /milkshape │ │
-│ │ /quake3 │ │
-│ │ /photonix │ │
-│ │ /jellyfin │ │
-│ └─────────────────────────┘ │
-│ │
-└─────────────────────────────────────────────────────────────────┘
-
-What This Unlocks:
-App Type Example Container
-🪟 Windows MilkShape, IGI, GIMP winedrop-base + Wine
-🌐 Web (static) Quake3 WASM, Doom, JS games nginx:alpine
-🐳 Web (dynamic) Nextcloud, Jellyfin, WordPress official images
-🎮 Console PS2, Wii, N64 emulator images
-🤖 AI Stable Diffusion, LLMs python + models
-📊 Database PostgreSQL, MySQL official images
-🔧 Tools VS Code Server, Jupyter codercom/code-server
-
-The Packager Ecosystem:
-
-Windows Packager Web Packager
-│ │
-│ │
-▼ ▼
-Right-click folder Right-click URL / Paste repo
-│ │
-▼ ▼
-Select EXE Enter Docker image or GitHub URL
-│ │
-▼ ▼
-Extract icon Get icon (URL or default)
-│ │
-▼ ▼
-Create ZIP Just clone repo / pull image
-│ │
-▼ ▼
-Generate install.sh Generate install.sh
-│ │
-└────────────┬───────────────┘
-▼
-Install on WineJS server
-│
-▼
-┌──────────────────────────────┐
-│ │
-▼ ▼
-docker-compose.yml docker-compose.yml
-(Windows app) (web app)
-│ │
-└──────────────┬───────────────┘
-▼
-Translator proxies to port
-│
-▼
-App appears in dashboard!
-
-The Beauty:
-One platform to rule them all - Windows, web, games, tools, everything
-Same deployment - Just run sudo bash install_appname.sh
-Same management - docker logs, docker stop, all the same
-Same user experience - Dashboard shows everything equally
-Shared storage - /uploads accessible from ANY app (Windows or web)
-Unlimited scalability - Dynamic ports, unlimited apps
-
-You've just turned WineJS into a universal app platform! 🔥
+* **One Platform to Rule Them All:** Windows apps, web apps, games, and dev tools run under one roof.
+* **Identical Deployment:** Deploy anything with a single command (`sudo bash install_appname.sh`).
+* **Unified Management:** Standard `docker logs`, `docker stop`, and `docker stats` across every app.
+* **Shared Storage:** The `/uploads` directory is accessible from both Windows and web containers.
+* **Unlimited Scalability:** Dynamic port assignment means there is no hardcoded limit on how many apps you can host.
