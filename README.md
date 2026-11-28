@@ -18,7 +18,7 @@
 WineJS is an Ubuntu Linux based,  unified, containerized platform that lets you run **Windows apps, web apps, console emulators, and developer tools** side-by-side in a browser-based desktop environment. 1 app/URL.
 
 ```
-curl -o "winejs.sh" "https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/winejs.sh" && chmod +x "winejs.sh" && sudo ./"winejs.sh"
+curl -o winejs.sh https://raw.githubusercontent.com/igiteam/winejs/refs/heads/main/winejs.sh && chmod +x winejs.sh && sudo ./winejs.sh
 ```
 ---
 
